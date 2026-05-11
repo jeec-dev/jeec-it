@@ -84,7 +84,7 @@ export function InteractiveCover() {
         Reset Arcade Save
       </button>
 
-      <div className="relative overflow-hidden rounded-3xl border border-cyan-300/20 bg-neutral-950 p-3 shadow-[0_0_60px_rgba(34,211,238,0.12)]">
+      <div className="relative overflow-hidden rounded-3xl border border-[#f1bbdf]/25 bg-[var(--jeec-deep-violet)] p-3 shadow-[0_0_70px_rgba(205,149,201,0.20)]">
         <div className="arcade-scanlines" />
         <div className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-900">
           <Image
@@ -106,8 +106,8 @@ export function InteractiveCover() {
                 onClick={() => handleHotspotClick(hotspot)}
                 className={`absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-full border font-mono text-[10px] transition hover:scale-125 ${
                   isDiscovered
-                    ? "border-cyan-300 bg-cyan-300/20 text-cyan-100 shadow-[0_0_20px_rgba(34,211,238,0.6)]"
-                    : "border-white/30 bg-black/30 text-white/70 backdrop-blur-sm hover:border-fuchsia-300 hover:bg-fuchsia-300/20"
+                    ? "border-[#f1bbdf] bg-[#f1bbdf]/20 text-[#f9ebf4] shadow-[0_0_22px_rgba(241,187,223,0.65)]"
+                    : "border-[#f9ebf4]/30 bg-black/30 text-[#f9ebf4]/70 backdrop-blur-sm hover:border-[#f1bbdf] hover:bg-[#cd95c9]/20"
                 }`}
                 style={{
                   left: `${hotspot.x}%`,

@@ -15,9 +15,9 @@ export function AchievementToast({ achievement }: AchievementToastProps) {
           initial={{ opacity: 0, x: 80, scale: 0.95 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           exit={{ opacity: 0, x: 80, scale: 0.95 }}
-          className="fixed right-6 top-24 z-50 w-[min(360px,calc(100%-3rem))] rounded-2xl border border-fuchsia-300/40 bg-black/90 p-4 font-mono text-white shadow-[0_0_40px_rgba(217,70,239,0.25)] backdrop-blur-md"
+          className="fixed right-6 top-24 z-50 w-[min(360px,calc(100%-3rem))] rounded-2xl border border-[#f1bbdf]/45 bg-[#0c0a19]/90 p-4 font-mono text-[var(--jeec-moon-white)] shadow-[0_0_44px_rgba(241,187,223,0.28)] backdrop-blur-md"
         >
-          <p className="text-xs uppercase tracking-[0.35em] text-fuchsia-300">
+          <p className="text-xs uppercase tracking-[0.35em] text-[var(--jeec-new-pink)]">
             Achievement Unlocked
           </p>
           <h3 className="mt-2 text-lg font-bold">{achievement.title}</h3>

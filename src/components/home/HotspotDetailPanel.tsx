@@ -15,7 +15,7 @@ export function HotspotDetailPanel({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="arcade-label">Inspect Mode</p>
-          <h2 className="mt-2 text-2xl font-bold text-cyan-100">
+          <h2 className="mt-2 text-2xl font-bold text-[var(--jeec-new-pink)] drop-shadow-[0_0_18px_rgba(241,187,223,0.35)]">
             {hotspot.title}
           </h2>
         </div>
@@ -33,7 +33,9 @@ export function HotspotDetailPanel({
         <p className="text-xs uppercase tracking-[0.25em] text-white/40">
           Track
         </p>
-        <p className="mt-2 text-sm text-white/80">{hotspot.trackTitle}</p>
+        <p className="mt-2 text-sm text-[var(--jeec-moon-white)]">
+          {hotspot.trackTitle}
+        </p>
       </div>
 
       <p className="mt-5 text-sm leading-6 text-white/70">{hotspot.content}</p>
