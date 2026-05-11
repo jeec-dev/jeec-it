@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Hotspot } from "@/types/hotspot";
+import { cn } from "@/lib/ui";
 
 type DiscoveryHUDProps = {
   hotspots: Hotspot[];
@@ -16,12 +17,11 @@ export function DiscoveryHUD({ hotspots, discoveredIds }: DiscoveryHUDProps) {
     .reduce((total, hotspot) => total + hotspot.score, 0);
 
   return (
-    <div className="mb-4 rounded-2xl border border-cyan-300/30 bg-black/80 p-4 font-mono text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.15)]">
+    <div className="arcade-panel mb-4 p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-cyan-300/70">
-            JEEC Arcade System
-          </p>
+          <p className="arcade-label">JEEC Arcade System</p>
+
           <p className="mt-1 text-sm text-white/60">
             Score: <span className="text-cyan-200">{score}</span> XP ·{" "}
             {discoveredCount}/{totalCount} elementi trovati
@@ -36,11 +36,12 @@ export function DiscoveryHUD({ hotspots, discoveredIds }: DiscoveryHUDProps) {
               <div
                 key={hotspot.id}
                 title={hotspot.title}
-                className={`flex h-10 w-10 items-center justify-center rounded-xl border ${
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-xl border",
                   isDiscovered
                     ? "border-cyan-300/60 bg-cyan-300/10 text-cyan-100"
-                    : "border-white/10 bg-white/[0.03] text-white/20"
-                }`}
+                    : "border-white/10 bg-white/[0.03] text-white/20",
+                )}
               >
                 {isDiscovered ? (
                   <Image

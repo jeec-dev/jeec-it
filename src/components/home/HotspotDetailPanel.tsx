@@ -11,12 +11,10 @@ export function HotspotDetailPanel({
   onClose,
 }: HotspotDetailPanelProps) {
   return (
-    <aside className="absolute bottom-4 right-4 top-4 z-20 w-[min(360px,calc(100%-2rem))] rounded-2xl border border-cyan-300/40 bg-black/85 p-5 font-mono text-white shadow-[0_0_40px_rgba(34,211,238,0.25)] backdrop-blur-md">
+    <aside className="arcade-panel-strong absolute bottom-4 right-4 top-4 z-20 w-[min(360px,calc(100%-2rem))] p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-cyan-300/70">
-            Inspect Mode
-          </p>
+          <p className="arcade-label">Inspect Mode</p>
           <h2 className="mt-2 text-2xl font-bold text-cyan-100">
             {hotspot.title}
           </h2>
@@ -54,10 +52,7 @@ export function HotspotDetailPanel({
       )}
 
       {hotspot.href && (
-        <Link
-          href={hotspot.href}
-          className="mt-5 inline-flex rounded-full border border-cyan-300/40 px-4 py-2 text-sm text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/10"
-        >
+        <Link href={hotspot.href} className="arcade-button mt-5 inline-flex">
           Apri scheda catalogo
         </Link>
       )}

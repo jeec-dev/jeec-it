@@ -85,8 +85,7 @@ export function InteractiveCover() {
       </button>
 
       <div className="relative overflow-hidden rounded-3xl border border-cyan-300/20 bg-neutral-950 p-3 shadow-[0_0_60px_rgba(34,211,238,0.12)]">
-        <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[length:100%_4px] opacity-25" />
-
+        <div className="arcade-scanlines" />
         <div className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-900">
           <Image
             src="/images/covers/Copertina_NEW_TQCNTHD.PNG"

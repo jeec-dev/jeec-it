@@ -2,6 +2,37 @@
 
 @plugin "@tailwindcss/typography";
 
+@layer components {
+  .arcade-panel {
+    @apply rounded-2xl border border-cyan-300/30 bg-black/80 font-mono text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.15)] backdrop-blur-md;
+  }
+
+  .arcade-panel-strong {
+    @apply rounded-2xl border border-cyan-300/40 bg-black/85 font-mono text-white shadow-[0_0_40px_rgba(34,211,238,0.25)] backdrop-blur-md;
+  }
+
+  .arcade-label {
+    @apply text-xs uppercase tracking-[0.35em] text-cyan-300/70;
+  }
+
+  .arcade-muted {
+    @apply text-sm text-white/60;
+  }
+
+  .arcade-button {
+    @apply rounded-full border border-cyan-300/40 px-4 py-2 text-sm text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/10;
+  }
+
+  .arcade-scanlines {
+    @apply pointer-events-none absolute inset-0 z-10 opacity-25;
+    background-image: linear-gradient(
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 1px
+    );
+    background-size: 100% 4px;
+  }
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
