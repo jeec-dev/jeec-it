@@ -1,0 +1,15 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect x="5" y="5" width="54" height="54" rx="14" fill="#0c0a19" stroke="#f1bbdf" stroke-width="3"/>
+  <circle cx="32" cy="32" r="23" fill="none" stroke="#5b4581" stroke-width="2" opacity="0.8"/>
+  <g fill="none" stroke="#f9ebf4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    
+  <path d="M15 35H48V45H15Z"/>
+  <path d="M22 25H36V35H22Z"/>
+  <path d="M38 29H45V35H38Z"/>
+  <circle cx="23" cy="48" r="4"/>
+  <circle cx="41" cy="48" r="4"/>
+  <path d="M16 25H21"/>
+
+  </g>
+  <text x="32" y="57" text-anchor="middle" font-family="monospace" font-size="6" fill="#f1bbdf">TRAIN</text>
+</svg>

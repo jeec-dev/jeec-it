@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect x="5" y="5" width="54" height="54" rx="14" fill="#0c0a19" stroke="#f1bbdf" stroke-width="3"/>
+  <circle cx="32" cy="32" r="23" fill="none" stroke="#5b4581" stroke-width="2" opacity="0.8"/>
+  <g fill="none" stroke="#f9ebf4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    
+  <circle cx="32" cy="22" r="8"/>
+  <path d="M24 32H40V48H24Z"/>
+  <path d="M18 35L24 39"/>
+  <path d="M46 35L40 39"/>
+  <path d="M28 48L25 54"/>
+  <path d="M36 48L39 54"/>
+  <path d="M28 22H36"/>
+
+  </g>
+  <text x="32" y="57" text-anchor="middle" font-family="monospace" font-size="6" fill="#f1bbdf">ASTRO</text>
+</svg>

@@ -1,0 +1,14 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect x="5" y="5" width="54" height="54" rx="14" fill="#0c0a19" stroke="#f1bbdf" stroke-width="3"/>
+  <circle cx="32" cy="32" r="23" fill="none" stroke="#5b4581" stroke-width="2" opacity="0.8"/>
+  <g fill="none" stroke="#f9ebf4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    
+  <path d="M32 13V20"/>
+  <circle cx="32" cy="35" r="15"/>
+  <path d="M20 30H44M19 38H45"/>
+  <path d="M27 21C23 29 23 40 27 49"/>
+  <path d="M37 21C41 29 41 40 37 49"/>
+
+  </g>
+  <text x="32" y="57" text-anchor="middle" font-family="monospace" font-size="6" fill="#f1bbdf">DISCO</text>
+</svg>
