@@ -1,5 +1,11 @@
 import type { Hotspot } from "@/types/hotspot";
 
+const albumSlug = "new-tutto-quello-che-non-ti-ho-detto";
+
+function trackHref(trackSlug: string) {
+  return `/musica/${albumSlug}/${trackSlug}`;
+}
+
 export const hotspots: Hotspot[] = [
   {
     id: "chessboard",
@@ -9,12 +15,12 @@ export const hotspots: Hotspot[] = [
     title: "Scacchiera",
     shortLabel: "CHESS",
     content:
-      "Una scacchiera abbandonata ai margini della scena: ogni mossa sembra parlare di strategia, perdita e controllo.",
+      "La scacchiera rimanda a pedine, ruoli e mosse obbligate: il gioco sociale in cui tutti sembrano muoversi dentro schemi già scritti.",
     badgeIcon: "/icons/badges/chessboard.svg",
     score: 100,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "Pedine (Come Voi)",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("pedine-come-voi"),
   },
   {
     id: "grinder-kit",
@@ -24,12 +30,12 @@ export const hotspots: Hotspot[] = [
     title: "Grinder con cartine e filtrini",
     shortLabel: "GRIND",
     content:
-      "Un piccolo rituale sospeso nel vuoto: oggetti intimi, quotidiani, rimasti a galleggiare nella memoria della stanza.",
+      "Un rituale piccolo e ripetuto, tra abitudine e dipendenza: fumo, nervi scoperti e pensieri che girano come una spirale.",
     badgeIcon: "/icons/badges/grinder-kit.svg",
     score: 120,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "Nicotina (Bojack Horseman)",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("nicotina-bojack-horseman"),
   },
   {
     id: "jack-daniels",
@@ -39,12 +45,12 @@ export const hotspots: Hotspot[] = [
     title: "Bottiglia di Jack Daniel's",
     shortLabel: "JACK",
     content:
-      "Una bottiglia dimenticata nello spazio della cover: eco di notti lunghe, eccessi e parole rimaste in gola.",
+      "La bottiglia è una richiesta che si ripete: un altro giro, un altro tentativo, un altro modo per non restare da soli con quello che pesa.",
     badgeIcon: "/icons/badges/jack-daniels.svg",
     score: 130,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "Gimmie Another",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("gimmie-another"),
   },
   {
     id: "signed-contract",
@@ -54,12 +60,12 @@ export const hotspots: Hotspot[] = [
     title: "Contratto con la firma segnata in rosso",
     shortLabel: "DEAL",
     content:
-      "Un contratto volante, segnato in rosso: simbolo di scelte definitive, pressioni esterne e promesse difficili da sostenere.",
+      "Una firma rossa, quasi definitiva: il momento in cui scegli comunque di andare avanti, anche senza sapere davvero come finirà.",
     badgeIcon: "/icons/badges/signed-contract.svg",
     score: 180,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "Vada Come Vada",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("vada-come-vada"),
   },
   {
     id: "disco-ball",
@@ -69,12 +75,12 @@ export const hotspots: Hotspot[] = [
     title: "Disco ball",
     shortLabel: "DISCO",
     content:
-      "La disco ball riflette una nostalgia luminosa: festa, performance, palco, ma anche frammenti sparsi di identità.",
+      "La disco ball spezza la stanza in frammenti di luce: corpo, movimento, festa e fuga dalla staticità.",
     badgeIcon: "/icons/badges/disco-ball.svg",
     score: 140,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "MUOVI",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("muovi"),
   },
   {
     id: "marijuana-leaf",
@@ -84,12 +90,12 @@ export const hotspots: Hotspot[] = [
     title: "Foglia di marijuana",
     shortLabel: "LEAF",
     content:
-      "Una foglia sospesa nella luce rosata: dettaglio fragile, simbolo di evasione, calma artificiale e stati alterati.",
+      "La foglia galleggia come una calma artificiale: un modo per dirsi che va tutto bene, anche quando non è proprio così.",
     badgeIcon: "/icons/badges/marijuana-leaf.svg",
     score: 110,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "Ma Tanto Sto Bene",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("ma-tanto-sto-bene"),
   },
   {
     id: "rick-gun-morty-shirt",
@@ -99,12 +105,12 @@ export const hotspots: Hotspot[] = [
     title: "Pistola di Rick e maglietta di Morty",
     shortLabel: "RICK",
     content:
-      "Citazione pop e oggetti fuori asse: ironia, multiverso e caos emotivo entrano nel linguaggio visivo della cover.",
+      "Qui la connessione è diretta: pop culture, multiverso, ironia e caos emotivo entrano nella stanza come una citazione impossibile da ignorare.",
     badgeIcon: "/icons/badges/rick-gun-morty-shirt.svg",
     score: 190,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "Inverno & Soldi (Rick & Morty)",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("inverno-e-soldi-rick-e-morty"),
   },
   {
     id: "acoustic-guitar",
@@ -114,12 +120,12 @@ export const hotspots: Hotspot[] = [
     title: "Chitarra acustica",
     shortLabel: "GTR",
     content:
-      "La chitarra resta ai margini ma tiene insieme il lato più umano della scena: scrittura, suono, origine musicale.",
+      "La chitarra tiene il lato più nudo della release: una versione spogliata, più fragile, più vicina alla scrittura originaria.",
     badgeIcon: "/icons/badges/acoustic-guitar.svg",
     score: 150,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "If I Die Tonight (Acoustic Version)",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("if-i-die-tonight-acoustic-version"),
   },
   {
     id: "notebook",
@@ -129,12 +135,12 @@ export const hotspots: Hotspot[] = [
     title: "Taccuino",
     shortLabel: "NOTE",
     content:
-      "Appunti dispersi nello spazio della cover: idee, testi, bozze e pensieri lasciati aperti come ferite leggere.",
+      "Il taccuino è il posto delle cose non dette: frasi lasciate aperte, bozze emotive, parole che qualcuno forse conosce già.",
     badgeIcon: "/icons/badges/notebook.svg",
     score: 120,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "Lo Sai",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("lo-sai"),
   },
   {
     id: "toy-train",
@@ -144,12 +150,12 @@ export const hotspots: Hotspot[] = [
     title: "Trenino giocattolo",
     shortLabel: "TRAIN",
     content:
-      "Un oggetto infantile in orbita: memoria, crescita e vulnerabilità si mescolano al resto del paesaggio emotivo.",
+      "Il trenino trasforma il tempo in un percorso circolare: giorni contati, infanzia, distanza e movimento dentro una stanza mentale.",
     badgeIcon: "/icons/badges/toy-train.svg",
     score: 125,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "In 12 Giorni",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("in-12-giorni"),
   },
   {
     id: "astronaut",
@@ -159,12 +165,12 @@ export const hotspots: Hotspot[] = [
     title: "Astronauta",
     shortLabel: "ASTRO",
     content:
-      "Il cuore della cover: un corpo sospeso tra vuoto e luce, come se la canzone esistesse in uno spazio mentale senza gravità.",
+      "L’astronauta è il corpo sospeso al centro della cover: isolamento, vuoto, sopravvivenza e quella domanda estrema che resta accesa nel buio.",
     badgeIcon: "/icons/badges/astronaut.svg",
     score: 250,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "If I Die Tonight",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("if-i-die-tonight"),
   },
   {
     id: "planet",
@@ -174,12 +180,12 @@ export const hotspots: Hotspot[] = [
     title: "Pianeta",
     shortLabel: "MOON",
     content:
-      "Il grande pianeta/oblò domina la scena: è insieme destinazione, stanza mentale e orizzonte emotivo della release.",
+      "Il pianeta è l’orbita completa della deluxe: apre il viaggio con Intro (Raap) e raccoglie le tracce che non appartengono a un singolo oggetto ma all’atmosfera generale del disco — Riflessioni, Pt. 1 (Tempo), Riflessioni, Pt. 3 (Amore), Stammi Vicino Dai, Outro (Ehi!) e Una Formica Sulla 34esima Strada.",
     badgeIcon: "/icons/badges/planet.svg",
     score: 220,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "Intro (Raap)",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("intro-raap"),
   },
   {
     id: "pill-bottle",
@@ -189,11 +195,11 @@ export const hotspots: Hotspot[] = [
     title: "Bottiglietta di pillole",
     shortLabel: "PILLS",
     content:
-      "Un contenitore piccolo ma pesante di significato: ansia, cura, dipendenza o sopravvivenza, tutto resta ambiguo.",
+      "La bottiglietta è il dettaglio più ambiguo: cura, ansia, dipendenza, controllo. Un oggetto piccolo che porta addosso il peso della mortalità.",
     badgeIcon: "/icons/badges/pill-bottle.svg",
     score: 135,
-    trackTitle: "NEW (Tutto Quello Che Non Ti Ho Detto)",
+    trackTitle: "Riflessioni, Pt. 2 (Morte)",
     playerUrl: "",
-    href: "/musica/new-tutto-quello-che-non-ti-ho-detto/new",
+    href: trackHref("riflessioni-pt-2-morte"),
   },
 ];
