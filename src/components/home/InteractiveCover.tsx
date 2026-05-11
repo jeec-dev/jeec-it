@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hotspots } from "@/data/hotspots";
 import type { Hotspot } from "@/types/hotspot";
 import { DiscoveryHUD } from "@/components/home/DiscoveryHUD";
@@ -15,13 +15,20 @@ export function InteractiveCover() {
     null,
   );
 
+  const coverRef = useRef<HTMLDivElement | null>(null);
   const [discoveredIds, setDiscoveredIds] = useState<string[]>([]);
-
   const [achievement, setAchievement] = useState<Hotspot | null>(null);
 
   const selectedHotspot = hotspots.find(
     (hotspot) => hotspot.id === selectedHotspotId,
   );
+
+  const [debugPosition, setDebugPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const isDebugMode = process.env.NODE_ENV === "development";
 
   useEffect(() => {
     window.requestAnimationFrame(() => {
@@ -69,6 +76,22 @@ export function InteractiveCover() {
     }
   }
 
+  function handleDebugPointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (!isDebugMode || !coverRef.current) {
+      return;
+    }
+
+    const rect = coverRef.current.getBoundingClientRect();
+
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    setDebugPosition({
+      x: Number(x.toFixed(1)),
+      y: Number(y.toFixed(1)),
+    });
+  }
+
   return (
     <section className="relative mx-auto max-w-5xl">
       <DiscoveryHUD hotspots={hotspots} discoveredIds={discoveredIds} />
@@ -87,7 +110,12 @@ export function InteractiveCover() {
 
       <div className="relative overflow-hidden rounded-3xl border border-[#f1bbdf]/25 bg-[var(--jeec-deep-violet)] p-3 shadow-[0_0_70px_rgba(205,149,201,0.20)]">
         <div className="arcade-scanlines" />
-        <div className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-900">
+        <div
+          ref={coverRef}
+          onPointerMove={handleDebugPointerMove}
+          onPointerLeave={() => setDebugPosition(null)}
+          className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-900"
+        >
           <Image
             src="/images/covers/Copertina_NEW_TQCNTHD.PNG"
             alt="Copertina NEW (Tutto Quello Che Non Ti Ho Detto)"
@@ -122,6 +150,12 @@ export function InteractiveCover() {
               </button>
             );
           })}
+
+          {isDebugMode && debugPosition && (
+            <div className="pointer-events-none absolute left-4 top-4 z-30 rounded-xl border border-[#f1bbdf]/40 bg-[#0c0a19]/85 px-3 py-2 font-mono text-xs text-[#f9ebf4] shadow-[0_0_20px_rgba(241,187,223,0.25)] backdrop-blur-md">
+              x: {debugPosition.x} · y: {debugPosition.y}
+            </div>
+          )}
 
           {selectedHotspot && (
             <HotspotDetailPanel
