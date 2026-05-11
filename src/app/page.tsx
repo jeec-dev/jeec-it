@@ -4,7 +4,9 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-[var(--jeec-space-black)] px-6 py-12 text-[var(--jeec-moon-white)]">
       <section className="mx-auto mb-12 max-w-4xl text-center">
-        <p className="arcade-label">JEEC ARCADE CABINET</p>
+        <p className="font-mono text-xs uppercase tracking-[0.35em] text-[var(--jeec-new-pink)]">
+          JEEC ARCADE CABINET
+        </p>
 
         <h1 className="mt-4 text-5xl font-bold text-[var(--jeec-new-pink)] drop-shadow-[0_0_24px_rgba(241,187,223,0.35)]">
           NEW
