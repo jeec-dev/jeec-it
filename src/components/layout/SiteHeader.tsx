@@ -1,8 +1,9 @@
 import Link from "next/link";
+import styles from "./SiteHeader.module.css";
 
 const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/musica", label: "Musica" },
+  { href: "/", label: "Home", primary: true },
+  { href: "/musica", label: "Musica", primary: true },
   { href: "/musica/diario-di-jay", label: "Diario" },
   { href: "/eventi", label: "Eventi" },
   { href: "/bio", label: "Bio" },
@@ -12,15 +13,32 @@ const navItems = [
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-white/10 bg-black/90 px-6 py-4 text-white">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between">
-        <Link href="/" className="font-bold tracking-[0.3em]">
-          JEEC
-        </Link>
+    <header className={styles.header}>
+      <nav className={styles.nav} aria-label="Navigazione principale">
+        <div className={styles.brandRow}>
+          <Link href="/" className={styles.brand} aria-label="JEEC home">
+            <span className={styles.brandMark}>J</span>
 
-        <div className="flex flex-wrap gap-4 text-sm text-white/60">
+            <span className={styles.brandText}>
+              <span className={styles.brandName}>JEEC</span>
+              <span className={styles.brandSubtitle}>Arcade Transmission</span>
+            </span>
+          </Link>
+
+          <div className={styles.status} aria-hidden="true">
+            <span className={styles.statusDot} />
+            NEW online
+          </div>
+        </div>
+
+        <div className={styles.links}>
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-white">
+            <Link
+              key={item.href}
+              href={item.href}
+              className={styles.link}
+              data-primary={item.primary ? "true" : undefined}
+            >
               {item.label}
             </Link>
           ))}
