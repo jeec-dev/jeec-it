@@ -3,7 +3,15 @@ export type Hotspot = {
   x: number;
   y: number;
   radius: number;
+
   title: string;
+  shortLabel: string;
   content: string;
-  unlocks?: string;
+
+  badgeIcon: string;
+  score: number;
+
+  trackTitle: string;
+  playerUrl?: string;
+  href?: string;
 };
