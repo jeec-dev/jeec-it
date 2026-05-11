@@ -8,6 +8,7 @@ import { DiscoveryHUD } from "@/components/home/DiscoveryHUD";
 import { HotspotDetailPanel } from "@/components/home/HotspotDetailPanel";
 import { AchievementToast } from "@/components/home/AchievementToast";
 
+const coverImageSrc = "/images/covers/Copertina_NEW_TQCNTHD.PNG";
 const storageKey = "jeec:new-cover-discoveries";
 
 export function InteractiveCover() {
@@ -22,6 +23,11 @@ export function InteractiveCover() {
   const selectedHotspot = hotspots.find(
     (hotspot) => hotspot.id === selectedHotspotId,
   );
+
+  const [pointerPosition, setPointerPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   const [debugPosition, setDebugPosition] = useState<{
     x: number;
@@ -59,25 +65,24 @@ export function InteractiveCover() {
 
     const alreadyDiscovered = discoveredIds.includes(hotspot.id);
 
-    if (!alreadyDiscovered) {
-      const nextDiscoveredIds = [...discoveredIds, hotspot.id];
-
-      setDiscoveredIds(nextDiscoveredIds);
-      window.localStorage.setItem(
-        storageKey,
-        JSON.stringify(nextDiscoveredIds),
-      );
-
-      setAchievement(hotspot);
-
-      window.setTimeout(() => {
-        setAchievement(null);
-      }, 3000);
+    if (alreadyDiscovered) {
+      return;
     }
+
+    const nextDiscoveredIds = [...discoveredIds, hotspot.id];
+
+    setDiscoveredIds(nextDiscoveredIds);
+    window.localStorage.setItem(storageKey, JSON.stringify(nextDiscoveredIds));
+
+    setAchievement(hotspot);
+
+    window.setTimeout(() => {
+      setAchievement(null);
+    }, 3000);
   }
 
-  function handleDebugPointerMove(event: React.PointerEvent<HTMLDivElement>) {
-    if (!isDebugMode || !coverRef.current) {
+  function handleCoverPointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (!coverRef.current) {
       return;
     }
 
@@ -86,10 +91,16 @@ export function InteractiveCover() {
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-    setDebugPosition({
+    const nextPosition = {
       x: Number(x.toFixed(1)),
       y: Number(y.toFixed(1)),
-    });
+    };
+
+    setPointerPosition(nextPosition);
+
+    if (isDebugMode) {
+      setDebugPosition(nextPosition);
+    }
   }
 
   return (
@@ -112,12 +123,15 @@ export function InteractiveCover() {
         <div className="arcade-scanlines" />
         <div
           ref={coverRef}
-          onPointerMove={handleDebugPointerMove}
-          onPointerLeave={() => setDebugPosition(null)}
+          onPointerMove={handleCoverPointerMove}
+          onPointerLeave={() => {
+            setDebugPosition(null);
+            setPointerPosition(null);
+          }}
           className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-900"
         >
           <Image
-            src="/images/covers/Copertina_NEW_TQCNTHD.PNG"
+            src={coverImageSrc}
             alt="Copertina NEW (Tutto Quello Che Non Ti Ho Detto)"
             fill
             priority
@@ -127,6 +141,17 @@ export function InteractiveCover() {
 
           {hotspots.map((hotspot) => {
             const isDiscovered = discoveredIds.includes(hotspot.id);
+            const distance = pointerPosition
+              ? Math.hypot(
+                  pointerPosition.x - hotspot.x,
+                  pointerPosition.y - hotspot.y,
+                )
+              : 100;
+
+            const proximity = Math.max(0, 1 - distance / 18);
+            const glow = isDiscovered ? 0.62 : 0.2 + proximity * 0.5;
+            const opacity = isDiscovered ? 1 : 0.58 + proximity * 0.32;
+            const ringOpacity = isDiscovered ? 0.9 : 0.25 + proximity * 0.5;
 
             return (
               <button
@@ -134,19 +159,29 @@ export function InteractiveCover() {
                 type="button"
                 aria-label={hotspot.title}
                 onClick={() => handleHotspotClick(hotspot)}
-                className={`absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-full border font-mono text-[10px] transition hover:scale-125 ${
+                className={`group absolute z-20 rounded-full border font-mono text-[10px] transition-[opacity,box-shadow,border-color,background-color] duration-200 active:scale-90 ${
                   isDiscovered
-                    ? "border-[#f1bbdf] bg-[#f1bbdf]/20 text-[#f9ebf4] shadow-[0_0_22px_rgba(241,187,223,0.65)]"
+                    ? "border-[#f1bbdf] bg-[#f1bbdf]/20 text-[#f9ebf4]"
                     : "border-[#f9ebf4]/30 bg-black/30 text-[#f9ebf4]/70 backdrop-blur-sm hover:border-[#f1bbdf] hover:bg-[#cd95c9]/20"
                 }`}
                 style={{
                   left: `${hotspot.x}%`,
                   top: `${hotspot.y}%`,
-                  width: `${hotspot.radius * 8}px`,
-                  height: `${hotspot.radius * 8}px`,
+                  width: `${Math.max(44, hotspot.radius * 8)}px`,
+                  height: `${Math.max(44, hotspot.radius * 8)}px`,
+                  opacity,
+                  transform: "translate(-50%, -50%)",
+                  boxShadow: `0 0 ${10 + proximity * 20}px rgba(241, 187, 223, ${glow})`,
                 }}
               >
-                {isDiscovered ? "✓" : ""}
+                <span
+                  className="pointer-events-none absolute inset-[-6px] rounded-full border border-[#f1bbdf] transition-opacity duration-200"
+                  style={{ opacity: ringOpacity }}
+                />
+
+                <span className="pointer-events-none absolute inset-0 rounded-full bg-[#f1bbdf]/10 opacity-0 transition-opacity duration-200 group-active:opacity-100" />
+
+                <span className="relative z-10">{isDiscovered ? "✓" : ""}</span>
               </button>
             );
           })}
@@ -160,6 +195,7 @@ export function InteractiveCover() {
           {selectedHotspot && (
             <HotspotDetailPanel
               hotspot={selectedHotspot}
+              closeUpImageSrc={coverImageSrc}
               onClose={() => setSelectedHotspotId(null)}
             />
           )}

@@ -1,20 +1,26 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Hotspot } from "@/types/hotspot";
 
 type HotspotDetailPanelProps = {
   hotspot: Hotspot;
+  closeUpImageSrc: string;
   onClose: () => void;
 };
 
 export function HotspotDetailPanel({
   hotspot,
+  closeUpImageSrc,
   onClose,
 }: HotspotDetailPanelProps) {
+  const zoom = 3.2;
+
   return (
-    <aside className="arcade-panel-strong absolute bottom-4 right-4 top-4 z-20 w-[min(360px,calc(100%-2rem))] p-5">
+    <aside className="arcade-panel-strong absolute inset-x-3 bottom-3 z-30 max-h-[72%] overflow-y-auto p-4 sm:bottom-4 sm:right-4 sm:left-auto sm:top-4 sm:w-[min(380px,calc(100%-2rem))] sm:max-h-none sm:p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="arcade-label">Inspect Mode</p>
+
           <h2 className="mt-2 text-2xl font-bold text-[var(--jeec-new-pink)] drop-shadow-[0_0_18px_rgba(241,187,223,0.35)]">
             {hotspot.title}
           </h2>
@@ -23,16 +29,38 @@ export function HotspotDetailPanel({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/60 transition hover:border-white hover:text-white"
+          className="min-h-10 min-w-10 rounded-full border border-white/20 px-3 py-1 text-xs text-white/60 transition active:scale-95 hover:border-white hover:text-white"
+          aria-label="Chiudi pannello dettaglio"
         >
           ESC
         </button>
+      </div>
+
+      <div className="mt-5 overflow-hidden rounded-2xl border border-[#f1bbdf]/30 bg-[#0c0a19] shadow-[0_0_24px_rgba(241,187,223,0.16)]">
+        <div className="relative h-40 overflow-hidden sm:h-36">
+          <Image
+            src={closeUpImageSrc}
+            alt={`Close up di ${hotspot.title}`}
+            fill
+            sizes="(max-width: 640px) 90vw, 380px"
+            className="object-cover"
+            style={{
+              transform: `scale(${zoom})`,
+              transformOrigin: `${hotspot.x}% ${hotspot.y}%`,
+            }}
+          />
+
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,transparent_45%,rgba(12,10,25,0.72)_100%)]" />
+
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#f1bbdf]/70 shadow-[0_0_18px_rgba(241,187,223,0.45)]" />
+        </div>
       </div>
 
       <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.04] p-4">
         <p className="text-xs uppercase tracking-[0.25em] text-white/40">
           Track
         </p>
+
         <p className="mt-2 text-sm text-[var(--jeec-moon-white)]">
           {hotspot.trackTitle}
         </p>
