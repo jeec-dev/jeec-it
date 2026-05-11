@@ -8,15 +8,42 @@ import { DiscoveryHUD } from "@/components/home/DiscoveryHUD";
 import { HotspotDetailPanel } from "@/components/home/HotspotDetailPanel";
 import { AchievementToast } from "@/components/home/AchievementToast";
 
+const storageKey = "jeec:new-cover-discoveries";
+
 export function InteractiveCover() {
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(
-    null
+    null,
   );
-  const [discoveredIds, setDiscoveredIds] = useState<string[]>([]);
+
+  const [discoveredIds, setDiscoveredIds] = useState<string[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    const storedValue = window.localStorage.getItem(storageKey);
+
+    if (!storedValue) {
+      return [];
+    }
+
+    try {
+      const parsedValue = JSON.parse(storedValue);
+
+      if (Array.isArray(parsedValue)) {
+        return parsedValue.filter(
+          (item): item is string => typeof item === "string",
+        );
+      }
+    } catch {
+      window.localStorage.removeItem(storageKey);
+    }
+
+    return [];
+  });
   const [achievement, setAchievement] = useState<Hotspot | null>(null);
 
   const selectedHotspot = hotspots.find(
-    (hotspot) => hotspot.id === selectedHotspotId
+    (hotspot) => hotspot.id === selectedHotspotId,
   );
 
   function handleHotspotClick(hotspot: Hotspot) {
@@ -25,7 +52,14 @@ export function InteractiveCover() {
     const alreadyDiscovered = discoveredIds.includes(hotspot.id);
 
     if (!alreadyDiscovered) {
-      setDiscoveredIds((current) => [...current, hotspot.id]);
+      const nextDiscoveredIds = [...discoveredIds, hotspot.id];
+
+      setDiscoveredIds(nextDiscoveredIds);
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify(nextDiscoveredIds),
+      );
+
       setAchievement(hotspot);
 
       window.setTimeout(() => {
@@ -37,6 +71,18 @@ export function InteractiveCover() {
   return (
     <section className="relative mx-auto max-w-5xl">
       <DiscoveryHUD hotspots={hotspots} discoveredIds={discoveredIds} />
+
+      <button
+        type="button"
+        onClick={() => {
+          setDiscoveredIds([]);
+          setSelectedHotspotId(null);
+          window.localStorage.removeItem(storageKey);
+        }}
+        className="mb-4 rounded-full border border-white/10 px-4 py-2 font-mono text-xs uppercase tracking-[0.25em] text-white/40 transition hover:border-white/30 hover:text-white"
+      >
+        Reset Arcade Save
+      </button>
 
       <div className="relative overflow-hidden rounded-3xl border border-cyan-300/20 bg-neutral-950 p-3 shadow-[0_0_60px_rgba(34,211,238,0.12)]">
         <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[length:100%_4px] opacity-25" />
