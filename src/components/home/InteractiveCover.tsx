@@ -1,76 +1,91 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { hotspots } from "@/data/hotspots";
+import type { Hotspot } from "@/types/hotspot";
+import { DiscoveryHUD } from "@/components/home/DiscoveryHUD";
+import { HotspotDetailPanel } from "@/components/home/HotspotDetailPanel";
+import { AchievementToast } from "@/components/home/AchievementToast";
 
 export function InteractiveCover() {
-  const [activeHotspotId, setActiveHotspotId] = useState<string | null>(null);
+  const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(
+    null
+  );
+  const [discoveredIds, setDiscoveredIds] = useState<string[]>([]);
+  const [achievement, setAchievement] = useState<Hotspot | null>(null);
 
-  const activeHotspot = hotspots.find(
-    (hotspot) => hotspot.id === activeHotspotId
+  const selectedHotspot = hotspots.find(
+    (hotspot) => hotspot.id === selectedHotspotId
   );
 
-  return (
-    <section className="relative mx-auto max-w-4xl">
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-900 shadow-2xl">
-        <Image
-          src="/images/covers/Copertina_NEW_TQCNTHD.PNG"
-          alt="Copertina NEW (Tutto Quello Che Non Ti Ho Detto)"
-          fill
-          priority
-          className="object-cover"
-        />
+  function handleHotspotClick(hotspot: Hotspot) {
+    setSelectedHotspotId(hotspot.id);
 
-        {hotspots.map((hotspot) => (
-          <button
-            key={hotspot.id}
-            type="button"
-            aria-label={hotspot.title}
-            onClick={() => setActiveHotspotId(hotspot.id)}
-            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm transition hover:scale-125 hover:bg-white/30"
-            style={{
-              left: `${hotspot.x}%`,
-              top: `${hotspot.y}%`,
-              width: `${hotspot.radius * 8}px`,
-              height: `${hotspot.radius * 8}px`,
-            }}
+    const alreadyDiscovered = discoveredIds.includes(hotspot.id);
+
+    if (!alreadyDiscovered) {
+      setDiscoveredIds((current) => [...current, hotspot.id]);
+      setAchievement(hotspot);
+
+      window.setTimeout(() => {
+        setAchievement(null);
+      }, 3000);
+    }
+  }
+
+  return (
+    <section className="relative mx-auto max-w-5xl">
+      <DiscoveryHUD hotspots={hotspots} discoveredIds={discoveredIds} />
+
+      <div className="relative overflow-hidden rounded-3xl border border-cyan-300/20 bg-neutral-950 p-3 shadow-[0_0_60px_rgba(34,211,238,0.12)]">
+        <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[length:100%_4px] opacity-25" />
+
+        <div className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-900">
+          <Image
+            src="/images/covers/Copertina_NEW_TQCNTHD.PNG"
+            alt="Copertina NEW (Tutto Quello Che Non Ti Ho Detto)"
+            fill
+            priority
+            className="object-cover"
           />
-        ))}
+
+          {hotspots.map((hotspot) => {
+            const isDiscovered = discoveredIds.includes(hotspot.id);
+
+            return (
+              <button
+                key={hotspot.id}
+                type="button"
+                aria-label={hotspot.title}
+                onClick={() => handleHotspotClick(hotspot)}
+                className={`absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-full border font-mono text-[10px] transition hover:scale-125 ${
+                  isDiscovered
+                    ? "border-cyan-300 bg-cyan-300/20 text-cyan-100 shadow-[0_0_20px_rgba(34,211,238,0.6)]"
+                    : "border-white/30 bg-black/30 text-white/70 backdrop-blur-sm hover:border-fuchsia-300 hover:bg-fuchsia-300/20"
+                }`}
+                style={{
+                  left: `${hotspot.x}%`,
+                  top: `${hotspot.y}%`,
+                  width: `${hotspot.radius * 8}px`,
+                  height: `${hotspot.radius * 8}px`,
+                }}
+              >
+                {isDiscovered ? "✓" : ""}
+              </button>
+            );
+          })}
+
+          {selectedHotspot && (
+            <HotspotDetailPanel
+              hotspot={selectedHotspot}
+              onClose={() => setSelectedHotspotId(null)}
+            />
+          )}
+        </div>
       </div>
 
-      {activeHotspot && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-6 rounded-2xl border border-white/10 bg-black/80 p-6 text-white"
-        >
-          <p className="text-xs uppercase tracking-[0.3em] text-white/40">
-            {activeHotspot.shortLabel} · +{activeHotspot.score} XP
-          </p>
-
-          <h2 className="mt-2 text-xl font-semibold">{activeHotspot.title}</h2>
-
-          <p className="mt-2 text-sm text-white/70">
-            {activeHotspot.content}
-          </p>
-
-          <p className="mt-4 text-sm text-white/50">
-            Traccia: {activeHotspot.trackTitle}
-          </p>
-
-          {activeHotspot.href && (
-            <Link
-              href={activeHotspot.href}
-              className="mt-4 inline-flex rounded-full border border-white/20 px-4 py-2 text-sm text-white/70 transition hover:border-white hover:text-white"
-            >
-              Vai alla scheda nel catalogo
-            </Link>
-          )}
-        </motion.div>
-      )}
+      <AchievementToast achievement={achievement} />
     </section>
   );
 }
