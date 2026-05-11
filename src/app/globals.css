@@ -4,29 +4,57 @@
 
 @layer components {
   .arcade-panel {
-    @apply rounded-2xl border border-cyan-300/30 bg-black/80 font-mono text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.15)] backdrop-blur-md;
+    @apply rounded-2xl border font-mono backdrop-blur-md;
+    background: linear-gradient(
+      135deg,
+      rgba(12, 10, 25, 0.92),
+      rgba(28, 22, 52, 0.82)
+    );
+    border-color: rgba(241, 187, 223, 0.28);
+    color: var(--jeec-moon-white);
+    box-shadow:
+      0 0 30px rgba(205, 149, 201, 0.18),
+      inset 0 0 24px rgba(91, 69, 129, 0.18);
   }
 
   .arcade-panel-strong {
-    @apply rounded-2xl border border-cyan-300/40 bg-black/85 font-mono text-white shadow-[0_0_40px_rgba(34,211,238,0.25)] backdrop-blur-md;
+    @apply rounded-2xl border font-mono text-white backdrop-blur-md;
+    background: linear-gradient(
+      160deg,
+      rgba(12, 10, 25, 0.96),
+      rgba(52, 40, 88, 0.88)
+    );
+    border-color: rgba(241, 187, 223, 0.42);
+    box-shadow:
+      0 0 44px rgba(241, 187, 223, 0.22),
+      inset 0 0 30px rgba(146, 106, 167, 0.18);
   }
 
   .arcade-label {
-    @apply text-xs uppercase tracking-[0.35em] text-cyan-300/70;
+    @apply text-xs uppercase tracking-[0.35em];
+    color: var(--jeec-new-pink);
   }
 
   .arcade-muted {
-    @apply text-sm text-white/60;
+    color: rgba(249, 235, 244, 0.62);
   }
 
   .arcade-button {
-    @apply rounded-full border border-cyan-300/40 px-4 py-2 text-sm text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/10;
+    @apply rounded-full border px-4 py-2 text-sm transition;
+    border-color: rgba(241, 187, 223, 0.42);
+    color: var(--jeec-new-pink);
+  }
+
+  .arcade-button:hover {
+    background: rgba(241, 187, 223, 0.1);
+    border-color: rgba(249, 235, 244, 0.8);
+    color: var(--jeec-moon-white);
   }
 
   .arcade-scanlines {
     @apply pointer-events-none absolute inset-0 z-10 opacity-25;
     background-image: linear-gradient(
-      rgba(255, 255, 255, 0.04) 1px,
+      rgba(249, 235, 244, 0.045) 1px,
       transparent 1px
     );
     background-size: 100% 4px;
@@ -34,8 +62,14 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --jeec-space-black: #0c0a19;
+  --jeec-deep-violet: #1c1634;
+  --jeec-cabin-purple: #342858;
+  --jeec-astral-purple: #5b4581;
+  --jeec-muted-lavender: #926aa7;
+  --jeec-moon-pink: #cd95c9;
+  --jeec-new-pink: #f1bbdf;
+  --jeec-moon-white: #f9ebf4;
 }
 
 @theme inline {
