@@ -8,7 +8,7 @@ export default function HomePage() {
           JEEC
         </p>
 
-        <h1 className="mt-4 text-5xl font-bold">Diario di Jay</h1>
+        <h1 className="mt-4 text-5xl font-bold">NEW TQCNTHD</h1>
 
         <p className="mt-4 text-white/60">
           Esplora la copertina. Alcuni dettagli nascondono frammenti della

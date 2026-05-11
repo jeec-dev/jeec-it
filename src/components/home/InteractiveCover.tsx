@@ -15,8 +15,8 @@ export function InteractiveCover() {
     <section className="relative mx-auto max-w-4xl">
       <div className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-900 shadow-2xl">
         <img
-          src="/images/covers/diario-di-jay.jpg"
-          alt="Copertina Diario di Jay"
+          src="/images/covers/Copertina_NEW_TQCNTHD.PNG"
+          alt="Copertina New Tutto Quello Che Non Ti Ho Detto"
           className="h-full w-full object-cover"
         />
 
