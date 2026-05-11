@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Hotspot } from "@/types/hotspot";
-import { cn } from "@/lib/ui";
+import styles from "./DiscoveryHUD.module.css";
 
 type DiscoveryHUDProps = {
   hotspots: Hotspot[];
@@ -17,18 +17,18 @@ export function DiscoveryHUD({ hotspots, discoveredIds }: DiscoveryHUDProps) {
     .reduce((total, hotspot) => total + hotspot.score, 0);
 
   return (
-    <div className="arcade-panel mb-4 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className={styles.hud}>
+      <div className={styles.inner}>
         <div>
-          <p className="arcade-label">JEEC Arcade System</p>
+          <p className={styles.label}>JEEC Arcade System</p>
 
-          <p className="mt-1 text-sm text-white/60">
-            Score: <span className="text-[var(--jeec-new-pink)]">{score}</span>{" "}
-            XP · {discoveredCount}/{totalCount} elementi trovati
+          <p className={styles.meta}>
+            Score: <span className={styles.score}>{score}</span> XP ·{" "}
+            {discoveredCount}/{totalCount} elementi trovati
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className={styles.badges}>
           {hotspots.map((hotspot) => {
             const isDiscovered = discoveredIds.includes(hotspot.id);
 
@@ -36,12 +36,8 @@ export function DiscoveryHUD({ hotspots, discoveredIds }: DiscoveryHUDProps) {
               <div
                 key={hotspot.id}
                 title={hotspot.title}
-                className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-xl border",
-                  isDiscovered
-                    ? "border-[#f1bbdf]/60 bg-[#f1bbdf]/10 text-[#f9ebf4] shadow-[0_0_18px_rgba(241,187,223,0.28)]"
-                    : "border-white/10 bg-white/[0.03] text-white/20",
-                )}
+                className={styles.badge}
+                data-discovered={isDiscovered}
               >
                 {isDiscovered ? (
                   <Image
@@ -49,10 +45,10 @@ export function DiscoveryHUD({ hotspots, discoveredIds }: DiscoveryHUDProps) {
                     alt={hotspot.shortLabel}
                     width={24}
                     height={24}
-                    className="h-6 w-6"
+                    className={styles.badgeIcon}
                   />
                 ) : (
-                  <span className="text-xs">?</span>
+                  <span className={styles.locked}>?</span>
                 )}
               </div>
             );
@@ -60,9 +56,9 @@ export function DiscoveryHUD({ hotspots, discoveredIds }: DiscoveryHUDProps) {
         </div>
       </div>
 
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+      <div className={styles.progressTrack}>
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[#5b4581] via-[#cd95c9] to-[#f1bbdf] transition-all duration-500"
+          className={styles.progressFill}
           style={{ width: `${progress}%` }}
         />
       </div>

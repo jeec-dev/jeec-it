@@ -1,0 +1,71 @@
+.toast {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  top: 5rem;
+  z-index: 50;
+  max-width: 24rem;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgb(241 187 223 / 0.45);
+  background: rgb(12 10 25 / 0.92);
+  padding: 1rem;
+  font-family: monospace;
+  color: var(--jeec-moon-white);
+  box-shadow: 0 0 44px rgb(241 187 223 / 0.28);
+  backdrop-filter: blur(14px);
+}
+
+.scanline {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, #f1bbdf, transparent);
+}
+
+.label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  color: var(--jeec-new-pink);
+}
+
+.title {
+  margin-top: 0.5rem;
+  font-size: 1.125rem;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.meta {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: rgb(255 255 255 / 0.6);
+}
+
+.timerTrack {
+  margin-top: 0.75rem;
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.1);
+}
+
+.timerFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5b4581, #cd95c9, #f1bbdf);
+}
+
+@media (min-width: 640px) {
+  .toast {
+    left: auto;
+    right: 1.5rem;
+    width: 360px;
+    margin-inline: 0;
+  }
+}
