@@ -1,0 +1,188 @@
+.root {
+  position: relative;
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+.resetButton {
+  margin-bottom: 1rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  padding: 0.5rem 1rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: rgb(255 255 255 / 0.4);
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 120ms ease;
+}
+
+.resetButton:hover {
+  border-color: rgb(255 255 255 / 0.3);
+  color: white;
+}
+
+.resetButton:active {
+  transform: scale(0.96);
+}
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid rgb(241 187 223 / 0.25);
+  background: var(--jeec-deep-violet);
+  padding: 0.75rem;
+  box-shadow: 0 0 70px rgb(205 149 201 / 0.2);
+}
+
+.coverViewport {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #171225;
+}
+
+.coverImage {
+  object-fit: cover;
+}
+
+.scanlines {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  opacity: 0.25;
+  background-image: linear-gradient(
+    rgb(249 235 244 / 0.045) 1px,
+    transparent 1px
+  );
+  background-size: 100% 4px;
+}
+
+.hotspot {
+  position: absolute;
+  z-index: 20;
+  left: var(--hotspot-left);
+  top: var(--hotspot-top);
+  width: var(--hotspot-size);
+  height: var(--hotspot-size);
+  transform: translate(-50%, -50%);
+  opacity: var(--hotspot-opacity);
+  box-shadow: var(--hotspot-shadow);
+  border-radius: 999px;
+  border: 1px solid rgb(249 235 244 / 0.3);
+  background: rgb(0 0 0 / 0.3);
+  color: rgb(249 235 244 / 0.7);
+  font-family: monospace;
+  font-size: 0.625rem;
+  touch-action: manipulation;
+  backdrop-filter: blur(6px);
+  transition:
+    opacity 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 110ms ease;
+}
+
+.hotspot:hover {
+  border-color: rgb(241 187 223 / 0.95);
+  background: rgb(205 149 201 / 0.2);
+}
+
+.hotspot:active {
+  transform: translate(-50%, -50%) scale(0.84);
+}
+
+.hotspot[data-discovered="true"] {
+  border-color: rgb(241 187 223);
+  background: rgb(241 187 223 / 0.2);
+  color: rgb(249 235 244);
+}
+
+.hotspotRing {
+  pointer-events: none;
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  border: 1px solid rgb(241 187 223);
+  opacity: var(--hotspot-ring-opacity);
+  transition: opacity 180ms ease;
+}
+
+.hotspotPulse {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: rgb(241 187 223 / 0.1);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.hotspot:active .hotspotPulse {
+  opacity: 1;
+}
+
+.hotspotLabel {
+  position: relative;
+  z-index: 1;
+}
+
+.debugOverlay {
+  pointer-events: none;
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 30;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(241 187 223 / 0.4);
+  background: rgb(12 10 25 / 0.85);
+  padding: 0.5rem 0.75rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: rgb(249 235 244);
+  box-shadow: 0 0 20px rgb(241 187 223 / 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.debugHint {
+  margin-top: 0.25rem;
+  font-size: 0.625rem;
+  color: rgb(241 187 223 / 0.7);
+}
+
+@media (max-width: 640px) {
+  .root {
+    max-width: 100%;
+  }
+
+  .frame {
+    border-radius: 1.25rem;
+    padding: 0.5rem;
+  }
+
+  .coverViewport {
+    border-radius: 0.875rem;
+  }
+
+  .resetButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hotspot,
+  .hotspotRing,
+  .hotspotPulse,
+  .resetButton {
+    transition: none;
+  }
+}
