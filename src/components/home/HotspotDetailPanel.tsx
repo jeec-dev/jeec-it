@@ -8,12 +8,25 @@ type HotspotDetailPanelProps = {
   onClose: () => void;
 };
 
+function getCloseUpOffset(coordinate: number, zoom: number) {
+  const rawOffset = 50 - coordinate * zoom;
+  const minOffset = 100 - zoom * 100;
+  const maxOffset = 0;
+
+  return Math.min(maxOffset, Math.max(minOffset, rawOffset));
+}
+
 export function HotspotDetailPanel({
   hotspot,
   closeUpImageSrc,
   onClose,
 }: HotspotDetailPanelProps) {
-  const zoom = 3.2;
+  const closeUpX = hotspot.closeUpX ?? hotspot.x;
+  const closeUpY = hotspot.closeUpY ?? hotspot.y;
+  const zoom = hotspot.closeUpZoom ?? 5.2;
+
+  const closeUpLeft = getCloseUpOffset(closeUpX, zoom);
+  const closeUpTop = getCloseUpOffset(closeUpY, zoom);
 
   return (
     <aside className="arcade-panel-strong absolute inset-x-3 bottom-3 z-30 max-h-[72%] overflow-y-auto p-4 sm:bottom-4 sm:right-4 sm:left-auto sm:top-4 sm:w-[min(380px,calc(100%-2rem))] sm:max-h-none sm:p-5">
@@ -37,22 +50,32 @@ export function HotspotDetailPanel({
       </div>
 
       <div className="mt-5 overflow-hidden rounded-2xl border border-[#f1bbdf]/30 bg-[#0c0a19] shadow-[0_0_24px_rgba(241,187,223,0.16)]">
-        <div className="relative h-40 overflow-hidden sm:h-36">
-          <Image
-            src={closeUpImageSrc}
-            alt={`Close up di ${hotspot.title}`}
-            fill
-            sizes="(max-width: 640px) 90vw, 380px"
-            className="object-cover"
+        <div className="relative aspect-square overflow-hidden bg-[#0c0a19]">
+          <div
+            className="absolute"
             style={{
-              transform: `scale(${zoom})`,
-              transformOrigin: `${hotspot.x}% ${hotspot.y}%`,
+              width: `${zoom * 100}%`,
+              height: `${zoom * 100}%`,
+              left: `${closeUpLeft}%`,
+              top: `${closeUpTop}%`,
             }}
-          />
+          >
+            <Image
+              src={closeUpImageSrc}
+              alt={`Close up di ${hotspot.title}`}
+              fill
+              sizes="(max-width: 640px) 90vw, 380px"
+              className="object-cover"
+            />
+          </div>
 
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,transparent_45%,rgba(12,10,25,0.72)_100%)]" />
 
-          <div className="pointer-events-none absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#f1bbdf]/70 shadow-[0_0_18px_rgba(241,187,223,0.45)]" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#f1bbdf]/80 shadow-[0_0_22px_rgba(241,187,223,0.55)]" />
+
+          <div className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-[#f1bbdf]/30 bg-[#0c0a19]/70 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#f1bbdf]/80">
+            Close Scan
+          </div>
         </div>
       </div>
 

@@ -4,7 +4,7 @@ export const hotspots: Hotspot[] = [
   {
     id: "chessboard",
     x: 29,
-    y: 85,
+    y: 89,
     radius: 5,
     title: "Scacchiera",
     shortLabel: "CHESS",
@@ -18,8 +18,8 @@ export const hotspots: Hotspot[] = [
   },
   {
     id: "grinder-kit",
-    x: 17,
-    y: 33,
+    x: 7,
+    y: 51,
     radius: 4,
     title: "Grinder con cartine e filtrini",
     shortLabel: "GRIND",
@@ -33,8 +33,8 @@ export const hotspots: Hotspot[] = [
   },
   {
     id: "jack-daniels",
-    x: 10,
-    y: 73,
+    x: 9,
+    y: 70,
     radius: 4,
     title: "Bottiglia di Jack Daniel's",
     shortLabel: "JACK",
@@ -48,7 +48,7 @@ export const hotspots: Hotspot[] = [
   },
   {
     id: "signed-contract",
-    x: 18,
+    x: 24,
     y: 60,
     radius: 5,
     title: "Contratto con la firma segnata in rosso",
@@ -64,7 +64,7 @@ export const hotspots: Hotspot[] = [
   {
     id: "disco-ball",
     x: 3,
-    y: 92,
+    y: 86,
     radius: 6,
     title: "Disco ball",
     shortLabel: "DISCO",
@@ -78,8 +78,8 @@ export const hotspots: Hotspot[] = [
   },
   {
     id: "marijuana-leaf",
-    x: 68,
-    y: 59,
+    x: 69,
+    y: 60,
     radius: 4,
     title: "Foglia di marijuana",
     shortLabel: "LEAF",
@@ -94,8 +94,8 @@ export const hotspots: Hotspot[] = [
   {
     id: "rick-gun-morty-shirt",
     x: 84,
-    y: 37,
-    radius: 6,
+    y: 40,
+    radius: 10,
     title: "Pistola di Rick e maglietta di Morty",
     shortLabel: "RICK",
     content:
@@ -108,9 +108,9 @@ export const hotspots: Hotspot[] = [
   },
   {
     id: "acoustic-guitar",
-    x: 96,
-    y: 78,
-    radius: 6,
+    x: 94,
+    y: 88,
+    radius: 8,
     title: "Chitarra acustica",
     shortLabel: "GTR",
     content:
@@ -123,8 +123,8 @@ export const hotspots: Hotspot[] = [
   },
   {
     id: "notebook",
-    x: 20,
-    y: 35,
+    x: 69,
+    y: 79,
     radius: 4,
     title: "Taccuino",
     shortLabel: "NOTE",
@@ -138,8 +138,8 @@ export const hotspots: Hotspot[] = [
   },
   {
     id: "toy-train",
-    x: 7,
-    y: 48,
+    x: 81,
+    y: 68,
     radius: 4,
     title: "Trenino giocattolo",
     shortLabel: "TRAIN",
@@ -154,7 +154,7 @@ export const hotspots: Hotspot[] = [
   {
     id: "astronaut",
     x: 50,
-    y: 57,
+    y: 48,
     radius: 8,
     title: "Astronauta",
     shortLabel: "ASTRO",
@@ -168,8 +168,8 @@ export const hotspots: Hotspot[] = [
   },
   {
     id: "planet",
-    x: 50,
-    y: 48,
+    x: 72,
+    y: 44,
     radius: 9,
     title: "Pianeta",
     shortLabel: "MOON",
@@ -183,8 +183,8 @@ export const hotspots: Hotspot[] = [
   },
   {
     id: "pill-bottle",
-    x: 19,
-    y: 24,
+    x: 17,
+    y: 31,
     radius: 4,
     title: "Bottiglietta di pillole",
     shortLabel: "PILLS",
