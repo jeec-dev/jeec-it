@@ -14,4 +14,8 @@ export type Hotspot = {
   trackTitle: string;
   playerUrl?: string;
   href?: string;
+
+  closeUpX?: number;
+  closeUpY?: number;
+  closeUpZoom?: number;
 };
