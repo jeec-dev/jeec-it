@@ -59,6 +59,7 @@ export function AlbumTree() {
                     key={track.slug}
                     track={track}
                     index={index}
+                    albumSlug={album.slug}
                   />
                 ))}
               </div>
