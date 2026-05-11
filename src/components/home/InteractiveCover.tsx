@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { hotspots } from "@/data/hotspots";
 import type { Hotspot } from "@/types/hotspot";
 import { DiscoveryHUD } from "@/components/home/DiscoveryHUD";
@@ -15,36 +15,37 @@ export function InteractiveCover() {
     null,
   );
 
-  const [discoveredIds, setDiscoveredIds] = useState<string[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
+  const [discoveredIds, setDiscoveredIds] = useState<string[]>([]);
 
-    const storedValue = window.localStorage.getItem(storageKey);
-
-    if (!storedValue) {
-      return [];
-    }
-
-    try {
-      const parsedValue = JSON.parse(storedValue);
-
-      if (Array.isArray(parsedValue)) {
-        return parsedValue.filter(
-          (item): item is string => typeof item === "string",
-        );
-      }
-    } catch {
-      window.localStorage.removeItem(storageKey);
-    }
-
-    return [];
-  });
   const [achievement, setAchievement] = useState<Hotspot | null>(null);
 
   const selectedHotspot = hotspots.find(
     (hotspot) => hotspot.id === selectedHotspotId,
   );
+
+  useEffect(() => {
+    window.requestAnimationFrame(() => {
+      const storedValue = window.localStorage.getItem(storageKey);
+
+      if (!storedValue) {
+        return;
+      }
+
+      try {
+        const parsedValue = JSON.parse(storedValue);
+
+        if (Array.isArray(parsedValue)) {
+          setDiscoveredIds(
+            parsedValue.filter(
+              (item): item is string => typeof item === "string",
+            ),
+          );
+        }
+      } catch {
+        window.localStorage.removeItem(storageKey);
+      }
+    });
+  }, []);
 
   function handleHotspotClick(hotspot: Hotspot) {
     setSelectedHotspotId(hotspot.id);
@@ -92,6 +93,7 @@ export function InteractiveCover() {
             alt="Copertina NEW (Tutto Quello Che Non Ti Ho Detto)"
             fill
             priority
+            sizes="(max-width: 768px) 100vw, 960px"
             className="object-cover"
           />
 
