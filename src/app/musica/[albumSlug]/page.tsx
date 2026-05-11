@@ -86,25 +86,29 @@ export default async function AlbumDetailPage({ params }: AlbumPageProps) {
           </div>
 
           <div className={styles.trackList}>
-            {albums.map((album, index) => (
+            {album.tracks.map((track) => (
               <Link
-                key={album.slug}
-                href={`/musica/${album.slug}`}
-                className={styles.card}
+                key={track.slug}
+                href={`/musica/${album.slug}/${track.slug}`}
+                className={styles.track}
               >
-                <div className={styles.coverFrame}>
-                  <Image
-                    src={album.cover}
-                    alt={`Cover di ${album.title}`}
-                    fill
-                    priority={index === 0}
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className={styles.coverImage}
-                  />
-                </div>
+                <span className={styles.trackNumber}>
+                  {String(track.trackNumber).padStart(2, "0")}
+                </span>
 
-                <p className={styles.type}>{getTypeLabel(album.type)}</p>
-                <h2 className={styles.name}>{album.title}</h2>
+                <span className={styles.trackInfo}>
+                  <span className={styles.trackTitle}>{track.title}</span>
+
+                  {track.credits?.length ? (
+                    <span className={styles.trackCredits}>
+                      Credits: {track.credits.join(", ")}
+                    </span>
+                  ) : null}
+                </span>
+
+                {track.duration ? (
+                  <span className={styles.trackDuration}>{track.duration}</span>
+                ) : null}
               </Link>
             ))}
           </div>

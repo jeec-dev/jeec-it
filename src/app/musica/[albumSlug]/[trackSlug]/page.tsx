@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTrackBySlugs } from "@/lib/music";
+import { albums } from "@/data/albums";
+import { getSpotifyEmbedUrl, getYouTubeEmbedUrl } from "@/lib/music/embeds";
+import styles from "./TrackDetail.module.css";
 
 type TrackPageProps = {
   params: Promise<{
@@ -10,98 +12,179 @@ type TrackPageProps = {
   }>;
 };
 
-export default async function TrackPage({ params }: TrackPageProps) {
-  const { albumSlug, trackSlug } = await params;
-  const result = getTrackBySlugs(albumSlug, trackSlug);
+export function generateStaticParams() {
+  return albums.flatMap((album) =>
+    album.tracks.map((track) => ({
+      albumSlug: album.slug,
+      trackSlug: track.slug,
+    })),
+  );
+}
 
-  if (!result) {
+export async function generateMetadata({ params }: TrackPageProps) {
+  const { albumSlug, trackSlug } = await params;
+  const album = albums.find((item) => item.slug === albumSlug);
+  const track = album?.tracks.find((item) => item.slug === trackSlug);
+
+  if (!album || !track) {
+    return {
+      title: "Traccia non trovata",
+    };
+  }
+
+  return {
+    title: `${track.title} | ${album.title} | JeeC`,
+    description:
+      track.loreEntry ??
+      `Scheda traccia di ${track.title}, dal progetto ${album.title}.`,
+  };
+}
+
+export default async function TrackDetailPage({ params }: TrackPageProps) {
+  const { albumSlug, trackSlug } = await params;
+
+  const album = albums.find((item) => item.slug === albumSlug);
+  const track = album?.tracks.find((item) => item.slug === trackSlug);
+
+  if (!album || !track) {
     notFound();
   }
 
-  const { album, track } = result;
+  const spotifyEmbedUrl =
+    track.spotifyEmbedUrl ?? getSpotifyEmbedUrl(track.spotifyUrl);
+
+  const youtubeEmbedUrl =
+    track.youtubeEmbedUrl ?? getYouTubeEmbedUrl(track.youtubeUrl);
+
+  const externalLinks = [
+    track.spotifyUrl ? { label: "Spotify", href: track.spotifyUrl } : null,
+    track.youtubeUrl ? { label: "YouTube", href: track.youtubeUrl } : null,
+    track.geniusUrl ? { label: "Genius", href: track.geniusUrl } : null,
+    track.appleMusicUrl
+      ? { label: "Apple Music", href: track.appleMusicUrl }
+      : null,
+    track.youtubeMusicUrl
+      ? { label: "YouTube Music", href: track.youtubeMusicUrl }
+      : null,
+    ...(track.externalLinks ?? []),
+  ].filter(Boolean) as { label: string; href: string }[];
 
   return (
-    <main className="min-h-screen bg-black px-6 py-12 text-white">
-      <article className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[360px_1fr]">
-        <aside>
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
-            <Image
-              src={album.cover}
-              alt={`Copertina ${album.title}`}
-              width={720}
-              height={720}
-              className="h-full w-full object-cover"
-            />
+    <main className={styles.page}>
+      <div className={styles.inner}>
+        <Link href={`/musica/${album.slug}`} className={styles.backLink}>
+          ← Torna a {album.title}
+        </Link>
+
+        <section className={styles.layout}>
+          <div>
+            <div className={styles.coverFrame}>
+              <Image
+                src={album.cover}
+                alt={`Cover di ${album.title}`}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 28rem"
+                className={styles.coverImage}
+              />
+            </div>
           </div>
 
-          <Link
-            href="/musica"
-            className="mt-6 inline-flex text-sm text-white/50 transition hover:text-white"
-          >
-            ← Torna alla musica
-          </Link>
-        </aside>
+          <div>
+            <div className={styles.meta}>
+              <span>Traccia {track.trackNumber}</span>
+              <span>{album.type}</span>
+              <span>{album.displayDate ?? album.year}</span>
+            </div>
 
-        <section>
-          <p className="text-sm uppercase tracking-[0.4em] text-white/40">
-            {album.title}
-          </p>
+            <h1 className={styles.title}>{track.title}</h1>
 
-          <h1 className="mt-4 text-5xl font-bold">{track.title}</h1>
+            <p className={styles.albumTitle}>{album.title}</p>
 
-          {track.credits && track.credits.length > 0 && (
-            <p className="mt-4 text-white/50">
-              Credits: {track.credits.join(", ")}
-            </p>
-          )}
+            {track.credits?.length ? (
+              <p className={styles.credits}>
+                Credits: {track.credits.join(", ")}
+              </p>
+            ) : null}
 
-          {track.spotifyUrl && (
-            <a
-              href={track.spotifyUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-8 inline-flex rounded-full border border-white/20 px-5 py-3 text-sm text-white/70 transition hover:border-white hover:text-white"
-            >
-              Apri su Spotify
-            </a>
-          )}
+            {externalLinks.length ? (
+              <div className={styles.actions}>
+                {externalLinks.map((link) => (
+                  <a
+                    key={`${link.label}-${link.href}`}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.action}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </section>
 
-          {track.videoUrl && (
-            <a
-              href={track.videoUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="ml-3 mt-8 inline-flex rounded-full border border-white/20 px-5 py-3 text-sm text-white/70 transition hover:border-white hover:text-white"
-            >
-              Guarda video
-            </a>
-          )}
+        <section className={styles.sections}>
+          <div className={styles.panel}>
+            <h2 className={styles.panelTitle}>Spotify player</h2>
 
-          <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-            <h2 className="text-2xl font-semibold">Testo</h2>
-
-            {track.lyrics ? (
-              <pre className="mt-4 whitespace-pre-wrap font-sans leading-7 text-white/70">
-                {track.lyrics}
-              </pre>
+            {spotifyEmbedUrl ? (
+              <iframe
+                title={`Spotify player — ${track.title}`}
+                src={spotifyEmbedUrl}
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                className={`${styles.embed} ${styles.spotifyEmbed}`}
+              />
             ) : (
-              <p className="mt-4 text-white/40">
-                Testo non ancora disponibile.
+              <p className={styles.empty}>
+                Spotify player non ancora collegato per questa traccia.
               </p>
             )}
           </div>
 
-          {track.loreEntry && (
-            <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-              <h2 className="text-2xl font-semibold">Lore collegata</h2>
-              <p className="mt-4 text-white/60">
-                Questa traccia è collegata al frammento narrativo:{" "}
-                <span className="text-white">{track.loreEntry}</span>
+          <div className={styles.panel}>
+            <h2 className={styles.panelTitle}>Video</h2>
+
+            {youtubeEmbedUrl ? (
+              <iframe
+                title={`YouTube video — ${track.title}`}
+                src={youtubeEmbedUrl}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                loading="lazy"
+                className={`${styles.embed} ${styles.youtubeEmbed}`}
+              />
+            ) : (
+              <p className={styles.empty}>
+                Video YouTube non ancora collegato per questa traccia.
               </p>
+            )}
+          </div>
+
+          <div className={styles.panel}>
+            <h2 className={styles.panelTitle}>Testo / lyrics</h2>
+
+            {track.lyrics ? (
+              <div className={styles.lyrics}>{track.lyrics}</div>
+            ) : (
+              <p className={styles.empty}>
+                Testo non ancora inserito. Per ora collega Genius con{" "}
+                <code>geniusUrl</code>; i lyrics ufficiali possono essere
+                aggiunti manualmente quando autorizzati.
+              </p>
+            )}
+          </div>
+
+          {track.loreEntry ? (
+            <div className={styles.panel}>
+              <h2 className={styles.panelTitle}>Lore</h2>
+              <p className={styles.empty}>{track.loreEntry}</p>
             </div>
-          )}
+          ) : null}
         </section>
-      </article>
+      </div>
     </main>
   );
 }

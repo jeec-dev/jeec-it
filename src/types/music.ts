@@ -1,14 +1,31 @@
+export type ExternalLink = {
+  label: string;
+  href: string;
+};
+
 export type Track = {
   slug: string;
   title: string;
   trackNumber: number;
   duration?: string;
+
   lyrics?: string;
+  lyricsNote?: string;
+
   spotifyUrl?: string;
-  videoUrl?: string;
+  spotifyEmbedUrl?: string;
+
+  youtubeUrl?: string;
+  youtubeEmbedUrl?: string;
+
+  geniusUrl?: string;
+  appleMusicUrl?: string;
+  youtubeMusicUrl?: string;
+
   loreEntry?: string;
   credits?: string[];
   featuredArtists?: string[];
+  externalLinks?: ExternalLink[];
 };
 
 export type Album = {
