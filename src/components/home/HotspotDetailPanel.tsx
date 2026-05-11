@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Hotspot } from "@/types/hotspot";
+import styles from "./HotspotDetailPanel.module.css";
 
 type HotspotDetailPanelProps = {
   hotspot: Hotspot;
@@ -29,30 +30,29 @@ export function HotspotDetailPanel({
   const closeUpTop = getCloseUpOffset(closeUpY, zoom);
 
   return (
-    <aside className="arcade-panel-strong absolute inset-x-3 bottom-3 z-30 max-h-[72%] overflow-y-auto p-4 sm:bottom-4 sm:right-4 sm:left-auto sm:top-4 sm:w-[min(380px,calc(100%-2rem))] sm:max-h-none sm:p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="arcade-label">Inspect Mode</p>
+    <aside className={styles.panel}>
+      <div className={styles.dragHandle} />
 
-          <h2 className="mt-2 text-2xl font-bold text-[var(--jeec-new-pink)] drop-shadow-[0_0_18px_rgba(241,187,223,0.35)]">
-            {hotspot.title}
-          </h2>
+      <div className={styles.header}>
+        <div>
+          <p className={styles.label}>Inspect Mode</p>
+          <h2 className={styles.title}>{hotspot.title}</h2>
         </div>
 
         <button
           type="button"
           onClick={onClose}
-          className="min-h-10 min-w-10 rounded-full border border-white/20 px-3 py-1 text-xs text-white/60 transition active:scale-95 hover:border-white hover:text-white"
+          className={styles.closeButton}
           aria-label="Chiudi pannello dettaglio"
         >
           ESC
         </button>
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-2xl border border-[#f1bbdf]/30 bg-[#0c0a19] shadow-[0_0_24px_rgba(241,187,223,0.16)]">
-        <div className="relative aspect-square overflow-hidden bg-[#0c0a19]">
+      <div className={styles.closeUpFrame}>
+        <div className={styles.closeUpViewport}>
           <div
-            className="absolute"
+            className={styles.closeUpImageLayer}
             style={{
               width: `${zoom * 100}%`,
               height: `${zoom * 100}%`,
@@ -65,47 +65,38 @@ export function HotspotDetailPanel({
               alt={`Close up di ${hotspot.title}`}
               fill
               sizes="(max-width: 640px) 90vw, 380px"
-              className="object-cover"
+              className={styles.closeUpImage}
             />
           </div>
 
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,transparent_45%,rgba(12,10,25,0.72)_100%)]" />
-
-          <div className="pointer-events-none absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#f1bbdf]/80 shadow-[0_0_22px_rgba(241,187,223,0.55)]" />
-
-          <div className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-[#f1bbdf]/30 bg-[#0c0a19]/70 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#f1bbdf]/80">
-            Close Scan
-          </div>
+          <div className={styles.closeUpVignette} />
+          <div className={styles.closeUpReticle} />
+          <div className={styles.closeUpTag}>Close Scan</div>
         </div>
       </div>
 
-      <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.04] p-4">
-        <p className="text-xs uppercase tracking-[0.25em] text-white/40">
-          Track
-        </p>
-
-        <p className="mt-2 text-sm text-[var(--jeec-moon-white)]">
-          {hotspot.trackTitle}
-        </p>
+      <div className={styles.trackBox}>
+        <p className={styles.trackLabel}>Track</p>
+        <p className={styles.trackTitle}>{hotspot.trackTitle}</p>
       </div>
 
-      <p className="mt-5 text-sm leading-6 text-white/70">{hotspot.content}</p>
+      <p className={styles.content}>{hotspot.content}</p>
 
       {hotspot.playerUrl ? (
         <iframe
           src={hotspot.playerUrl}
-          className="mt-5 h-24 w-full rounded-xl border border-white/10"
+          className={styles.player}
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           loading="lazy"
         />
       ) : (
-        <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs text-white/40">
+        <div className={styles.playerPlaceholder}>
           Player non ancora collegato.
         </div>
       )}
 
       {hotspot.href && (
-        <Link href={hotspot.href} className="arcade-button mt-5 inline-flex">
+        <Link href={hotspot.href} className={styles.catalogLink}>
           Apri scheda catalogo
         </Link>
       )}
