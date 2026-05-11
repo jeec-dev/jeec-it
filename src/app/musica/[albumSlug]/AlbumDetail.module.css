@@ -1,0 +1,138 @@
+.page {
+  min-height: 100vh;
+  padding: 3rem 1rem 5rem;
+  color: var(--jeec-moon-white);
+}
+
+.inner {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+}
+
+.backLink {
+  display: inline-flex;
+  margin-bottom: 2.5rem;
+  font-family: monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: rgb(249 235 244 / 0.5);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--jeec-new-pink);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+  font-family: monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgb(249 235 244 / 0.55);
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.title {
+  max-width: 58rem;
+  font-size: clamp(2.2rem, 7vw, 5rem);
+  line-height: 0.95;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+.layout {
+  display: grid;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.coverFrame {
+  position: relative;
+  width: 100%;
+  max-width: 31rem;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  background: rgb(255 255 255 / 0.04);
+  box-shadow: 0 2rem 5rem rgb(0 0 0 / 0.45);
+}
+
+.coverImage {
+  object-fit: cover;
+}
+
+.description {
+  margin-top: 1.25rem;
+  max-width: 31rem;
+  color: rgb(249 235 244 / 0.66);
+  line-height: 1.7;
+}
+
+.trackList {
+  display: grid;
+  align-content: start;
+  border-top: 1px solid rgb(255 255 255 / 0.1);
+}
+
+.track {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgb(255 255 255 / 0.1);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    color 160ms ease,
+    padding-left 160ms ease,
+    background-color 160ms ease;
+}
+
+.track:hover {
+  padding-left: 0.75rem;
+  color: var(--jeec-new-pink);
+  background: rgb(241 187 223 / 0.035);
+}
+
+.trackNumber {
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: rgb(249 235 244 / 0.45);
+}
+
+.trackTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.trackCredits {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: rgb(249 235 244 / 0.42);
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding-inline: 2rem;
+  }
+
+  .layout {
+    grid-template-columns: minmax(18rem, 31rem) 1fr;
+    align-items: start;
+    gap: 3.5rem;
+  }
+}
