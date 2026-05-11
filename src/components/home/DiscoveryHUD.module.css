@@ -62,13 +62,14 @@
 .badge[data-discovered="true"] {
   border-color: rgb(241 187 223 / 0.6);
   background: rgb(241 187 223 / 0.1);
-  color: var(--jeec-moon-white);
   box-shadow: 0 0 18px rgb(241 187 223 / 0.28);
 }
 
 .badgeIcon {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  object-fit: contain;
+  opacity: 0.95;
 }
 
 .locked {
