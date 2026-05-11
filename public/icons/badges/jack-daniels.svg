@@ -1,12 +1,9 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <rect x="5" y="5" width="54" height="54" rx="14" fill="#0c0a19" stroke="#f1bbdf" stroke-width="3"/>
-  <circle cx="32" cy="32" r="23" fill="none" stroke="#5b4581" stroke-width="2" opacity="0.8"/>
-  <g fill="none" stroke="#f9ebf4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     
   <path d="M27 16H37"/>
   <path d="M29 16V24L24 29V48H40V29L35 24V16"/>
   <path d="M27 34H37M27 40H37"/>
 
   </g>
-  <text x="32" y="57" text-anchor="middle" font-family="monospace" font-size="6" fill="#f1bbdf">JACK</text>
 </svg>

@@ -8,28 +8,24 @@ mkdir -p "$BADGE_DIR"
 
 create_badge() {
   local file_name="$1"
-  local label="$2"
-  local path_markup="$3"
+  local path_markup="$2"
 
   cat > "$BADGE_DIR/$file_name.svg" <<EOF
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <rect x="5" y="5" width="54" height="54" rx="14" fill="#0c0a19" stroke="#f1bbdf" stroke-width="3"/>
-  <circle cx="32" cy="32" r="23" fill="none" stroke="#5b4581" stroke-width="2" opacity="0.8"/>
-  <g fill="none" stroke="#f9ebf4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     $path_markup
   </g>
-  <text x="32" y="57" text-anchor="middle" font-family="monospace" font-size="6" fill="#f1bbdf">$label</text>
 </svg>
 EOF
 }
 
-create_badge "chessboard" "CHESS" '
+create_badge "chessboard" '
   <path d="M18 20H46V48H18Z"/>
   <path d="M18 27H46M18 34H46M18 41H46"/>
   <path d="M25 20V48M32 20V48M39 20V48"/>
 '
 
-create_badge "grinder-kit" "GRIND" '
+create_badge "grinder-kit" '
   <circle cx="26" cy="32" r="8"/>
   <circle cx="39" cy="31" r="6"/>
   <path d="M18 45H46"/>
@@ -37,20 +33,20 @@ create_badge "grinder-kit" "GRIND" '
   <path d="M23 24L18 17M34 24L37 17"/>
 '
 
-create_badge "jack-daniels" "JACK" '
+create_badge "jack-daniels" '
   <path d="M27 16H37"/>
   <path d="M29 16V24L24 29V48H40V29L35 24V16"/>
   <path d="M27 34H37M27 40H37"/>
 '
 
-create_badge "signed-contract" "DEAL" '
+create_badge "signed-contract" '
   <path d="M21 15H41L47 21V49H21Z"/>
   <path d="M41 15V22H47"/>
   <path d="M27 29H39M27 35H39"/>
   <path d="M26 43C31 38 35 49 42 42"/>
 '
 
-create_badge "disco-ball" "DISCO" '
+create_badge "disco-ball" '
   <path d="M32 13V20"/>
   <circle cx="32" cy="35" r="15"/>
   <path d="M20 30H44M19 38H45"/>
@@ -58,7 +54,7 @@ create_badge "disco-ball" "DISCO" '
   <path d="M37 21C41 29 41 40 37 49"/>
 '
 
-create_badge "marijuana-leaf" "LEAF" '
+create_badge "marijuana-leaf" '
   <path d="M32 49V33"/>
   <path d="M32 33C26 25 26 18 32 12C38 18 38 25 32 33Z"/>
   <path d="M30 36C22 30 18 25 18 18C25 20 29 27 30 36Z"/>
@@ -67,7 +63,7 @@ create_badge "marijuana-leaf" "LEAF" '
   <path d="M35 39C42 39 47 36 50 30C43 29 37 33 35 39Z"/>
 '
 
-create_badge "rick-gun-morty-shirt" "RICK" '
+create_badge "rick-gun-morty-shirt" '
   <path d="M17 33H38"/>
   <path d="M38 28H48V38H38Z"/>
   <path d="M22 33V42"/>
@@ -75,7 +71,7 @@ create_badge "rick-gun-morty-shirt" "RICK" '
   <path d="M20 20L28 15L36 20L41 17L47 25L42 29L38 24V49H18V24L14 29L9 25L15 17Z"/>
 '
 
-create_badge "acoustic-guitar" "GTR" '
+create_badge "acoustic-guitar" '
   <path d="M39 15L47 23"/>
   <path d="M36 18L44 26"/>
   <path d="M18 42C13 37 16 27 24 28C25 19 36 17 40 25C46 26 48 36 43 41C37 48 25 49 18 42Z"/>
@@ -83,14 +79,14 @@ create_badge "acoustic-guitar" "GTR" '
   <path d="M35 31L44 22"/>
 '
 
-create_badge "notebook" "NOTE" '
+create_badge "notebook" '
   <path d="M20 15H45V49H20Z"/>
   <path d="M25 15V49"/>
   <path d="M29 25H40M29 32H40M29 39H36"/>
   <path d="M18 21H22M18 29H22M18 37H22M18 45H22"/>
 '
 
-create_badge "toy-train" "TRAIN" '
+create_badge "toy-train" '
   <path d="M15 35H48V45H15Z"/>
   <path d="M22 25H36V35H22Z"/>
   <path d="M38 29H45V35H38Z"/>
@@ -99,7 +95,7 @@ create_badge "toy-train" "TRAIN" '
   <path d="M16 25H21"/>
 '
 
-create_badge "astronaut" "ASTRO" '
+create_badge "astronaut" '
   <circle cx="32" cy="22" r="8"/>
   <path d="M24 32H40V48H24Z"/>
   <path d="M18 35L24 39"/>
@@ -109,7 +105,7 @@ create_badge "astronaut" "ASTRO" '
   <path d="M28 22H36"/>
 '
 
-create_badge "planet" "MOON" '
+create_badge "planet" '
   <circle cx="32" cy="32" r="17"/>
   <path d="M12 37C23 29 40 24 52 27"/>
   <path d="M15 41C28 33 42 29 51 31"/>
@@ -117,7 +113,7 @@ create_badge "planet" "MOON" '
   <circle cx="38" cy="37" r="3"/>
 '
 
-create_badge "pill-bottle" "PILLS" '
+create_badge "pill-bottle" '
   <path d="M25 16H39"/>
   <path d="M27 20H37"/>
   <path d="M24 24H40V50H24Z"/>
@@ -126,4 +122,4 @@ create_badge "pill-bottle" "PILLS" '
   <circle cx="32" cy="41" r="5"/>
 '
 
-echo "Generated badge SVGs in $BADGE_DIR"
+echo "Generated simplified badge SVGs in $BADGE_DIR"

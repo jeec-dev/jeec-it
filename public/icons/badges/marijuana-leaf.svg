@@ -1,7 +1,5 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <rect x="5" y="5" width="54" height="54" rx="14" fill="#0c0a19" stroke="#f1bbdf" stroke-width="3"/>
-  <circle cx="32" cy="32" r="23" fill="none" stroke="#5b4581" stroke-width="2" opacity="0.8"/>
-  <g fill="none" stroke="#f9ebf4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     
   <path d="M32 49V33"/>
   <path d="M32 33C26 25 26 18 32 12C38 18 38 25 32 33Z"/>
@@ -11,5 +9,4 @@
   <path d="M35 39C42 39 47 36 50 30C43 29 37 33 35 39Z"/>
 
   </g>
-  <text x="32" y="57" text-anchor="middle" font-family="monospace" font-size="6" fill="#f1bbdf">LEAF</text>
 </svg>
