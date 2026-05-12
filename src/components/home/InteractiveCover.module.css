@@ -159,6 +159,342 @@
   color: rgb(241 187 223 / 0.7);
 }
 
+.rewardOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background:
+    radial-gradient(
+      circle at center,
+      rgb(241 187 223 / 0.16),
+      transparent 26rem
+    ),
+    rgb(3 7 17 / 0.78);
+  backdrop-filter: blur(14px);
+}
+
+.rewardDialog {
+  width: min(100%, 34rem);
+  border: 1px solid rgb(241 187 223 / 0.34);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.16),
+      transparent 18rem
+    ),
+    linear-gradient(135deg, rgb(28 22 52 / 0.96), rgb(6 31 42 / 0.92));
+  padding: clamp(1.25rem, 4vw, 2rem);
+  color: var(--jeec-moon-white);
+  box-shadow:
+    0 2rem 6rem rgb(0 0 0 / 0.5),
+    0 0 40px rgb(241 187 223 / 0.12),
+    inset 0 0 28px rgb(241 187 223 / 0.06);
+}
+
+.rewardKicker {
+  margin: 0;
+  color: var(--jeec-cyan-glow);
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.rewardDialog h2 {
+  margin: 0.9rem 0 0;
+  color: var(--jeec-new-pink);
+  font-size: clamp(2rem, 7vw, 3.4rem);
+  font-weight: 950;
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+
+.rewardDialog p {
+  color: rgb(249 235 244 / 0.72);
+  line-height: 1.7;
+}
+
+.rewardStats {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1.2rem;
+  border: 1px solid rgb(125 247 240 / 0.16);
+  border-radius: 1rem;
+  background: rgb(6 31 42 / 0.42);
+  padding: 1rem;
+}
+
+.rewardStats span {
+  color: rgb(249 235 244 / 0.72);
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rewardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.4rem;
+}
+
+.rewardPrimary,
+.rewardSecondary {
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.85rem 1rem;
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.rewardPrimary {
+  border: 1px solid rgb(241 187 223 / 0.44);
+  background: rgb(241 187 223 / 0.12);
+  color: var(--jeec-new-pink);
+}
+
+.rewardSecondary {
+  border: 1px solid rgb(125 247 240 / 0.24);
+  background: rgb(125 247 240 / 0.06);
+  color: var(--jeec-cyan-ice);
+}
+
+.rewardPrimary:hover,
+.rewardPrimary:focus-visible {
+  border-color: rgb(241 187 223 / 0.62);
+  background: rgb(241 187 223 / 0.18);
+  color: var(--jeec-moon-white);
+  transform: translateY(-1px);
+}
+
+.rewardSecondary:hover,
+.rewardSecondary:focus-visible {
+  border-color: rgb(125 247 240 / 0.44);
+  background: rgb(125 247 240 / 0.1);
+  color: var(--jeec-cyan-glow);
+  transform: translateY(-1px);
+}
+
+.rewardClaimed {
+  margin: -0.2rem 0 1rem;
+  color: var(--jeec-cyan-glow);
+  font-family: monospace;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.rewardUnlockedButton {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+  margin: -0.2rem 0 1rem;
+  border-radius: 999px;
+  border: 1px solid rgb(241 187 223 / 0.42);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.16),
+      transparent 70%
+    ),
+    rgb(241 187 223 / 0.08);
+  padding: 0.85rem 1rem;
+  color: var(--jeec-new-pink);
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    0 0 24px rgb(241 187 223 / 0.12),
+    inset 0 0 18px rgb(91 69 129 / 0.12);
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.rewardUnlockedButton:hover,
+.rewardUnlockedButton:focus-visible {
+  border-color: rgb(241 187 223 / 0.62);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.22),
+      transparent 70%
+    ),
+    rgb(241 187 223 / 0.12);
+  color: var(--jeec-moon-white);
+  transform: translateY(-1px);
+}
+
+.winOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 79;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background:
+    radial-gradient(
+      circle at center,
+      rgb(241 187 223 / 0.2),
+      transparent 24rem
+    ),
+    rgb(3 7 17 / 0.76);
+  backdrop-filter: blur(12px);
+  animation: winOverlayIn 220ms ease-out both;
+}
+
+.winDialog {
+  width: min(100%, 34rem);
+  border: 1px solid rgb(241 187 223 / 0.42);
+  border-radius: 1.6rem;
+  background:
+    radial-gradient(circle at top, rgb(241 187 223 / 0.18), transparent 18rem),
+    linear-gradient(135deg, rgb(28 22 52 / 0.96), rgb(6 31 42 / 0.92));
+  padding: clamp(1.4rem, 5vw, 2.25rem);
+  text-align: center;
+  color: var(--jeec-moon-white);
+  box-shadow:
+    0 2rem 6rem rgb(0 0 0 / 0.55),
+    0 0 54px rgb(241 187 223 / 0.18),
+    inset 0 0 34px rgb(241 187 223 / 0.07);
+  animation: winDialogPop 520ms cubic-bezier(0.2, 1.2, 0.3, 1) both;
+}
+
+.winBadge {
+  display: grid;
+  place-items: center;
+  width: 5.2rem;
+  height: 5.2rem;
+  margin: 0 auto 1rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgb(241 187 223 / 0.55);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.22),
+      transparent 70%
+    ),
+    rgb(241 187 223 / 0.1);
+  color: var(--jeec-new-pink);
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  box-shadow:
+    0 0 32px rgb(241 187 223 / 0.24),
+    inset 0 0 22px rgb(91 69 129 / 0.22);
+  animation: winBadgePulse 900ms ease-in-out infinite alternate;
+}
+
+.winKicker {
+  margin: 0;
+  color: var(--jeec-cyan-glow);
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.winDialog h2 {
+  margin: 0.8rem 0 0;
+  color: var(--jeec-new-pink);
+  font-size: clamp(2.2rem, 8vw, 4rem);
+  font-weight: 950;
+  line-height: 0.88;
+  letter-spacing: -0.075em;
+}
+
+.winDialog p {
+  color: rgb(249 235 244 / 0.72);
+}
+
+.winProgressTrack {
+  height: 0.45rem;
+  margin-top: 1.25rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.1);
+}
+
+.winProgressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5b4581, #cd95c9, #f1bbdf, #c8fff8);
+  animation: winProgress 2100ms ease-in-out both;
+}
+
+@keyframes winOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes winDialogPop {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes winBadgePulse {
+  from {
+    transform: scale(1);
+    box-shadow:
+      0 0 26px rgb(241 187 223 / 0.2),
+      inset 0 0 22px rgb(91 69 129 / 0.22);
+  }
+
+  to {
+    transform: scale(1.05);
+    box-shadow:
+      0 0 46px rgb(241 187 223 / 0.34),
+      inset 0 0 26px rgb(91 69 129 / 0.28);
+  }
+}
+
+@keyframes winProgress {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
 @media (max-width: 640px) {
   .root {
     max-width: 100%;
@@ -184,5 +520,37 @@
   .hotspotPulse,
   .resetButton {
     transition: none;
+  }
+
+  .rewardPrimary,
+  .rewardSecondary {
+    transition: none;
+  }
+
+  .rewardPrimary:hover,
+  .rewardPrimary:focus-visible,
+  .rewardSecondary:hover,
+  .rewardSecondary:focus-visible {
+    transform: none;
+  }
+
+  .rewardUnlockedButton {
+    transition: none;
+  }
+
+  .rewardUnlockedButton:hover,
+  .rewardUnlockedButton:focus-visible {
+    transform: none;
+  }
+
+  .winOverlay,
+  .winDialog,
+  .winBadge,
+  .winProgressFill {
+    animation: none;
+  }
+
+  .winProgressFill {
+    width: 100%;
   }
 }

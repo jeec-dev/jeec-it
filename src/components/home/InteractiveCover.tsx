@@ -17,6 +17,14 @@ import styles from "./InteractiveCover.module.css";
 
 const coverImageSrc = "/images/covers/Copertina_NEW_TQCNTHD.jpg";
 const storageKey = "jeec:new-cover-discoveries";
+const finalRewardClaimedKey = "jeec:new-cover-final-reward-claimed";
+const finalRewardUnlockedKey = "jeec:new-cover-final-reward-unlocked";
+
+const FINAL_REWARD = {
+  requiredXp: 1970,
+  downloadUrl: "/downloads/jeec-new-digital-copy.zip",
+  fileName: "JeeC-NEW-Digital-Copy.zip",
+};
 
 type HotspotStyle = CSSProperties & {
   "--hotspot-left": string;
@@ -27,12 +35,16 @@ type HotspotStyle = CSSProperties & {
   "--hotspot-ring-opacity": number;
 };
 
+const [isRewardSequencePlaying, setIsRewardSequencePlaying] = useState(false);
+
 export function InteractiveCover() {
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(
     null,
   );
   const [discoveredIds, setDiscoveredIds] = useState<string[]>([]);
   const [achievement, setAchievement] = useState<Hotspot | null>(null);
+  const [isRewardDialogOpen, setIsRewardDialogOpen] = useState(false);
+  const [hasClaimedFinalReward, setHasClaimedFinalReward] = useState(false);
   const [pointerPosition, setPointerPosition] = useState<{
     x: number;
     y: number;
@@ -49,29 +61,60 @@ export function InteractiveCover() {
     (hotspot) => hotspot.id === selectedHotspotId,
   );
 
+  const selectedPanelSide =
+    selectedHotspot && selectedHotspot.x >= 50 ? "left" : "right";
+
+  const score = discoveredIds.reduce((total, hotspotId) => {
+    const hotspot = hotspots.find((item) => item.id === hotspotId);
+
+    return total + (hotspot?.score ?? 0);
+  }, 0);
+
+  const allBadgesFound = discoveredIds.length === hotspots.length;
+  const canClaimFinalReward =
+    allBadgesFound &&
+    score >= FINAL_REWARD.requiredXp &&
+    !hasClaimedFinalReward;
+
   useEffect(() => {
     window.requestAnimationFrame(() => {
       const storedValue = window.localStorage.getItem(storageKey);
 
-      if (!storedValue) {
-        return;
-      }
+      if (storedValue) {
+        try {
+          const parsedValue = JSON.parse(storedValue);
 
-      try {
-        const parsedValue = JSON.parse(storedValue);
-
-        if (Array.isArray(parsedValue)) {
-          setDiscoveredIds(
-            parsedValue.filter(
-              (item): item is string => typeof item === "string",
-            ),
-          );
+          if (Array.isArray(parsedValue)) {
+            setDiscoveredIds(
+              parsedValue.filter(
+                (item): item is string => typeof item === "string",
+              ),
+            );
+          }
+        } catch {
+          window.localStorage.removeItem(storageKey);
         }
-      } catch {
-        window.localStorage.removeItem(storageKey);
       }
+
+      const claimedReward = window.localStorage.getItem(finalRewardClaimedKey);
+      setHasClaimedFinalReward(claimedReward === "true");
     });
   }, []);
+
+  useEffect(() => {
+    if (!canClaimFinalReward) {
+      return;
+    }
+
+    const alreadyUnlocked = window.localStorage.getItem(finalRewardUnlockedKey);
+
+    if (alreadyUnlocked === "true") {
+      return;
+    }
+
+    window.localStorage.setItem(finalRewardUnlockedKey, "true");
+    openFinalRewardSequence();
+  }, [canClaimFinalReward]);
 
   function handleHotspotClick(hotspot: Hotspot) {
     setSelectedHotspotId(hotspot.id);
@@ -125,10 +168,31 @@ export function InteractiveCover() {
     setDebugPosition(null);
   }
 
+  function claimFinalReward() {
+    if (!canClaimFinalReward) {
+      return;
+    }
+
+    window.localStorage.setItem(finalRewardClaimedKey, "true");
+    setHasClaimedFinalReward(true);
+    setIsRewardDialogOpen(false);
+
+    const link = document.createElement("a");
+    link.href = FINAL_REWARD.downloadUrl;
+    link.download = FINAL_REWARD.fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   function resetArcadeSave() {
     setDiscoveredIds([]);
     setSelectedHotspotId(null);
+    setHasClaimedFinalReward(false);
+    setIsRewardDialogOpen(false);
     window.localStorage.removeItem(storageKey);
+    window.localStorage.removeItem(finalRewardClaimedKey);
+    window.localStorage.removeItem(finalRewardUnlockedKey);
   }
 
   function getHotspotStyle(
@@ -157,9 +221,39 @@ export function InteractiveCover() {
     };
   }
 
+  function openFinalRewardSequence() {
+    if (!canClaimFinalReward) {
+      return;
+    }
+
+    setSelectedHotspotId(null);
+    setIsRewardSequencePlaying(true);
+
+    window.setTimeout(() => {
+      setIsRewardSequencePlaying(false);
+      setIsRewardDialogOpen(true);
+    }, 2200);
+  }
+
   return (
     <section className={styles.root}>
       <DiscoveryHUD hotspots={hotspots} discoveredIds={discoveredIds} />
+
+      {canClaimFinalReward ? (
+        <button
+          type="button"
+          className={styles.rewardUnlockedButton}
+          onClick={() => setIsRewardDialogOpen(true)}
+        >
+          Reward unlocked · Scarica copia digitale
+        </button>
+      ) : null}
+
+      {hasClaimedFinalReward ? (
+        <p className={styles.rewardClaimed}>
+          Digital copy claimed · NEW archive unlocked
+        </p>
+      ) : null}
 
       {isDebugMode && (
         <button
@@ -227,11 +321,69 @@ export function InteractiveCover() {
             <HotspotDetailPanel
               hotspot={selectedHotspot}
               closeUpImageSrc={coverImageSrc}
+              panelSide={selectedPanelSide}
               onClose={() => setSelectedHotspotId(null)}
             />
           )}
         </div>
       </div>
+
+      {isRewardSequencePlaying ? (
+        <div className={styles.winOverlay} role="status" aria-live="polite">
+          <div className={styles.winDialog}>
+            <div className={styles.winBadge}>13/13</div>
+            <p className={styles.winKicker}>Arcade clear</p>
+            <h2>NEW archive unlocked</h2>
+            <p>Conversione XP in corso...</p>
+
+            <div className={styles.winProgressTrack}>
+              <div className={styles.winProgressFill} />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isRewardDialogOpen ? (
+        <div className={styles.rewardOverlay} role="dialog" aria-modal="true">
+          <div className={styles.rewardDialog}>
+            <p className={styles.rewardKicker}>Final reward unlocked</p>
+
+            <h2>Hai trovato tutti i frammenti di NEW.</h2>
+
+            <p>
+              Hai completato l’arcade cabinet e raccolto abbastanza esperienza
+              per convertire il tuo punteggio in una copia digitale gratuita
+              dell’album.
+            </p>
+
+            <div className={styles.rewardStats}>
+              <span>
+                Badge trovati: {discoveredIds.length}/{hotspots.length}
+              </span>
+              <span>XP disponibili: {score}</span>
+              <span>Costo ricompensa: {FINAL_REWARD.requiredXp} XP</span>
+            </div>
+
+            <div className={styles.rewardActions}>
+              <button
+                type="button"
+                className={styles.rewardPrimary}
+                onClick={claimFinalReward}
+              >
+                Spendi XP e scarica album
+              </button>
+
+              <button
+                type="button"
+                className={styles.rewardSecondary}
+                onClick={() => setIsRewardDialogOpen(false)}
+              >
+                Più tardi
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <AchievementToast achievement={achievement} />
     </section>

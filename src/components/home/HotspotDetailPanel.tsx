@@ -11,6 +11,7 @@ import styles from "./HotspotDetailPanel.module.css";
 type HotspotDetailPanelProps = {
   hotspot: Hotspot;
   closeUpImageSrc: string;
+  panelSide: "left" | "right";
   onClose: () => void;
 };
 
@@ -25,6 +26,7 @@ function getCloseUpOffset(coordinate: number, zoom: number) {
 export function HotspotDetailPanel({
   hotspot,
   closeUpImageSrc,
+  panelSide,
   onClose,
 }: HotspotDetailPanelProps) {
   const closeUpX = hotspot.closeUpX ?? hotspot.x;
@@ -87,7 +89,7 @@ export function HotspotDetailPanel({
     getSpotifyEmbedUrl(selectedCatalogTrack?.spotifyUrl);
 
   return (
-    <aside className={styles.panel}>
+    <aside className={styles.panel} data-side={panelSide}>
       <div className={styles.dragHandle} />
 
       <div className={styles.header}>
