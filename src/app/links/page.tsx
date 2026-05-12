@@ -13,7 +13,7 @@ function LinkButton({
   label,
   description,
   external,
-  variant,
+  variant = "standard",
 }: {
   href: string;
   label: string;
@@ -40,7 +40,7 @@ function LinkButton({
         target="_blank"
         rel="noreferrer"
         className={styles.linkButton}
-        data-variant={variant ?? "standard"}
+        data-variant={variant}
       >
         {content}
       </a>
@@ -48,11 +48,7 @@ function LinkButton({
   }
 
   return (
-    <Link
-      href={href}
-      className={styles.linkButton}
-      data-variant={variant ?? "standard"}
-    >
+    <Link href={href} className={styles.linkButton} data-variant={variant}>
       {content}
     </Link>
   );
