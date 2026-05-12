@@ -7,7 +7,20 @@ function getTypeLabel(type: string) {
   return type.toUpperCase();
 }
 
+function getAlbumTime(album: (typeof albums)[number]) {
+  if (album.releaseDate) {
+    return new Date(album.releaseDate).getTime();
+  }
+
+  return new Date(`${album.year}-01-01`).getTime();
+}
+
 export default function MusicPage() {
+  const orderedAlbums = [...albums].sort(
+    (firstAlbum, secondAlbum) =>
+      getAlbumTime(secondAlbum) - getAlbumTime(firstAlbum),
+  );
+
   return (
     <main className={styles.page}>
       <div className={styles.inner}>
@@ -22,7 +35,7 @@ export default function MusicPage() {
         </p>
 
         <div className={styles.grid}>
-          {albums.map((album) => (
+          {orderedAlbums.map((album, index) => (
             <Link
               key={album.slug}
               href={`/musica/${album.slug}`}
@@ -33,6 +46,7 @@ export default function MusicPage() {
                   src={album.cover}
                   alt={`Cover di ${album.title}`}
                   fill
+                  priority={index === 0}
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className={styles.coverImage}
                 />
