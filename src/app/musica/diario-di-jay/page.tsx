@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { orderedDiaryEntries } from "@/data/diary";
+import { getDiaryEntries } from "@/lib/diary";
 import styles from "./DiaryIndex.module.css";
 
 export const metadata = {
@@ -9,7 +9,9 @@ export const metadata = {
     "Il diario di bordo fantasy di Jay: un viaggio narrativo tra passato, futuro, amore, perdita e frammenti musicali.",
 };
 
-export default function DiarioDiJayPage() {
+export default async function DiarioDiJayPage() {
+  const diaryEntries = await getDiaryEntries();
+
   return (
     <main className={styles.page}>
       <div className={styles.inner}>
@@ -24,17 +26,17 @@ export default function DiarioDiJayPage() {
         </p>
 
         <div className={styles.timeline}>
-          {orderedDiaryEntries.map((entry) => (
+          {diaryEntries.map((entry) => (
             <Link
-              key={entry.slug}
-              href={`/musica/diario-di-jay/${entry.slug}`}
+              key={entry.metadata.slug}
+              href={`/musica/diario-di-jay/${entry.metadata.slug}`}
               className={styles.card}
             >
-              {entry.cover ? (
+              {entry.metadata.cover ? (
                 <div className={styles.coverFrame}>
                   <Image
-                    src={entry.cover}
-                    alt={`Cover di ${entry.title}`}
+                    src={entry.metadata.cover}
+                    alt={`Cover di ${entry.metadata.title}`}
                     fill
                     sizes="(max-width: 768px) 100vw, 18rem"
                     className={styles.coverImage}
@@ -43,14 +45,14 @@ export default function DiarioDiJayPage() {
               ) : null}
 
               <div className={styles.content}>
-                <p className={styles.chapter}>{entry.chapter}</p>
-                <h2 className={styles.entryTitle}>{entry.title}</h2>
-                <p className={styles.date}>{entry.displayDate}</p>
-                <p className={styles.excerpt}>{entry.excerpt}</p>
+                <p className={styles.chapter}>{entry.metadata.chapter}</p>
+                <h2 className={styles.entryTitle}>{entry.metadata.title}</h2>
+                <p className={styles.date}>{entry.metadata.displayDate}</p>
+                <p className={styles.excerpt}>{entry.metadata.excerpt}</p>
 
-                {entry.linkedTrackTitle ? (
+                {entry.metadata.linkedTrackTitle ? (
                   <span className={styles.track}>
-                    Traccia: {entry.linkedTrackTitle}
+                    Traccia: {entry.metadata.linkedTrackTitle}
                   </span>
                 ) : null}
               </div>
