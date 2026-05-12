@@ -1,6 +1,8 @@
 export type HotspotRelatedTrack = {
   title: string;
+  trackSlug: string;
   href: string;
+  note?: string;
 };
 
 export type Hotspot = {

@@ -15,7 +15,7 @@ import { HotspotDetailPanel } from "@/components/home/HotspotDetailPanel";
 import { AchievementToast } from "@/components/home/AchievementToast";
 import styles from "./InteractiveCover.module.css";
 
-const coverImageSrc = "/images/covers/Copertina_NEW_TQCNTHD.PNG";
+const coverImageSrc = "/images/covers/Copertina_NEW_TQCNTHD.jpg";
 const storageKey = "jeec:new-cover-discoveries";
 
 type HotspotStyle = CSSProperties & {

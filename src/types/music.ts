@@ -41,5 +41,6 @@ export type Album = {
   label?: string;
   description?: string;
   spotifyUrl?: string;
+  externalLinks?: ExternalLink[];
   tracks: Track[];
 };
