@@ -29,7 +29,7 @@ export default async function DiarioDiJayPage() {
           {diaryEntries.map((entry) => (
             <Link
               key={entry.metadata.slug}
-              href={`/musica/diario-di-jay/${entry.metadata.slug}`}
+              href={`/diario-di-jay/${entry.metadata.slug}`}
               className={styles.card}
             >
               {entry.metadata.cover ? (

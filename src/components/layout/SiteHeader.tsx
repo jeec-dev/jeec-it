@@ -7,7 +7,7 @@ import styles from "./SiteHeader.module.css";
 const navItems = [
   { href: "/", label: "Home", exact: true },
   { href: "/musica", label: "Musica" },
-  { href: "/musica/diario-di-jay", label: "Diario" },
+  { href: "/diario-di-jay", label: "Diario" },
   { href: "/eventi", label: "Eventi" },
   { href: "/bio", label: "Bio" },
   { href: "/media-kit", label: "Media Kit" },

@@ -59,7 +59,7 @@ export default async function DiaryEntryPage({ params }: DiaryEntryPageProps) {
   return (
     <main className={styles.page}>
       <article className={styles.inner}>
-        <Link href="/musica/diario-di-jay" className={styles.backLink}>
+        <Link href="/diario-di-jay" className={styles.backLink}>
           ← Torna al diario
         </Link>
 
@@ -106,7 +106,7 @@ export default async function DiaryEntryPage({ params }: DiaryEntryPageProps) {
         <nav className={styles.navigation} aria-label="Navigazione diario">
           {previousEntry ? (
             <Link
-              href={`/musica/diario-di-jay/${previousEntry.metadata.slug}`}
+              href={`/diario-di-jay/${previousEntry.metadata.slug}`}
               className={styles.navCard}
             >
               <span>Capitolo precedente</span>
@@ -118,7 +118,7 @@ export default async function DiaryEntryPage({ params }: DiaryEntryPageProps) {
 
           {nextEntry ? (
             <Link
-              href={`/musica/diario-di-jay/${nextEntry.metadata.slug}`}
+              href={`/diario-di-jay/${nextEntry.metadata.slug}`}
               className={styles.navCard}
             >
               <span>Capitolo successivo</span>

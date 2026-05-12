@@ -4,7 +4,7 @@ import styles from "./Footer.module.css";
 const footerNav = [
   { label: "Home", href: "/" },
   { label: "Musica", href: "/musica" },
-  { label: "Diario di Jay", href: "/musica/diario-di-jay" },
+  { label: "Diario di Jay", href: "/diario-di-jay" },
   { label: "Eventi", href: "/eventi" },
   { label: "Bio", href: "/bio" },
   { label: "Media Kit", href: "/media-kit" },
