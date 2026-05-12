@@ -77,7 +77,23 @@ export function HotspotDetailPanel({
 
       <div className={styles.trackBox}>
         <p className={styles.trackLabel}>Track</p>
-        <p className={styles.trackTitle}>{hotspot.trackTitle}</p>
+        <p className={styles.trackTitle}>
+          {hotspot.relatedTracks?.length ? (
+            <div className={styles.trackLinks}>
+              {hotspot.relatedTracks.map((track) => (
+                <Link
+                  key={track.href}
+                  href={track.href}
+                  className={styles.trackLink}
+                >
+                  {track.title}
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.trackTitle}>{hotspot.trackTitle}</p>
+          )}
+        </p>
       </div>
 
       <p className={styles.content}>{hotspot.content}</p>

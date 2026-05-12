@@ -154,9 +154,24 @@
   color: rgb(255 255 255 / 0.4);
 }
 
+.trackLinks {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.trackLink {
+  display: inline-flex;
+  width: fit-content;
+  color: var(--jeec-moon-white);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.trackLink:hover {
+  color: var(--jeec-new-pink);
+}
+
 .trackTitle {
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
   color: var(--jeec-moon-white);
 }
 

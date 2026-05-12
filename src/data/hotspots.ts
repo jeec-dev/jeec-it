@@ -6,6 +6,13 @@ function trackHref(trackSlug: string) {
   return `/musica/${albumSlug}/${trackSlug}`;
 }
 
+function relatedTrack(title: string, trackSlug: string) {
+  return {
+    title,
+    href: trackHref(trackSlug),
+  };
+}
+
 export const hotspots: Hotspot[] = [
   {
     id: "chessboard",
@@ -15,12 +22,16 @@ export const hotspots: Hotspot[] = [
     title: "Scacchiera",
     shortLabel: "CHESS",
     content:
-      "La scacchiera rimanda a pedine, ruoli e mosse obbligate: il gioco sociale in cui tutti sembrano muoversi dentro schemi già scritti.",
+      "La scacchiera è il punto dove il disco parla di mosse, ruoli e cose già decise: pedine da spostare, parole che sembrano chiare solo quando ormai la partita è iniziata.",
     badgeIcon: "/icons/badges/chessboard.svg",
     score: 100,
-    trackTitle: "Pedine (Come Voi)",
+    trackTitle: "Pedine (Come Voi) / Lo Sai",
     playerUrl: "",
     href: trackHref("pedine-come-voi"),
+    relatedTracks: [
+      relatedTrack("Pedine (Come Voi)", "pedine-come-voi"),
+      relatedTrack("Lo Sai", "lo-sai"),
+    ],
   },
   {
     id: "grinder-kit",
@@ -30,12 +41,16 @@ export const hotspots: Hotspot[] = [
     title: "Grinder con cartine e filtrini",
     shortLabel: "GRIND",
     content:
-      "Un rituale piccolo e ripetuto, tra abitudine e dipendenza: fumo, nervi scoperti e pensieri che girano come una spirale.",
+      "Il rituale prima del fumo diventa loop mentale: un altro giro, un'altra scusa, un altro pensiero che si accende tra abitudine, dipendenza e fuga.",
     badgeIcon: "/icons/badges/grinder-kit.svg",
     score: 120,
-    trackTitle: "Nicotina (Bojack Horseman)",
+    trackTitle: "Gimmie Another / Nicotina (Bojack Horseman)",
     playerUrl: "",
-    href: trackHref("nicotina-bojack-horseman"),
+    href: trackHref("gimmie-another"),
+    relatedTracks: [
+      relatedTrack("Gimmie Another", "gimmie-another"),
+      relatedTrack("Nicotina (Bojack Horseman)", "nicotina-bojack-horseman"),
+    ],
   },
   {
     id: "jack-daniels",
@@ -45,12 +60,13 @@ export const hotspots: Hotspot[] = [
     title: "Bottiglia di Jack Daniel's",
     shortLabel: "JACK",
     content:
-      "La bottiglia è una richiesta che si ripete: un altro giro, un altro tentativo, un altro modo per non restare da soli con quello che pesa.",
+      "La bottiglia resta lì come compagnia sbagliata: una notte lunga, una richiesta di vicinanza e il tentativo di non crollare da soli.",
     badgeIcon: "/icons/badges/jack-daniels.svg",
     score: 130,
-    trackTitle: "Gimmie Another",
+    trackTitle: "Stammi Vicino Dai",
     playerUrl: "",
-    href: trackHref("gimmie-another"),
+    href: trackHref("stammi-vicino-dai"),
+    relatedTracks: [relatedTrack("Stammi Vicino Dai", "stammi-vicino-dai")],
   },
   {
     id: "signed-contract",
@@ -60,12 +76,13 @@ export const hotspots: Hotspot[] = [
     title: "Contratto con la firma segnata in rosso",
     shortLabel: "DEAL",
     content:
-      "Una firma rossa, quasi definitiva: il momento in cui scegli comunque di andare avanti, anche senza sapere davvero come finirà.",
+      "Una firma rossa, quasi una condanna: quando dici che va tutto bene, ma sotto c'è il peso di accordi, aspettative e parti di te che non hai davvero scelto.",
     badgeIcon: "/icons/badges/signed-contract.svg",
     score: 180,
-    trackTitle: "Vada Come Vada",
+    trackTitle: "Ma Tanto Sto Bene",
     playerUrl: "",
-    href: trackHref("vada-come-vada"),
+    href: trackHref("ma-tanto-sto-bene"),
+    relatedTracks: [relatedTrack("Ma Tanto Sto Bene", "ma-tanto-sto-bene")],
   },
   {
     id: "disco-ball",
@@ -75,12 +92,16 @@ export const hotspots: Hotspot[] = [
     title: "Disco ball",
     shortLabel: "DISCO",
     content:
-      "La disco ball spezza la stanza in frammenti di luce: corpo, movimento, festa e fuga dalla staticità.",
+      "La disco ball divide la stanza in frammenti: movimento, corpo, luce e amore riflesso male, come una festa che prova a coprire quello che resta acceso dentro.",
     badgeIcon: "/icons/badges/disco-ball.svg",
     score: 140,
-    trackTitle: "MUOVI",
+    trackTitle: "MUOVI / Riflessioni, Pt. 3 (Amore)",
     playerUrl: "",
     href: trackHref("muovi"),
+    relatedTracks: [
+      relatedTrack("MUOVI", "muovi"),
+      relatedTrack("Riflessioni, Pt. 3 (Amore)", "riflessioni-pt-3-amore"),
+    ],
   },
   {
     id: "marijuana-leaf",
@@ -90,12 +111,18 @@ export const hotspots: Hotspot[] = [
     title: "Foglia di marijuana",
     shortLabel: "LEAF",
     content:
-      "La foglia galleggia come una calma artificiale: un modo per dirsi che va tutto bene, anche quando non è proprio così.",
+      "La foglia diventa un dettaglio minuscolo in una città gigantesca: una formica emotiva che attraversa strade, ricordi e stati alterati senza sapere davvero dove andare.",
     badgeIcon: "/icons/badges/marijuana-leaf.svg",
     score: 110,
-    trackTitle: "Ma Tanto Sto Bene",
+    trackTitle: "Una Formica Sulla 34esima Strada",
     playerUrl: "",
-    href: trackHref("ma-tanto-sto-bene"),
+    href: trackHref("una-formica-sulla-34esima-strada"),
+    relatedTracks: [
+      relatedTrack(
+        "Una Formica Sulla 34esima Strada",
+        "una-formica-sulla-34esima-strada",
+      ),
+    ],
   },
   {
     id: "rick-gun-morty-shirt",
@@ -105,12 +132,18 @@ export const hotspots: Hotspot[] = [
     title: "Pistola di Rick e maglietta di Morty",
     shortLabel: "RICK",
     content:
-      "Qui la connessione è diretta: pop culture, multiverso, ironia e caos emotivo entrano nella stanza come una citazione impossibile da ignorare.",
+      "Qui la connessione è diretta: multiverso, inverno, soldi, ironia e caos. Il riferimento pop non è decorazione, è una porta aperta dentro la traccia.",
     badgeIcon: "/icons/badges/rick-gun-morty-shirt.svg",
     score: 190,
     trackTitle: "Inverno & Soldi (Rick & Morty)",
     playerUrl: "",
     href: trackHref("inverno-e-soldi-rick-e-morty"),
+    relatedTracks: [
+      relatedTrack(
+        "Inverno & Soldi (Rick & Morty)",
+        "inverno-e-soldi-rick-e-morty",
+      ),
+    ],
   },
   {
     id: "acoustic-guitar",
@@ -120,12 +153,18 @@ export const hotspots: Hotspot[] = [
     title: "Chitarra acustica",
     shortLabel: "GTR",
     content:
-      "La chitarra tiene il lato più nudo della release: una versione spogliata, più fragile, più vicina alla scrittura originaria.",
+      "La chitarra tiene il lato più nudo del disco: quando resta solo la canzone, senza corazza, e il pensiero di sparire diventa voce acustica.",
     badgeIcon: "/icons/badges/acoustic-guitar.svg",
     score: 150,
     trackTitle: "If I Die Tonight (Acoustic Version)",
     playerUrl: "",
     href: trackHref("if-i-die-tonight-acoustic-version"),
+    relatedTracks: [
+      relatedTrack(
+        "If I Die Tonight (Acoustic Version)",
+        "if-i-die-tonight-acoustic-version",
+      ),
+    ],
   },
   {
     id: "notebook",
@@ -135,12 +174,13 @@ export const hotspots: Hotspot[] = [
     title: "Taccuino",
     shortLabel: "NOTE",
     content:
-      "Il taccuino è il posto delle cose non dette: frasi lasciate aperte, bozze emotive, parole che qualcuno forse conosce già.",
+      "Il taccuino è l'origine: prima del viaggio, prima dei bonus, prima della deluxe. È il punto in cui tutto torna alla scrittura e al primo impulso di fare raap.",
     badgeIcon: "/icons/badges/notebook.svg",
     score: 120,
-    trackTitle: "Lo Sai",
+    trackTitle: "Intro (Raap)",
     playerUrl: "",
-    href: trackHref("lo-sai"),
+    href: trackHref("intro-raap"),
+    relatedTracks: [relatedTrack("Intro (Raap)", "intro-raap")],
   },
   {
     id: "toy-train",
@@ -150,12 +190,16 @@ export const hotspots: Hotspot[] = [
     title: "Trenino giocattolo",
     shortLabel: "TRAIN",
     content:
-      "Il trenino trasforma il tempo in un percorso circolare: giorni contati, infanzia, distanza e movimento dentro una stanza mentale.",
+      "Il trenino gira come il tempo: infanzia, attesa, giorni contati e pensieri che tornano allo stesso punto, finché il percorso non diventa memoria.",
     badgeIcon: "/icons/badges/toy-train.svg",
     score: 125,
-    trackTitle: "In 12 Giorni",
+    trackTitle: "Riflessioni, Pt. 1 (Tempo) / In 12 Giorni",
     playerUrl: "",
-    href: trackHref("in-12-giorni"),
+    href: trackHref("riflessioni-pt-1-tempo"),
+    relatedTracks: [
+      relatedTrack("Riflessioni, Pt. 1 (Tempo)", "riflessioni-pt-1-tempo"),
+      relatedTrack("In 12 Giorni", "in-12-giorni"),
+    ],
   },
   {
     id: "astronaut",
@@ -165,12 +209,15 @@ export const hotspots: Hotspot[] = [
     title: "Astronauta",
     shortLabel: "ASTRO",
     content:
-      "L’astronauta è il corpo sospeso al centro della cover: isolamento, vuoto, sopravvivenza e quella domanda estrema che resta accesa nel buio.",
+      "L'astronauta è il corpo sospeso al centro della cover: non cade e non atterra. Rimane lì, dentro una riflessione sulla morte, sul vuoto e su quello che resta quando tutto si spegne.",
     badgeIcon: "/icons/badges/astronaut.svg",
     score: 250,
-    trackTitle: "If I Die Tonight",
+    trackTitle: "Riflessioni, Pt. 2 (Morte)",
     playerUrl: "",
-    href: trackHref("if-i-die-tonight"),
+    href: trackHref("riflessioni-pt-2-morte"),
+    relatedTracks: [
+      relatedTrack("Riflessioni, Pt. 2 (Morte)", "riflessioni-pt-2-morte"),
+    ],
   },
   {
     id: "planet",
@@ -180,12 +227,13 @@ export const hotspots: Hotspot[] = [
     title: "Pianeta",
     shortLabel: "MOON",
     content:
-      "Il pianeta è l’orbita completa della deluxe: apre il viaggio con Intro (Raap) e raccoglie le tracce che non appartengono a un singolo oggetto ma all’atmosfera generale del disco — Riflessioni, Pt. 1 (Tempo), Riflessioni, Pt. 3 (Amore), Stammi Vicino Dai, Outro (Ehi!) e Una Formica Sulla 34esima Strada.",
+      "Il pianeta è l'hub simbolico dell'album: l'orbita che tiene insieme le tracce non agganciate a un singolo oggetto. Qui il disco smette di essere stanza e diventa sistema.",
     badgeIcon: "/icons/badges/planet.svg",
     score: 220,
-    trackTitle: "Intro (Raap)",
+    trackTitle: "Hub album",
     playerUrl: "",
-    href: trackHref("intro-raap"),
+    href: `/musica/${albumSlug}`,
+    relatedTracks: [relatedTrack("Outro (Ehi!)", "outro-ehi")],
   },
   {
     id: "pill-bottle",
@@ -195,11 +243,15 @@ export const hotspots: Hotspot[] = [
     title: "Bottiglietta di pillole",
     shortLabel: "PILLS",
     content:
-      "La bottiglietta è il dettaglio più ambiguo: cura, ansia, dipendenza, controllo. Un oggetto piccolo che porta addosso il peso della mortalità.",
+      "La bottiglietta è il dettaglio più instabile: cura, eccesso, paura, controllo. Dentro ci stanno sia il fatalismo di Vada Come Vada sia la domanda più buia di If I Die Tonight.",
     badgeIcon: "/icons/badges/pill-bottle.svg",
     score: 135,
-    trackTitle: "Riflessioni, Pt. 2 (Morte)",
+    trackTitle: "Vada Come Vada / If I Die Tonight",
     playerUrl: "",
-    href: trackHref("riflessioni-pt-2-morte"),
+    href: trackHref("vada-come-vada"),
+    relatedTracks: [
+      relatedTrack("Vada Come Vada", "vada-come-vada"),
+      relatedTrack("If I Die Tonight", "if-i-die-tonight"),
+    ],
   },
 ];
