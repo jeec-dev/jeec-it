@@ -1,41 +1,63 @@
+import Image from "next/image";
 import Link from "next/link";
-import { diaryEntries } from "@/lib/diary";
+import { orderedDiaryEntries } from "@/data/diary";
+import styles from "./DiaryIndex.module.css";
 
-export default function DiaryPage() {
+export const metadata = {
+  title: "Diario di Jay | JeeC",
+  description:
+    "Il diario di bordo fantasy di Jay: un viaggio narrativo tra passato, futuro, amore, perdita e frammenti musicali.",
+};
+
+export default function DiarioDiJayPage() {
   return (
-    <main className="min-h-screen bg-black px-6 py-12 text-white">
-      <section className="mx-auto max-w-5xl">
-        <p className="text-sm uppercase tracking-[0.4em] text-white/40">
-          Lore
+    <main className={styles.page}>
+      <div className={styles.inner}>
+        <p className={styles.kicker}>Lore transmission</p>
+
+        <h1 className={styles.title}>Diario di Jay</h1>
+
+        <p className={styles.description}>
+          Frammenti narrativi dall’universo di Jay: un viaggio iniziato nel
+          1954, interrotto da un incidente impossibile e riaperto nel 2023 tra
+          paure, amori, perdita e segnali fuori tempo.
         </p>
 
-        <h1 className="mt-3 text-5xl font-bold">Diario di Jay</h1>
-
-        <p className="mt-4 max-w-2xl text-white/60">
-          Frammenti narrativi dall’universo dell’album. Alcuni capitoli possono
-          essere collegati a tracce, immagini o dettagli nascosti nella home.
-        </p>
-
-        <div className="mt-10 grid gap-4">
-          {diaryEntries.map((entry) => (
+        <div className={styles.timeline}>
+          {orderedDiaryEntries.map((entry) => (
             <Link
-              key={entry.metadata.slug}
-              href={`/musica/diario-di-jay/${entry.metadata.slug}`}
-              className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-white/30 hover:bg-white/[0.06]"
+              key={entry.slug}
+              href={`/musica/diario-di-jay/${entry.slug}`}
+              className={styles.card}
             >
-              <p className="text-xs uppercase tracking-[0.3em] text-white/40">
-                Capitolo {entry.metadata.chapter}
-              </p>
+              {entry.cover ? (
+                <div className={styles.coverFrame}>
+                  <Image
+                    src={entry.cover}
+                    alt={`Cover di ${entry.title}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 18rem"
+                    className={styles.coverImage}
+                  />
+                </div>
+              ) : null}
 
-              <h2 className="mt-2 text-2xl font-semibold">
-                {entry.metadata.title}
-              </h2>
+              <div className={styles.content}>
+                <p className={styles.chapter}>{entry.chapter}</p>
+                <h2 className={styles.entryTitle}>{entry.title}</h2>
+                <p className={styles.date}>{entry.displayDate}</p>
+                <p className={styles.excerpt}>{entry.excerpt}</p>
 
-              <p className="mt-3 text-white/60">{entry.metadata.excerpt}</p>
+                {entry.linkedTrackTitle ? (
+                  <span className={styles.track}>
+                    Traccia: {entry.linkedTrackTitle}
+                  </span>
+                ) : null}
+              </div>
             </Link>
           ))}
         </div>
-      </section>
+      </div>
     </main>
   );
 }
