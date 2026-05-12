@@ -22,6 +22,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/6dpVOjuGz4rqBcMXx2bI2F",
         youtubeUrl: "https://www.youtube.com/watch?v=cPi-SE-X2E8",
+        geniusUrl: "https://genius.com/Jeec-intro-raap-lyrics",
+        geniusSongId: "6464882",
       },
       {
         slug: "riflessioni-pt-1-tempo",
@@ -31,6 +33,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/06jWuKFNBqWRAaIaD6Y8yF",
         youtubeUrl: "https://www.youtube.com/watch?v=RqtpdNcHrQw",
+        geniusUrl: "https://genius.com/Jeec-riflessioni-pt-1-lyrics",
+        geniusSongId: "6464896",
       },
       {
         slug: "nicotina-bojack-horseman",
@@ -40,6 +44,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/2j7DbOAmKY1TXKBj01o3cL",
         youtubeUrl: "https://www.youtube.com/watch?v=JAT2JYU6spI",
+        geniusUrl: "https://genius.com/Jeec-nicotina-bojack-horseman-lyrics",
+        geniusSongId: "6465372",
       },
       {
         slug: "vada-come-vada",
@@ -50,6 +56,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi", "Cargo", "Margot"],
         spotifyUrl: "https://open.spotify.com/track/2hkcaOCDGb3oe6EMgHXVBb",
         youtubeUrl: "https://www.youtube.com/watch?v=wZtLytDYaKg",
+        geniusUrl: "https://genius.com/Jeec-vada-come-vada-lyrics",
+        geniusSongId: "5193419",
       },
       {
         slug: "gimmie-another",
@@ -59,6 +67,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/1kbvu8xIsu8fnRbIZFqb18",
         youtubeUrl: "https://www.youtube.com/watch?v=pJK7HgkKu5c",
+        geniusUrl: "https://genius.com/Jeec-gimmie-another-lyrics",
+        geniusSongId: "6465373",
       },
       {
         slug: "riflessioni-pt-2-morte",
@@ -68,6 +78,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/1lWyNpzADGkOVXzsDF6fAA",
         youtubeUrl: "https://www.youtube.com/watch?v=lEgzcFDspiI",
+        geniusUrl: "https://genius.com/Jeec-riflessioni-pt-2-lyrics",
+        geniusSongId: "6465374",
       },
       {
         slug: "inverno-e-soldi-rick-e-morty",
@@ -77,6 +89,9 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/59f5buC884Mzjcs1jXC5ib",
         youtubeUrl: "https://www.youtube.com/watch?v=udFxrudEvJs",
+        geniusUrl:
+          "https://genius.com/Jeec-inverno-and-soldi-rick-and-morty-lyrics",
+        geniusSongId: "6465375",
       },
       {
         slug: "if-i-die-tonight",
@@ -86,6 +101,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/42Yt8SQZTnS6l7i80LoqGA",
         youtubeUrl: "https://www.youtube.com/watch?v=2ccqh9KUhyk",
+        geniusUrl: "https://genius.com/Jeec-if-i-die-tonight-lyrics",
+        geniusSongId: "5292918",
       },
       {
         slug: "ma-tanto-sto-bene",
@@ -94,6 +111,8 @@ export const albums: Album[] = [
         duration: "3:11",
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/2hHa7bxd1kA0lAg7NoHEDp",
+        geniusUrl: "https://genius.com/Jeec-ma-tanto-sto-bene-lyrics",
+        geniusSongId: "6465564",
       },
       {
         slug: "riflessioni-pt-3-amore",
@@ -103,6 +122,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/2KtIZdsaXhpuGlgFEbnJbR",
         youtubeUrl: "https://www.youtube.com/watch?v=-Vgbda_62zk",
+        geniusUrl: "https://genius.com/Jeec-riflessioni-pt-3-lyrics",
+        geniusSongId: "6465376",
       },
       {
         slug: "stammi-vicino-dai",
@@ -113,6 +134,9 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi", "SEMUA"],
         spotifyUrl: "https://open.spotify.com/track/3MzK2GTMaKFPAa94dX4qTh",
         youtubeUrl: "https://www.youtube.com/watch?v=Exd3_H_54cU",
+        geniusUrl:
+          "https://genius.com/Jeec-stammi-vicino-dai-feat-irene-piraino-lyrics",
+        geniusSongId: "6465565",
       },
       {
         slug: "in-12-giorni",
@@ -122,6 +146,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/4sBRv1vnkJutuoE5MWuu6k",
         youtubeUrl: "https://www.youtube.com/watch?v=CkqSsM8jE_c",
+        geniusUrl: "https://genius.com/Jeec-in-12-giorni-lyrics",
+        geniusSongId: "6465566",
       },
       {
         slug: "lo-sai",
@@ -131,6 +157,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/6tXJgLN17HFbUZAwBHrP8F",
         youtubeUrl: "https://www.youtube.com/watch?v=9TN69Jb0zwA",
+        geniusUrl: "https://genius.com/Jeec-lo-sai-lyrics",
+        geniusSongId: "6465567",
       },
       {
         slug: "outro-ehi",
@@ -140,43 +168,8 @@ export const albums: Album[] = [
         credits: ["Giosuè Rasi"],
         spotifyUrl: "https://open.spotify.com/track/6YE62AbuZxZvBcuO8ddri1",
         youtubeUrl: "https://www.youtube.com/watch?v=qGNvWEsenvY",
-      },
-      {
-        slug: "una-formica-sulla-34esima-strada",
-        title: "Una Formica Sulla 34esima Strada",
-        trackNumber: 15,
-        duration: "3:34",
-        featuredArtists: ["Fausto"],
-        credits: ["Giosuè Rasi", "Fausto Campana"],
-        spotifyUrl: "https://open.spotify.com/track/0J2ttsriyr4LpLImdlBOHL",
-      },
-      {
-        slug: "if-i-die-tonight-acoustic-version",
-        title: "If I Die Tonight (Acoustic Version)",
-        trackNumber: 16,
-        duration: "3:02",
-        credits: ["Giosuè Rasi"],
-        spotifyUrl: "https://open.spotify.com/track/416s2Gbd2CiPafvmE1JHrK",
-        youtubeUrl: "https://www.youtube.com/watch?v=CidrQ3e6Uxs",
-      },
-      {
-        slug: "pedine-come-voi",
-        title: "Pedine (Come Voi)",
-        trackNumber: 17,
-        duration: "2:42",
-        featuredArtists: ["Jack Langellotti"],
-        credits: ["Giosuè Rasi", "Mariano Langellotti", "Jack Langellotti"],
-        spotifyUrl: "https://open.spotify.com/track/2KPKY59Bz0qCe7TbjX2dRh",
-        youtubeUrl: "https://www.youtube.com/watch?v=G-e4PCdsnYY",
-      },
-      {
-        slug: "muovi",
-        title: "MUOVI",
-        trackNumber: 18,
-        duration: "3:04",
-        credits: ["Giosuè Rasi"],
-        spotifyUrl: "https://open.spotify.com/track/1eQPLKzfnLKZQ4PzfC9Dl2",
-        youtubeUrl: "https://www.youtube.com/watch?v=mkvjs8tgj68",
+        geniusUrl: "https://genius.com/Jeec-outro-ehi-lyrics",
+        geniusSongId: "6465377",
       },
     ],
   },
