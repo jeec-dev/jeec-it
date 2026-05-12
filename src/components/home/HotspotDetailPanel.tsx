@@ -1,5 +1,10 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { albums } from "@/data/albums";
+import { getSpotifyEmbedUrl } from "@/lib/music/embeds";
 import type { Hotspot } from "@/types/hotspot";
 import styles from "./HotspotDetailPanel.module.css";
 
@@ -28,6 +33,58 @@ export function HotspotDetailPanel({
 
   const closeUpLeft = getCloseUpOffset(closeUpX, zoom);
   const closeUpTop = getCloseUpOffset(closeUpY, zoom);
+
+  const album = albums.find(
+    (item) => item.slug === "new-tutto-quello-che-non-ti-ho-detto",
+  );
+
+  const relatedTracks = useMemo(() => {
+    if (hotspot.relatedTracks?.length) {
+      return hotspot.relatedTracks;
+    }
+
+    if (hotspot.href && hotspot.trackTitle) {
+      const trackSlug = hotspot.href.split("/").filter(Boolean).at(-1);
+
+      if (trackSlug) {
+        return [
+          {
+            title: hotspot.trackTitle,
+            trackSlug,
+            href: hotspot.href,
+          },
+        ];
+      }
+    }
+
+    return [];
+  }, [hotspot]);
+
+  const [selectedTrackByHotspot, setSelectedTrackByHotspot] = useState<
+    Record<string, string | undefined>
+  >({});
+
+  const selectedTrackSlug =
+    selectedTrackByHotspot[hotspot.id] ?? relatedTracks[0]?.trackSlug;
+
+  const selectedRelatedTrack =
+    relatedTracks.find((track) => track.trackSlug === selectedTrackSlug) ??
+    relatedTracks[0];
+
+  function handleTrackSelect(trackSlug: string) {
+    setSelectedTrackByHotspot((current) => ({
+      ...current,
+      [hotspot.id]: trackSlug,
+    }));
+  }
+
+  const selectedCatalogTrack = album?.tracks.find(
+    (track) => track.slug === selectedRelatedTrack?.trackSlug,
+  );
+
+  const spotifyEmbedUrl =
+    selectedCatalogTrack?.spotifyEmbedUrl ??
+    getSpotifyEmbedUrl(selectedCatalogTrack?.spotifyUrl);
 
   return (
     <aside className={styles.panel}>
@@ -75,45 +132,79 @@ export function HotspotDetailPanel({
         </div>
       </div>
 
+      <p className={styles.content}>{hotspot.content}</p>
+
       <div className={styles.trackBox}>
-        <p className={styles.trackLabel}>Track</p>
-        {hotspot.relatedTracks?.length ? (
-          <div className={styles.trackLinks}>
-            {hotspot.relatedTracks.map((track) => (
-              <Link
-                key={track.href}
-                href={track.href}
-                className={styles.trackLink}
+        <p className={styles.trackBoxLabel}>Tracce collegate</p>
+
+        {relatedTracks.length > 1 ? (
+          <div className={styles.trackTabs}>
+            {relatedTracks.map((track) => (
+              <button
+                key={track.trackSlug}
+                type="button"
+                className={styles.trackTab}
+                data-active={
+                  track.trackSlug === selectedRelatedTrack?.trackSlug
+                }
+                onClick={() => handleTrackSelect(track.trackSlug)}
               >
                 {track.title}
-              </Link>
+              </button>
             ))}
           </div>
+        ) : selectedRelatedTrack ? (
+          <p className={styles.trackTitle}>{selectedRelatedTrack.title}</p>
         ) : (
           <p className={styles.trackTitle}>{hotspot.trackTitle}</p>
         )}
+
+        {selectedRelatedTrack?.note ? (
+          <p className={styles.trackNote}>{selectedRelatedTrack.note}</p>
+        ) : null}
+
+        {selectedCatalogTrack ? (
+          <div className={styles.trackMeta}>
+            <span>
+              Track {String(selectedCatalogTrack.trackNumber).padStart(2, "0")}
+            </span>
+
+            {selectedCatalogTrack.duration ? (
+              <span>{selectedCatalogTrack.duration}</span>
+            ) : null}
+
+            {selectedCatalogTrack.featuredArtists?.length ? (
+              <span>
+                Feat. {selectedCatalogTrack.featuredArtists.join(", ")}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+
+        {spotifyEmbedUrl ? (
+          <iframe
+            title={`Spotify player — ${selectedCatalogTrack?.title ?? hotspot.title}`}
+            src={spotifyEmbedUrl}
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            className={styles.spotifyPlayer}
+          />
+        ) : (
+          <p className={styles.playerEmpty}>
+            Spotify player non ancora collegato per questa traccia.
+          </p>
+        )}
+
+        {selectedRelatedTrack ? (
+          <Link href={selectedRelatedTrack.href} className={styles.trackCta}>
+            Apri pagina traccia →
+          </Link>
+        ) : hotspot.href ? (
+          <Link href={hotspot.href} className={styles.trackCta}>
+            Apri pagina traccia →
+          </Link>
+        ) : null}
       </div>
-
-      <p className={styles.content}>{hotspot.content}</p>
-
-      {hotspot.playerUrl ? (
-        <iframe
-          src={hotspot.playerUrl}
-          className={styles.player}
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-        />
-      ) : (
-        <div className={styles.playerPlaceholder}>
-          Player non ancora collegato.
-        </div>
-      )}
-
-      {hotspot.href && (
-        <Link href={hotspot.href} className={styles.catalogLink}>
-          Apri scheda catalogo
-        </Link>
-      )}
     </aside>
   );
 }
