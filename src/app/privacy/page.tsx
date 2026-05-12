@@ -51,6 +51,7 @@ const sections = [
   {
     title: "6. Cookie e tecnologie simili",
     body: [
+      "Il sito può usare un cookie tecnico per salvare la progressione dell’esperienza arcade legata a NEW, inclusi badge scoperti, stato della ricompensa e preferenze di completamento. Questo cookie non ha finalità di profilazione o marketing e serve a permettere all’utente di ritrovare lo stato dell’esperienza nelle visite successive.",
       "Il sito può usare cookie tecnici o strumenti equivalenti necessari al funzionamento delle pagine e alla memorizzazione di preferenze locali, per esempio lo stato dell’esperienza interattiva arcade.",
       "Eventuali cookie o strumenti non tecnici, di analytics, profilazione, marketing o tracciamento di terze parti dovranno essere gestiti tramite consenso, quando richiesto dalla normativa applicabile.",
       "La configurazione effettiva dei cookie dipende dai servizi attivati sul sito in produzione.",

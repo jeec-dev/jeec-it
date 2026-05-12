@@ -29,11 +29,75 @@ const storageKey = "jeec:new-cover-discoveries";
 const finalRewardClaimedKey = "jeec:new-cover-final-reward-claimed";
 const finalRewardUnlockedKey = "jeec:new-cover-final-reward-unlocked";
 
+const arcadeCookieKey = "jeec_new_arcade_state";
+const arcadeCookieMaxAge = 60 * 60 * 24 * 365;
+
 const FINAL_REWARD = {
   requiredXp: 1970,
   downloadUrl: "/downloads/jeec-new-digital-copy.zip",
   fileName: "JeeC-NEW-Digital-Copy.zip",
 };
+
+type ArcadeCookieState = {
+  discoveredIds: string[];
+  finalRewardClaimed: boolean;
+  finalRewardUnlocked: boolean;
+};
+
+function getCookieValue(name: string) {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const cookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${name}=`));
+
+  if (!cookie) {
+    return null;
+  }
+
+  return decodeURIComponent(cookie.split("=")[1] ?? "");
+}
+
+function setCookieValue(name: string, value: string, maxAge: number) {
+  document.cookie = `${name}=${encodeURIComponent(
+    value,
+  )}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
+}
+
+function deleteCookieValue(name: string) {
+  document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
+}
+
+function readArcadeCookieState(): ArcadeCookieState | null {
+  const value = getCookieValue(arcadeCookieKey);
+
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const parsedValue = JSON.parse(value) as Partial<ArcadeCookieState>;
+
+    return {
+      discoveredIds: Array.isArray(parsedValue.discoveredIds)
+        ? parsedValue.discoveredIds.filter(
+            (item): item is string => typeof item === "string",
+          )
+        : [],
+      finalRewardClaimed: parsedValue.finalRewardClaimed === true,
+      finalRewardUnlocked: parsedValue.finalRewardUnlocked === true,
+    };
+  } catch {
+    deleteCookieValue(arcadeCookieKey);
+    return null;
+  }
+}
+
+function writeArcadeCookieState(state: ArcadeCookieState) {
+  setCookieValue(arcadeCookieKey, JSON.stringify(state), arcadeCookieMaxAge);
+}
 
 export function InteractiveCover() {
   const [isRewardSequencePlaying, setIsRewardSequencePlaying] = useState(false);
@@ -76,29 +140,78 @@ export function InteractiveCover() {
     !hasClaimedFinalReward;
 
   useEffect(() => {
-    if (!canClaimFinalReward) {
-      return;
-    }
+    window.requestAnimationFrame(() => {
+      let restoredDiscoveredIds: string[] = [];
 
-    const alreadyUnlocked = window.localStorage.getItem(finalRewardUnlockedKey);
+      const storedValue = window.localStorage.getItem(storageKey);
 
-    if (alreadyUnlocked === "true") {
-      return;
-    }
+      if (storedValue) {
+        try {
+          const parsedValue = JSON.parse(storedValue);
 
-    window.localStorage.setItem(finalRewardUnlockedKey, "true");
-    setSelectedHotspotId(null);
-    setIsRewardSequencePlaying(true);
+          if (Array.isArray(parsedValue)) {
+            restoredDiscoveredIds = parsedValue.filter(
+              (item): item is string => typeof item === "string",
+            );
+          }
+        } catch {
+          window.localStorage.removeItem(storageKey);
+        }
+      }
 
-    const timeoutId = window.setTimeout(() => {
-      setIsRewardSequencePlaying(false);
-      setIsRewardDialogOpen(true);
-    }, 2200);
+      const cookieState = readArcadeCookieState();
 
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [canClaimFinalReward]);
+      if (restoredDiscoveredIds.length > 0) {
+        setDiscoveredIds(restoredDiscoveredIds);
+      } else if (cookieState?.discoveredIds.length) {
+        restoredDiscoveredIds = cookieState.discoveredIds;
+        setDiscoveredIds(cookieState.discoveredIds);
+        window.localStorage.setItem(
+          storageKey,
+          JSON.stringify(cookieState.discoveredIds),
+        );
+      }
+
+      const claimedReward =
+        window.localStorage.getItem(finalRewardClaimedKey) === "true" ||
+        cookieState?.finalRewardClaimed === true;
+
+      const unlockedReward =
+        window.localStorage.getItem(finalRewardUnlockedKey) === "true" ||
+        cookieState?.finalRewardUnlocked === true;
+
+      setHasClaimedFinalReward(claimedReward);
+
+      if (claimedReward) {
+        window.localStorage.setItem(finalRewardClaimedKey, "true");
+      }
+
+      if (unlockedReward) {
+        window.localStorage.setItem(finalRewardUnlockedKey, "true");
+
+        writeArcadeCookieState({
+          discoveredIds,
+          finalRewardClaimed: hasClaimedFinalReward,
+          finalRewardUnlocked: true,
+        });
+      }
+
+      writeArcadeCookieState({
+        discoveredIds: restoredDiscoveredIds,
+        finalRewardClaimed: claimedReward,
+        finalRewardUnlocked: unlockedReward,
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    writeArcadeCookieState({
+      discoveredIds,
+      finalRewardClaimed: hasClaimedFinalReward,
+      finalRewardUnlocked:
+        window.localStorage.getItem(finalRewardUnlockedKey) === "true",
+    });
+  }, [discoveredIds, hasClaimedFinalReward]);
 
   function handleHotspotClick(hotspot: Hotspot) {
     setSelectedHotspotId(hotspot.id);
@@ -174,9 +287,11 @@ export function InteractiveCover() {
     setSelectedHotspotId(null);
     setHasClaimedFinalReward(false);
     setIsRewardDialogOpen(false);
+
     window.localStorage.removeItem(storageKey);
     window.localStorage.removeItem(finalRewardClaimedKey);
     window.localStorage.removeItem(finalRewardUnlockedKey);
+    deleteCookieValue(arcadeCookieKey);
   }
 
   function getHotspotStyle(
