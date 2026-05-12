@@ -92,17 +92,55 @@
   color: rgb(249 235 244 / 0.48);
 }
 
-.status {
+.experienceCta {
   display: none;
+  align-items: center;
   border-radius: 999px;
-  border: 1px solid rgb(241 187 223 / 0.24);
-  background: rgb(241 187 223 / 0.06);
-  padding: 0.4rem 0.75rem;
+  border: 1px solid rgb(241 187 223 / 0.34);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.16),
+      transparent 70%
+    ),
+    rgb(241 187 223 / 0.07);
+  padding: 0.45rem 0.8rem;
   font-family: monospace;
   font-size: 0.62rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: rgb(249 235 244 / 0.58);
+  color: var(--jeec-new-pink);
+  text-decoration: none;
+  box-shadow:
+    0 0 18px rgb(241 187 223 / 0.1),
+    inset 0 0 14px rgb(91 69 129 / 0.14);
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
+}
+
+.experienceCta:hover,
+.experienceCta:focus-visible {
+  border-color: rgb(241 187 223 / 0.56);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.22),
+      transparent 70%
+    ),
+    rgb(241 187 223 / 0.1);
+  color: var(--jeec-moon-white);
+  box-shadow:
+    0 0 24px rgb(241 187 223 / 0.2),
+    inset 0 0 16px rgb(91 69 129 / 0.18);
+}
+
+.experienceCta:active {
+  transform: scale(0.96);
 }
 
 .statusDot {
@@ -158,9 +196,30 @@
   transform: scale(0.96);
 }
 
-.link[data-primary="true"] {
-  border-color: rgb(241 187 223 / 0.44);
+.link[data-active="true"] {
+  border-color: rgb(241 187 223 / 0.5);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.16),
+      transparent 72%
+    ),
+    rgb(241 187 223 / 0.08);
   color: var(--jeec-new-pink);
+  box-shadow:
+    0 0 20px rgb(241 187 223 / 0.14),
+    inset 0 0 14px rgb(91 69 129 / 0.16);
+}
+
+.link[data-active="true"]::before {
+  content: "";
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-right: 0.5rem;
+  border-radius: 999px;
+  background: var(--jeec-new-pink);
+  box-shadow: 0 0 12px rgb(241 187 223 / 0.75);
 }
 
 @media (min-width: 768px) {
@@ -175,9 +234,8 @@
     justify-content: flex-start;
   }
 
-  .status {
+  .experienceCta {
     display: inline-flex;
-    align-items: center;
     margin-left: 0.25rem;
   }
 
@@ -201,7 +259,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .link {
+  .link,
+  .experienceCta {
     transition: none;
   }
 }
