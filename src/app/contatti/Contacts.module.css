@@ -1,0 +1,329 @@
+.page {
+  min-height: 100vh;
+  padding: 4rem 1rem 6rem;
+  color: var(--jeec-moon-white);
+  background:
+    radial-gradient(
+      circle at 12% 0%,
+      rgb(125 247 240 / 0.12),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 86% 28rem,
+      rgb(241 187 223 / 0.08),
+      transparent 34rem
+    ),
+    linear-gradient(180deg, #070512 0%, #030711 100%);
+}
+
+.inner {
+  width: min(100%, 72rem);
+  margin-inline: auto;
+}
+
+.hero {
+  max-width: 50rem;
+}
+
+.kicker,
+.cardKicker {
+  margin: 0;
+  color: var(--jeec-cyan-glow);
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.cardKicker {
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+}
+
+.title {
+  margin: 0.8rem 0 0;
+  color: var(--jeec-moon-white);
+  font-size: clamp(3.2rem, 10vw, 7rem);
+  font-weight: 950;
+  line-height: 0.86;
+  letter-spacing: -0.08em;
+  text-shadow:
+    0 0 24px rgb(241 187 223 / 0.12),
+    0 0 40px rgb(125 247 240 / 0.06);
+}
+
+.description {
+  margin: 1.35rem 0 0;
+  max-width: 44rem;
+  color: rgb(249 235 244 / 0.72);
+  font-size: clamp(1rem, 2vw, 1.12rem);
+  line-height: 1.75;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 1.75rem;
+}
+
+.primaryCta,
+.secondaryCta,
+.cardCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.78rem 1rem;
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 120ms ease;
+}
+
+.primaryCta {
+  border: 1px solid rgb(125 247 240 / 0.32);
+  background: rgb(125 247 240 / 0.1);
+  color: var(--jeec-cyan-ice);
+}
+
+.secondaryCta {
+  border: 1px solid rgb(241 187 223 / 0.28);
+  background: rgb(241 187 223 / 0.07);
+  color: var(--jeec-new-pink);
+}
+
+.cardCta {
+  margin-top: 0.4rem;
+  border: 1px solid rgb(125 247 240 / 0.28);
+  background: rgb(125 247 240 / 0.08);
+  color: var(--jeec-cyan-ice);
+}
+
+.primaryCta:hover,
+.primaryCta:focus-visible,
+.secondaryCta:hover,
+.secondaryCta:focus-visible,
+.cardCta:hover,
+.cardCta:focus-visible {
+  transform: translateY(-1px);
+}
+
+.primaryCta:hover,
+.primaryCta:focus-visible,
+.cardCta:hover,
+.cardCta:focus-visible {
+  border-color: rgb(125 247 240 / 0.5);
+  background: rgb(125 247 240 / 0.14);
+  color: var(--jeec-cyan-glow);
+}
+
+.secondaryCta:hover,
+.secondaryCta:focus-visible {
+  border-color: rgb(241 187 223 / 0.46);
+  background: rgb(241 187 223 / 0.11);
+  color: var(--jeec-moon-white);
+}
+
+.channels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 4rem;
+}
+
+.channelCard,
+.panel,
+.socialSection,
+.finalCta {
+  border: 1px solid rgb(125 247 240 / 0.14);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(135deg, rgb(6 31 42 / 0.54), rgb(12 10 25 / 0.78)),
+    rgb(255 255 255 / 0.02);
+  box-shadow:
+    0 1.5rem 4rem rgb(0 0 0 / 0.22),
+    inset 0 0 24px rgb(56 214 208 / 0.04);
+}
+
+.channelCard {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.25rem, 4vw, 1.6rem);
+}
+
+.channelCard h2,
+.panel h2,
+.socialSection h2,
+.finalCta h2 {
+  margin: 0.15rem 0 0;
+  color: var(--jeec-moon-white);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 950;
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.channelCard p,
+.panel p,
+.socialSection p,
+.finalCta p {
+  margin: 0;
+  color: rgb(249 235 244 / 0.7);
+  line-height: 1.75;
+}
+
+.splitSection {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 4.5rem;
+}
+
+.panel {
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.checkList {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checkList li {
+  position: relative;
+  padding-left: 1.35rem;
+  color: rgb(249 235 244 / 0.76);
+  line-height: 1.65;
+}
+
+.checkList li::before {
+  content: "";
+  position: absolute;
+  top: 0.65rem;
+  left: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--jeec-cyan-glow);
+  box-shadow: 0 0 14px rgb(125 247 240 / 0.8);
+}
+
+.quickLinks {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.4rem;
+}
+
+.quickLinks a,
+.socialLink {
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.035);
+  padding: 0.78rem 0.95rem;
+  color: var(--jeec-cyan-ice);
+  font-family: monospace;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 120ms ease;
+}
+
+.quickLinks a:hover,
+.quickLinks a:focus-visible,
+.socialLink:hover,
+.socialLink:focus-visible {
+  border-color: rgb(125 247 240 / 0.38);
+  background: rgb(125 247 240 / 0.08);
+  color: var(--jeec-cyan-glow);
+  transform: translateY(-1px);
+}
+
+.socialSection {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 4.5rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.socialGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.finalCta {
+  display: grid;
+  gap: 1.2rem;
+  margin-top: 4.5rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+@media (min-width: 720px) {
+  .channels {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .socialGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 920px) {
+  .splitSection {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .socialSection,
+  .finalCta {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page {
+    padding-inline: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryCta,
+  .secondaryCta,
+  .cardCta,
+  .quickLinks a,
+  .socialLink {
+    transition: none;
+  }
+
+  .primaryCta:hover,
+  .primaryCta:focus-visible,
+  .secondaryCta:hover,
+  .secondaryCta:focus-visible,
+  .cardCta:hover,
+  .cardCta:focus-visible,
+  .quickLinks a:hover,
+  .quickLinks a:focus-visible,
+  .socialLink:hover,
+  .socialLink:focus-visible {
+    transform: none;
+  }
+}
