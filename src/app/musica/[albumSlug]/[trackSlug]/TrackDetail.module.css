@@ -140,6 +140,36 @@
   height: auto;
 }
 
+.geniusEmbed {
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 1px solid rgb(241 187 223 / 0.16);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.08),
+      transparent 24rem
+    ),
+    rgb(12 10 25 / 0.72);
+  box-shadow:
+    0 1.5rem 4rem rgb(0 0 0 / 0.32),
+    inset 0 0 28px rgb(91 69 129 / 0.14);
+}
+
+.geniusEmbed iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+}
+
+.empty a {
+  color: var(--jeec-new-pink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 .lyrics {
   margin-top: 1rem;
   white-space: pre-wrap;
