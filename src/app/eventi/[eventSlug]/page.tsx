@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { LiveEvent } from "@/types/event";
 import { notFound } from "next/navigation";
-import { events } from "@/data/events";
+import { getLiveEvent, getLiveEvents } from "@/lib/events/events";
 import { getEventStatusLabel } from "@/lib/events/events";
 import { getYouTubeEmbedUrl } from "@/lib/music/embeds";
 import {
@@ -33,13 +34,15 @@ function formatEventTime(startsAt: string) {
   }).format(new Date(startsAt));
 }
 
-function getLocationLabel(event: (typeof events)[number]) {
+function getLocationLabel(event: LiveEvent) {
   return [event.venueName, event.city, event.country]
     .filter(Boolean)
     .join(" · ");
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const events = await getLiveEvents();
+
   return events.map((event) => ({
     eventSlug: event.slug,
   }));
@@ -47,7 +50,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: EventPageProps) {
   const { eventSlug } = await params;
-  const event = events.find((item) => item.slug === eventSlug);
+  const event = await getLiveEvent(eventSlug);
 
   if (!event) {
     return {
@@ -67,7 +70,7 @@ export async function generateMetadata({ params }: EventPageProps) {
 
 export default async function EventDetailPage({ params }: EventPageProps) {
   const { eventSlug } = await params;
-  const event = events.find((item) => item.slug === eventSlug);
+  const event = await getLiveEvent(eventSlug);
 
   if (!event) {
     notFound();
@@ -121,23 +124,81 @@ export default async function EventDetailPage({ params }: EventPageProps) {
           </div>
         </header>
 
-        <section className={styles.featureGrid}>
-          <div className={styles.mediaFrame}>
-            {introVideoEmbedUrl ? (
-              <iframe
-                title={`Video intro — ${event.title}`}
-                src={introVideoEmbedUrl}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                loading="lazy"
-                className={styles.videoEmbed}
-              />
-            ) : (
-              <div className={styles.coverFallback}>
-                <span>JeeC</span>
-                <strong>Live transmission</strong>
+        <section className={styles.eventLayout}>
+          <div className={styles.mainColumn}>
+            <div className={styles.mediaFrame}>
+              {introVideoEmbedUrl ? (
+                <iframe
+                  title={`Video intro — ${event.title}`}
+                  src={introVideoEmbedUrl}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                  className={styles.videoEmbed}
+                />
+              ) : (
+                <div className={styles.coverFallback}>
+                  <span>JeeC</span>
+                  <strong>Live transmission</strong>
+                </div>
+              )}
+            </div>
+
+            <section className={styles.panel}>
+              <p className={styles.panelLabel}>Dettagli</p>
+
+              <div className={styles.detailGrid}>
+                {event.image ? (
+                  <div className={styles.detailImageFrame}>
+                    <Image
+                      src={event.image}
+                      alt={`Immagine evento ${event.title}`}
+                      fill
+                      sizes="(max-width: 900px) 100vw, 28rem"
+                      className={styles.detailImage}
+                    />
+                  </div>
+                ) : null}
+
+                <div>
+                  {event.description ? (
+                    <p>{event.description}</p>
+                  ) : (
+                    <p>
+                      Dettagli evento in aggiornamento. Salva la data e torna
+                      qui per informazioni su scaletta, venue, orari e
+                      biglietti.
+                    </p>
+                  )}
+                </div>
               </div>
-            )}
+            </section>
+
+            {galleryImages.length > 1 ? (
+              <section className={styles.gallerySection}>
+                <p className={styles.sectionLabel}>Gallery</p>
+
+                <div className={styles.galleryGrid}>
+                  {galleryImages.map((image) => (
+                    <figure key={image.src} className={styles.galleryItem}>
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 24rem"
+                        className={styles.galleryImage}
+                      />
+
+                      {image.caption ? (
+                        <figcaption className={styles.galleryCaption}>
+                          {image.caption}
+                        </figcaption>
+                      ) : null}
+                    </figure>
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </div>
 
           <aside className={styles.infoCard}>
@@ -249,61 +310,6 @@ export default async function EventDetailPage({ params }: EventPageProps) {
             </div>
           </aside>
         </section>
-
-        <section className={styles.panel}>
-          <p className={styles.panelLabel}>Dettagli</p>
-
-          <div className={styles.detailGrid}>
-            {event.image ? (
-              <div className={styles.detailImageFrame}>
-                <Image
-                  src={event.image}
-                  alt={`Immagine evento ${event.title}`}
-                  fill
-                  sizes="(max-width: 900px) 100vw, 28rem"
-                  className={styles.detailImage}
-                />
-              </div>
-            ) : null}
-
-            <div>
-              {event.description ? (
-                <p>{event.description}</p>
-              ) : (
-                <p>
-                  Dettagli evento in aggiornamento. Salva la data e torna qui
-                  per informazioni su scaletta, venue, orari e biglietti.
-                </p>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {galleryImages.length > 1 ? (
-          <section className={styles.gallerySection}>
-            <p className={styles.sectionLabel}>Gallery</p>
-
-            <div className={styles.galleryGrid}>
-              {galleryImages.map((image) => (
-                <figure key={image.src} className={styles.galleryItem}>
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 24rem"
-                    className={styles.galleryImage}
-                  />
-
-                  {image.caption ? (
-                    <figcaption className={styles.galleryCaption}>
-                      {image.caption}
-                    </figcaption>
-                  ) : null}
-                </figure>
-              ))}
-            </div>
-          </section>
-        ) : null}
       </article>
     </main>
   );
