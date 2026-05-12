@@ -1,15 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
-import { orderedEvents } from "@/data/events";
+import { getEventStatusLabel, getUpcomingEvents } from "@/lib/events/events";
+import { getLiveEvents } from "@/lib/events/events";
 import styles from "./EventsPage.module.css";
-import { getEventStatusLabel } from "@/lib/events/events";
 
 export const metadata = {
   title: "Eventi | JeeC",
-  description: "Date live, biglietti e appuntamenti ufficiali di JeeC.",
+  description:
+    "Date live, biglietti, dettagli evento e coordinate dei prossimi appuntamenti di JeeC.",
 };
 
-export default function EventiPage() {
+function formatEventDate(startsAt: string) {
+  return new Intl.DateTimeFormat("it-IT", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(startsAt));
+}
+
+export default async function EventsPage() {
+  const events = await getLiveEvents();
+  const upcomingEvents = getUpcomingEvents(events);
+
   return (
     <main className={styles.page}>
       <div className={styles.inner}>
@@ -17,53 +29,61 @@ export default function EventiPage() {
         <h1 className={styles.title}>Eventi</h1>
 
         <p className={styles.description}>
-          Date live, listening session e apparizioni speciali. Ogni evento ha
-          una pagina dedicata con dettagli, biglietti, condivisione e
-          calendario.
+          Prossime date, biglietti, venue e coordinate live. Quando Bandsintown
+          è configurato, le date vengono sincronizzate automaticamente.
         </p>
 
-        <div className={styles.grid}>
-          {orderedEvents.map((event) => (
-            <Link
-              key={event.slug}
-              href={`/eventi/${event.slug}`}
-              className={styles.card}
-            >
-              {event.image ? (
-                <div className={styles.coverFrame}>
-                  <Image
-                    src={event.image}
-                    alt={`Immagine evento ${event.title}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 18rem"
-                    className={styles.coverImage}
-                  />
-                </div>
-              ) : null}
-
-              <div>
-                <span
-                  className={styles.status}
-                  data-status={event.status ?? "unknown"}
-                >
-                  {getEventStatusLabel(event)}
-                </span>
-
-                <h2 className={styles.eventTitle}>{event.title}</h2>
-
-                <div className={styles.meta}>
-                  <span>{event.startsAt}</span>
-                  <span>{event.venueName}</span>
-                  <span>{event.city}</span>
+        {upcomingEvents.length ? (
+          <div className={styles.grid}>
+            {upcomingEvents.map((event, index) => (
+              <Link
+                key={event.id}
+                href={`/eventi/${event.slug}`}
+                className={styles.card}
+              >
+                <div className={styles.imageFrame}>
+                  {event.image ? (
+                    <Image
+                      src={event.image}
+                      alt={`Immagine evento ${event.title}`}
+                      fill
+                      priority={index === 0}
+                      sizes="(max-width: 768px) 100vw, 24rem"
+                      className={styles.image}
+                    />
+                  ) : (
+                    <div className={styles.imageFallback}>JeeC Live</div>
+                  )}
                 </div>
 
-                <p className={styles.excerpt}>{event.description}</p>
+                <div className={styles.cardContent}>
+                  <div className={styles.cardMeta}>
+                    <span>{formatEventDate(event.startsAt)}</span>
+                    {event.city ? <span>{event.city}</span> : null}
+                  </div>
 
-                <span className={styles.cta}>Apri evento →</span>
-              </div>
-            </Link>
-          ))}
-        </div>
+                  <h2 className={styles.cardTitle}>{event.title}</h2>
+
+                  <span
+                    className={styles.status}
+                    data-status={event.status ?? "unknown"}
+                  >
+                    {getEventStatusLabel(event)}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.emptyState}>
+            <p className={styles.emptyLabel}>No active signal</p>
+            <h2>Nessuna data annunciata</h2>
+            <p>
+              Le prossime coordinate live compariranno qui appena saranno
+              disponibili.
+            </p>
+          </div>
+        )}
       </div>
     </main>
   );
