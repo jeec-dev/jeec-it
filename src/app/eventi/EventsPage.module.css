@@ -47,36 +47,104 @@
 
 .grid {
   display: grid;
+  grid-template-columns: 1fr;
   gap: 1.25rem;
   margin-top: 3rem;
 }
 
 .card {
-  display: grid;
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   border: 1px solid rgb(125 247 240 / 0.16);
   border-radius: 1.25rem;
   background:
     linear-gradient(135deg, rgb(6 31 42 / 0.72), rgb(12 10 25 / 0.72)),
     rgb(255 255 255 / 0.025);
-  padding: 1rem;
   color: inherit;
   text-decoration: none;
   box-shadow:
     0 1.5rem 4rem rgb(0 0 0 / 0.28),
     inset 0 0 24px rgb(56 214 208 / 0.06);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease;
 }
 
+.card:hover {
+  border-color: rgb(125 247 240 / 0.32);
+  transform: translateY(-2px);
+}
+
+.imageFrame,
 .coverFrame {
   position: relative;
+  width: 100%;
   aspect-ratio: 16 / 9;
+  max-height: 16rem;
   overflow: hidden;
-  border-radius: 0.9rem;
   background: rgb(255 255 255 / 0.04);
 }
 
+.image,
 .coverImage {
   object-fit: cover;
+}
+
+.imageFallback {
+  display: grid;
+  min-height: 13rem;
+  place-content: center;
+  background:
+    radial-gradient(
+      circle at center,
+      rgb(125 247 240 / 0.12),
+      transparent 14rem
+    ),
+    rgb(255 255 255 / 0.035);
+  font-family: monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--jeec-cyan-glow);
+}
+
+.cardContent {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+}
+
+.cardMeta,
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-family: monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgb(249 235 244 / 0.52);
+}
+
+.cardMeta span:not(:last-child)::after,
+.meta span:not(:last-child)::after {
+  content: "·";
+  margin-left: 0.6rem;
+  color: rgb(125 247 240 / 0.4);
+}
+
+.cardTitle,
+.eventTitle {
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.excerpt {
+  color: rgb(249 235 244 / 0.66);
+  line-height: 1.7;
 }
 
 .status {
@@ -115,33 +183,7 @@
   color: rgb(249 235 244 / 0.58);
 }
 
-.eventTitle {
-  margin-top: 0.75rem;
-  font-size: clamp(1.4rem, 4vw, 2.2rem);
-  line-height: 1;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-}
-
-.meta {
-  margin-top: 0.85rem;
-  display: grid;
-  gap: 0.35rem;
-  font-family: monospace;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: rgb(249 235 244 / 0.5);
-}
-
-.excerpt {
-  margin-top: 1rem;
-  color: rgb(249 235 244 / 0.66);
-  line-height: 1.7;
-}
-
 .cta {
-  margin-top: 1.25rem;
   display: inline-flex;
   width: fit-content;
   border-radius: 999px;
@@ -155,18 +197,28 @@
   color: var(--jeec-cyan-ice);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
   .page {
     padding-inline: 2rem;
   }
 
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .card {
-    grid-template-columns: 18rem 1fr;
-    align-items: center;
-    padding: 1.25rem;
+    transition: none;
   }
 
-  .coverFrame {
-    aspect-ratio: 1 / 1;
+  .card:hover {
+    transform: none;
   }
 }
