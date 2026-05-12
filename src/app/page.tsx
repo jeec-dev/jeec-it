@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { InteractiveCover } from "@/components/home/InteractiveCover";
 import { getLiveEvents } from "@/lib/events/events";
+import { homeHeroVideo } from "@/data/home";
 
 function formatEventDate(startsAt: string) {
   return new Intl.DateTimeFormat("it-IT", {
@@ -8,6 +9,72 @@ function formatEventDate(startsAt: string) {
     month: "short",
     year: "numeric",
   }).format(new Date(startsAt));
+}
+
+function HomeVideoHero() {
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${homeHeroVideo.youtubeId}?rel=0&modestbranding=1`;
+
+  return (
+    <section className="mx-auto mb-16 grid max-w-6xl gap-8 pt-10 md:grid-cols-[1fr_1.25fr] md:items-center">
+      <div>
+        <p className="font-mono text-xs font-black uppercase tracking-[0.35em] text-[var(--jeec-new-pink)]">
+          {homeHeroVideo.eyebrow}
+        </p>
+
+        <h1 className="mt-4 text-6xl font-black leading-[0.85] tracking-[-0.08em] text-[var(--jeec-moon-white)] drop-shadow-[0_0_28px_rgba(241,187,223,0.18)] md:text-8xl">
+          {homeHeroVideo.title}
+        </h1>
+
+        <p className="mt-3 font-mono text-xs uppercase tracking-[0.22em] text-[var(--jeec-cyan-glow)]">
+          {homeHeroVideo.subtitle}
+        </p>
+
+        <p className="mt-5 max-w-xl text-base leading-8 text-white/65">
+          {homeHeroVideo.description}
+        </p>
+
+        <div className="mt-7 flex flex-wrap gap-3">
+          <a
+            href={homeHeroVideo.primaryCta.href}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex rounded-full border border-[rgb(241_187_223_/_0.38)] bg-[rgb(241_187_223_/_0.1)] px-5 py-3 font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--jeec-new-pink)] transition hover:border-[rgb(241_187_223_/_0.58)] hover:bg-[rgb(241_187_223_/_0.14)] hover:text-[var(--jeec-moon-white)]"
+          >
+            {homeHeroVideo.primaryCta.label}
+          </a>
+
+          <a
+            href={homeHeroVideo.secondaryCta.href}
+            className="inline-flex rounded-full border border-[rgb(125_247_240_/_0.32)] bg-[rgb(125_247_240_/_0.08)] px-5 py-3 font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--jeec-cyan-ice)] transition hover:border-[rgb(125_247_240_/_0.5)] hover:bg-[rgb(125_247_240_/_0.12)] hover:text-[var(--jeec-cyan-glow)]"
+          >
+            {homeHeroVideo.secondaryCta.label}
+          </a>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-[1.75rem] border border-[rgb(241_187_223_/_0.2)] bg-[rgb(255_255_255_/_0.035)] shadow-[0_2rem_5rem_rgb(0_0_0_/_0.38),inset_0_0_28px_rgb(241_187_223_/_0.045)]">
+        <div className="relative aspect-video w-full">
+          <iframe
+            className="absolute inset-0 h-full w-full"
+            src={embedUrl}
+            title="Video promozionale NEW - JeeC"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-5 py-4">
+          <span className="font-mono text-[0.68rem] font-black uppercase tracking-[0.18em] text-white/45">
+            Promo signal active
+          </span>
+
+          <span className="font-mono text-[0.68rem] font-black uppercase tracking-[0.18em] text-[var(--jeec-new-pink)]">
+            YouTube · NEW
+          </span>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default async function HomePage() {
@@ -22,7 +89,12 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-[var(--jeec-space-black)] px-6 py-12 text-[var(--jeec-moon-white)]">
-      <section className="mx-auto mb-12 max-w-4xl text-center">
+      <HomeVideoHero />
+
+      <section
+        id="arcade-cabinet"
+        className="mx-auto mb-12 max-w-4xl scroll-mt-28 text-center"
+      >
         <p className="font-mono text-xs uppercase tracking-[0.35em] text-[var(--jeec-new-pink)]">
           JEEC ARCADE CABINET
         </p>
