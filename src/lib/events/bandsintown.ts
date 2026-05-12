@@ -135,18 +135,12 @@ export async function getBandsintownEvents(): Promise<LiveEvent[]> {
   url.searchParams.set("app_id", appId);
   url.searchParams.set("date", "all");
 
-  console.log("[Bandsintown] artistName:", artistName);
-  console.log("[Bandsintown] appId exists:", Boolean(appId));
-  console.log("[Bandsintown] URL:", url.toString());
-
   try {
     const response = await fetch(url.toString(), {
       next: {
         revalidate: 60 * 30,
       },
     });
-
-    console.log("[Bandsintown] status:", response.status, response.statusText);
 
     if (!response.ok) {
       console.error(
@@ -164,14 +158,9 @@ export async function getBandsintownEvents(): Promise<LiveEvent[]> {
       return [];
     }
 
-    console.log("[Bandsintown] raw data:", data);
-    console.log("[Bandsintown] events count:", data.length);
-
     const normalizedEvents = data
       .map((event) => normalizeBandsintownEvent(event, artistName))
       .filter((event): event is LiveEvent => Boolean(event));
-
-    console.log("[Bandsintown] normalized count:", normalizedEvents.length);
 
     return normalizedEvents;
   } catch (error) {
