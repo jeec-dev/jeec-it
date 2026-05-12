@@ -19,6 +19,8 @@ export type Track = {
   youtubeEmbedUrl?: string;
 
   geniusUrl?: string;
+  geniusSongId?: string;
+
   appleMusicUrl?: string;
   youtubeMusicUrl?: string;
 

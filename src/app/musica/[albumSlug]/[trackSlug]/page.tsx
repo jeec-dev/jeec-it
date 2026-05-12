@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { albums } from "@/data/albums";
 import { getSpotifyEmbedUrl, getYouTubeEmbedUrl } from "@/lib/music/embeds";
+import { GeniusEmbed } from "./GeniusEmbed";
 import styles from "./TrackDetail.module.css";
 
 type TrackPageProps = {
@@ -164,15 +165,30 @@ export default async function TrackDetailPage({ params }: TrackPageProps) {
           </div>
 
           <div className={styles.panel}>
-            <h2 className={styles.panelTitle}>Testo / lyrics</h2>
+            <h2 className={styles.panelTitle}>Lyrics by Genius</h2>
 
-            {track.lyrics ? (
+            {track.geniusSongId ? (
+              <div className={styles.geniusEmbed}>
+                <GeniusEmbed
+                  songId={track.geniusSongId}
+                  title={track.title}
+                  geniusUrl={track.geniusUrl}
+                />
+              </div>
+            ) : track.geniusUrl ? (
+              <p className={styles.empty}>
+                Testo disponibile su{" "}
+                <a href={track.geniusUrl} target="_blank" rel="noreferrer">
+                  Genius
+                </a>
+                . L’embed verrà attivato quando sarà collegato il Genius song
+                ID.
+              </p>
+            ) : track.lyrics ? (
               <div className={styles.lyrics}>{track.lyrics}</div>
             ) : (
               <p className={styles.empty}>
-                Testo non ancora inserito. Per ora collega Genius con{" "}
-                <code>geniusUrl</code>; i lyrics ufficiali possono essere
-                aggiunti manualmente quando autorizzati.
+                Lyrics Genius non ancora collegati per questa traccia.
               </p>
             )}
           </div>
