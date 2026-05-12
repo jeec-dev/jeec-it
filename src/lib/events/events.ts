@@ -1,94 +1,113 @@
 import { fallbackEvents } from "@/data/events";
-import type { LiveEvent, LiveEventStatus } from "@/types/event";
+import type { LiveEvent } from "@/types/event";
 import { getBandsintownEvents } from "./bandsintown";
 
-const statusLabels: Record<LiveEventStatus, string> = {
-  available: "Biglietti disponibili",
-  "sold-out": "Sold out",
-  "coming-soon": "Coming soon",
-  "free-entry": "Ingresso libero",
-  cancelled: "Annullato",
-};
+function mergeEventsWithFallbackOverrides(
+  bandsintownEvents: LiveEvent[],
+  fallbackEvents: LiveEvent[],
+): LiveEvent[] {
+  return bandsintownEvents.map((event) => {
+    const override = fallbackEvents.find((fallbackEvent) => {
+      return (
+        fallbackEvent.bandsintownUrl &&
+        event.bandsintownUrl &&
+        fallbackEvent.bandsintownUrl === event.bandsintownUrl
+      );
+    });
 
-export function getEventTime(event: LiveEvent) {
-  return new Date(event.startsAt).getTime();
+    if (!override) {
+      return event;
+    }
+
+    return {
+      ...event,
+      ...override,
+      id: event.id,
+      slug: override.slug ?? event.slug,
+      startsAt: event.startsAt,
+      endsAt: override.endsAt ?? event.endsAt,
+      ticketUrl: override.ticketUrl ?? event.ticketUrl,
+      bandsintownUrl: event.bandsintownUrl,
+    };
+  });
 }
 
-export function getEventStatusLabel(event: LiveEvent) {
+function sortEventsNewestFirst(events: LiveEvent[]): LiveEvent[] {
+  return [...events].sort((a, b) => {
+    return new Date(b.startsAt).getTime() - new Date(a.startsAt).getTime();
+  });
+}
+
+function sortEventsOldestFirst(events: LiveEvent[]): LiveEvent[] {
+  return [...events].sort((a, b) => {
+    return new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime();
+  });
+}
+
+export async function getLiveEvents(): Promise<LiveEvent[]> {
+  console.log("[Events] getLiveEvents called");
+
+  const bandsintownEvents = await getBandsintownEvents();
+
+  console.log("[Events] Bandsintown events:", bandsintownEvents.length);
+
+  const events =
+    bandsintownEvents.length > 0
+      ? mergeEventsWithFallbackOverrides(bandsintownEvents, fallbackEvents)
+      : fallbackEvents;
+
+  console.log("[Events] final events:", events.length);
+
+  return sortEventsNewestFirst(events);
+}
+
+export async function getLiveEvent(
+  slug: string,
+): Promise<LiveEvent | undefined> {
+  const events = await getLiveEvents();
+
+  return events.find((event) => event.slug === slug);
+}
+
+export async function getUpcomingEvents(): Promise<LiveEvent[]> {
+  const events = await getLiveEvents();
+  const now = new Date();
+
+  return sortEventsOldestFirst(
+    events.filter((event) => {
+      return new Date(event.startsAt).getTime() >= now.getTime();
+    }),
+  );
+}
+
+export async function getPastEvents(): Promise<LiveEvent[]> {
+  const events = await getLiveEvents();
+  const now = new Date();
+
+  return sortEventsNewestFirst(
+    events.filter((event) => {
+      return new Date(event.startsAt).getTime() < now.getTime();
+    }),
+  );
+}
+
+export function getEventStatusLabel(event: LiveEvent): string {
   if (event.statusLabel) {
     return event.statusLabel;
   }
 
-  if (event.status) {
-    return statusLabels[event.status];
+  switch (event.status) {
+    case "available":
+      return "Biglietti disponibili";
+    case "sold-out":
+      return "Sold out";
+    case "coming-soon":
+      return "In arrivo";
+    case "free-entry":
+      return "Ingresso libero";
+    case "cancelled":
+      return "Annullato";
+    default:
+      return "Info evento";
   }
-
-  if (event.ticketUrl) {
-    return "Biglietti disponibili";
-  }
-
-  return "Info in arrivo";
-}
-
-export function getUpcomingEvents(events: LiveEvent[]) {
-  const now = Date.now();
-
-  return events
-    .filter((event) => getEventTime(event) >= now)
-    .sort(
-      (firstEvent, secondEvent) =>
-        getEventTime(firstEvent) - getEventTime(secondEvent),
-    );
-}
-
-export function getPastEvents(events: LiveEvent[]) {
-  const now = Date.now();
-
-  return events
-    .filter((event) => getEventTime(event) < now)
-    .sort(
-      (firstEvent, secondEvent) =>
-        getEventTime(secondEvent) - getEventTime(firstEvent),
-    );
-}
-
-function mergeEvents(apiEvents: LiveEvent[], localEvents: LiveEvent[]) {
-  const eventsById = new Map<string, LiveEvent>();
-
-  for (const event of localEvents) {
-    eventsById.set(event.id, event);
-  }
-
-  for (const event of apiEvents) {
-    const localOverride = eventsById.get(event.id);
-
-    eventsById.set(event.id, {
-      ...event,
-      ...localOverride,
-      gallery: localOverride?.gallery ?? event.gallery,
-      introVideoUrl: localOverride?.introVideoUrl ?? event.introVideoUrl,
-      introVideoEmbedUrl:
-        localOverride?.introVideoEmbedUrl ?? event.introVideoEmbedUrl,
-      image: localOverride?.image ?? event.image,
-      mapsUrl: localOverride?.mapsUrl ?? event.mapsUrl,
-      description: localOverride?.description ?? event.description,
-    });
-  }
-
-  return [...eventsById.values()].sort(
-    (firstEvent, secondEvent) =>
-      getEventTime(firstEvent) - getEventTime(secondEvent),
-  );
-}
-
-export async function getLiveEvents() {
-  const bandsintownEvents = await getBandsintownEvents();
-
-  return mergeEvents(bandsintownEvents, fallbackEvents);
-}
-
-export async function getLiveEvent(slug: string) {
-  const events = await getLiveEvents();
-
-  return events.find((event) => event.slug === slug);
 }

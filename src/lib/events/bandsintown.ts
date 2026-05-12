@@ -1,10 +1,4 @@
-import type { LiveEvent, LiveEventStatus } from "@/types/event";
-
-type BandsintownArtist = {
-  name?: string;
-  image_url?: string;
-  thumb_url?: string;
-};
+import type { LiveEvent } from "@/types/event";
 
 type BandsintownOffer = {
   type?: string;
@@ -20,108 +14,103 @@ type BandsintownVenue = {
   street_address?: string;
   latitude?: string;
   longitude?: string;
+  timezone?: string;
+  type?: string;
 };
 
 type BandsintownEvent = {
-  id?: string;
-  title?: string;
-  datetime?: string;
-  description?: string;
+  id: string;
+  artist_id?: string;
   url?: string;
-  venue?: BandsintownVenue;
-  offers?: BandsintownOffer[];
+  datetime?: string;
+  title?: string;
+  description?: string;
   lineup?: string[];
-  artist?: BandsintownArtist;
-  artists?: BandsintownArtist[];
+  offers?: BandsintownOffer[];
+  venue?: BandsintownVenue;
 };
+
+const BANDSINTOWN_API_BASE = "https://rest.bandsintown.com";
 
 function slugify(value: string) {
   return value
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/&/g, "and")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
 
-function getTicketOffer(event: BandsintownEvent) {
-  return event.offers?.find((offer) => offer.url) ?? null;
+function getTicketUrl(event: BandsintownEvent) {
+  const availableOffer = event.offers?.find((offer) => {
+    return offer.url && offer.status !== "unavailable";
+  });
+
+  return availableOffer?.url ?? event.url;
 }
 
-function getEventStatus(event: BandsintownEvent): {
-  status: LiveEventStatus;
-  statusLabel: string;
-} {
-  const ticketOffer = getTicketOffer(event);
-  const rawStatus = ticketOffer?.status?.toLowerCase();
-
-  if (rawStatus?.includes("sold")) {
-    return {
-      status: "sold-out",
-      statusLabel: "Sold out",
-    };
+function getEventTitle(event: BandsintownEvent, artistName: string) {
+  if (event.title?.trim()) {
+    return event.title.trim();
   }
 
-  if (ticketOffer?.url) {
-    return {
-      status: "available",
-      statusLabel: "Biglietti disponibili",
-    };
+  const venueName = event.venue?.name?.trim();
+
+  if (venueName) {
+    return `${artistName} live @ ${venueName}`;
   }
 
-  return {
-    status: "coming-soon",
-    statusLabel: "Info in arrivo",
-  };
+  return `${artistName} live`;
 }
 
-function getEventImage(event: BandsintownEvent) {
-  return (
-    event.artist?.image_url ??
-    event.artist?.thumb_url ??
-    event.artists?.[0]?.image_url ??
-    event.artists?.[0]?.thumb_url
-  );
-}
-
-function normalizeBandsintownEvent(event: BandsintownEvent): LiveEvent | null {
+function normalizeBandsintownEvent(
+  event: BandsintownEvent,
+  artistName: string,
+): LiveEvent | null {
   if (!event.id || !event.datetime) {
     return null;
   }
 
+  const title = getEventTitle(event, artistName);
   const venue = event.venue;
-  const ticketOffer = getTicketOffer(event);
-  const { status, statusLabel } = getEventStatus(event);
+  const city = venue?.city?.trim();
+  const country = venue?.country?.trim();
+  const venueName = venue?.name?.trim();
 
-  const title =
-    event.title ??
-    ["JeeC Live", venue?.city].filter(Boolean).join(" · ") ??
-    "JeeC Live";
+  const slugBase = [title, city, country, event.datetime.slice(0, 10), event.id]
+    .filter(Boolean)
+    .join(" ");
 
-  const citySlug = venue?.city ? slugify(venue.city) : "live";
-  const dateSlug = event.datetime.slice(0, 10);
-  const slug = slugify(`${title}-${citySlug}-${dateSlug}-${event.id}`);
+  const latitude = venue?.latitude ? Number(venue.latitude) : undefined;
+  const longitude = venue?.longitude ? Number(venue.longitude) : undefined;
+
+  const mapsUrl =
+    venueName || city
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          [venueName, city, venue?.region, country].filter(Boolean).join(", "),
+        )}`
+      : undefined;
 
   return {
-    id: event.id,
-    slug,
+    id: `bandsintown-${event.id}`,
+    slug: slugify(slugBase),
     title,
     startsAt: event.datetime,
-    venueName: venue?.name,
-    city: venue?.city,
+    timezone: venue?.timezone,
+    venueName,
+    city,
     region: venue?.region,
-    country: venue?.country,
+    country,
     address: venue?.street_address,
-    latitude: venue?.latitude ? Number(venue.latitude) : undefined,
-    longitude: venue?.longitude ? Number(venue.longitude) : undefined,
+    latitude: Number.isFinite(latitude) ? latitude : undefined,
+    longitude: Number.isFinite(longitude) ? longitude : undefined,
+    mapsUrl,
     description: event.description,
-    image: getEventImage(event),
-    ticketUrl: ticketOffer?.url,
+    ticketUrl: getTicketUrl(event),
     bandsintownUrl: event.url,
-    lineup: event.lineup,
-    status,
-    statusLabel,
+    lineup: event.lineup ?? [artistName],
+    status: getTicketUrl(event) ? "available" : "coming-soon",
+    statusLabel: getTicketUrl(event) ? "Biglietti disponibili" : "In arrivo",
   };
 }
 
@@ -130,45 +119,63 @@ export async function getBandsintownEvents(): Promise<LiveEvent[]> {
   const appId = process.env.BANDSINTOWN_APP_ID;
 
   if (!artistName || !appId) {
+    console.error("[Bandsintown] Missing env vars", {
+      artistName,
+      hasAppId: Boolean(appId),
+    });
+
     return [];
   }
 
   const url = new URL(
-    `https://rest.bandsintown.com/artists/${encodeURIComponent(
-      artistName,
-    )}/events`,
+    `/artists/${encodeURIComponent(artistName)}/events`,
+    BANDSINTOWN_API_BASE,
   );
 
   url.searchParams.set("app_id", appId);
-  url.searchParams.set("date", "upcoming");
+  url.searchParams.set("date", "all");
+
+  console.log("[Bandsintown] artistName:", artistName);
+  console.log("[Bandsintown] appId exists:", Boolean(appId));
+  console.log("[Bandsintown] URL:", url.toString());
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(url.toString(), {
       next: {
-        revalidate: 60 * 60,
+        revalidate: 60 * 30,
       },
     });
 
-    if (!response.ok) {
-      console.warn(
-        `Bandsintown API returned ${response.status}: ${response.statusText}`,
-      );
+    console.log("[Bandsintown] status:", response.status, response.statusText);
 
+    if (!response.ok) {
+      console.error(
+        `[Bandsintown] Request failed: ${response.status} ${response.statusText}`,
+      );
       return [];
     }
 
-    const data = (await response.json()) as BandsintownEvent[];
+    const data = (await response.json()) as
+      | BandsintownEvent[]
+      | { error?: string };
 
     if (!Array.isArray(data)) {
+      console.error("[Bandsintown] Unexpected response:", data);
       return [];
     }
 
-    return data
-      .map(normalizeBandsintownEvent)
-      .filter((event): event is LiveEvent => Boolean(event));
-  } catch (error) {
-    console.warn("Unable to fetch Bandsintown events.", error);
+    console.log("[Bandsintown] raw data:", data);
+    console.log("[Bandsintown] events count:", data.length);
 
+    const normalizedEvents = data
+      .map((event) => normalizeBandsintownEvent(event, artistName))
+      .filter((event): event is LiveEvent => Boolean(event));
+
+    console.log("[Bandsintown] normalized count:", normalizedEvents.length);
+
+    return normalizedEvents;
+  } catch (error) {
+    console.error("[Bandsintown] Fetch failed:", error);
     return [];
   }
 }
