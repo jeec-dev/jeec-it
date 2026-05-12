@@ -205,6 +205,31 @@ export function InteractiveCover() {
   }, []);
 
   useEffect(() => {
+    if (!canClaimFinalReward) {
+      return;
+    }
+
+    const alreadyUnlocked = window.localStorage.getItem(finalRewardUnlockedKey);
+
+    if (alreadyUnlocked === "true") {
+      return;
+    }
+
+    window.localStorage.setItem(finalRewardUnlockedKey, "true");
+    setSelectedHotspotId(null);
+    setIsRewardSequencePlaying(true);
+
+    const timeoutId = window.setTimeout(() => {
+      setIsRewardSequencePlaying(false);
+      setIsRewardDialogOpen(true);
+    }, 2200);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [canClaimFinalReward]);
+
+  useEffect(() => {
     writeArcadeCookieState({
       discoveredIds,
       finalRewardClaimed: hasClaimedFinalReward,
