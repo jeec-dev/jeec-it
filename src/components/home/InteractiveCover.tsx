@@ -15,6 +15,15 @@ import { HotspotDetailPanel } from "@/components/home/HotspotDetailPanel";
 import { AchievementToast } from "@/components/home/AchievementToast";
 import styles from "./InteractiveCover.module.css";
 
+type HotspotStyle = CSSProperties & {
+  "--hotspot-left": string;
+  "--hotspot-top": string;
+  "--hotspot-size": string;
+  "--hotspot-opacity": number;
+  "--hotspot-shadow": string;
+  "--hotspot-ring-opacity": number;
+};
+
 const coverImageSrc = "/images/covers/Copertina_NEW_TQCNTHD.jpg";
 const storageKey = "jeec:new-cover-discoveries";
 const finalRewardClaimedKey = "jeec:new-cover-final-reward-claimed";
@@ -26,18 +35,8 @@ const FINAL_REWARD = {
   fileName: "JeeC-NEW-Digital-Copy.zip",
 };
 
-type HotspotStyle = CSSProperties & {
-  "--hotspot-left": string;
-  "--hotspot-top": string;
-  "--hotspot-size": string;
-  "--hotspot-opacity": number;
-  "--hotspot-shadow": string;
-  "--hotspot-ring-opacity": number;
-};
-
-const [isRewardSequencePlaying, setIsRewardSequencePlaying] = useState(false);
-
 export function InteractiveCover() {
+  const [isRewardSequencePlaying, setIsRewardSequencePlaying] = useState(false);
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(
     null,
   );
@@ -77,31 +76,6 @@ export function InteractiveCover() {
     !hasClaimedFinalReward;
 
   useEffect(() => {
-    window.requestAnimationFrame(() => {
-      const storedValue = window.localStorage.getItem(storageKey);
-
-      if (storedValue) {
-        try {
-          const parsedValue = JSON.parse(storedValue);
-
-          if (Array.isArray(parsedValue)) {
-            setDiscoveredIds(
-              parsedValue.filter(
-                (item): item is string => typeof item === "string",
-              ),
-            );
-          }
-        } catch {
-          window.localStorage.removeItem(storageKey);
-        }
-      }
-
-      const claimedReward = window.localStorage.getItem(finalRewardClaimedKey);
-      setHasClaimedFinalReward(claimedReward === "true");
-    });
-  }, []);
-
-  useEffect(() => {
     if (!canClaimFinalReward) {
       return;
     }
@@ -113,7 +87,17 @@ export function InteractiveCover() {
     }
 
     window.localStorage.setItem(finalRewardUnlockedKey, "true");
-    openFinalRewardSequence();
+    setSelectedHotspotId(null);
+    setIsRewardSequencePlaying(true);
+
+    const timeoutId = window.setTimeout(() => {
+      setIsRewardSequencePlaying(false);
+      setIsRewardDialogOpen(true);
+    }, 2200);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
   }, [canClaimFinalReward]);
 
   function handleHotspotClick(hotspot: Hotspot) {
@@ -219,20 +203,6 @@ export function InteractiveCover() {
         10 + proximity * 20
       }px rgba(241, 187, 223, ${glow})`,
     };
-  }
-
-  function openFinalRewardSequence() {
-    if (!canClaimFinalReward) {
-      return;
-    }
-
-    setSelectedHotspotId(null);
-    setIsRewardSequencePlaying(true);
-
-    window.setTimeout(() => {
-      setIsRewardSequencePlaying(false);
-      setIsRewardDialogOpen(true);
-    }, 2200);
   }
 
   return (
