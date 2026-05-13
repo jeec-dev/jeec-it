@@ -5,8 +5,12 @@ import styles from "./EventsPage.module.css";
 
 export const metadata = {
   title: "Eventi",
+<<<<<<< Updated upstream
   description:
     "Date live, biglietti, dettagli evento e coordinate live di JeeC.",
+=======
+  description: "Date live, eventi, biglietti e archivio concerti di JeeC.",
+>>>>>>> Stashed changes
 };
 
 export const dynamic = "force-dynamic";
