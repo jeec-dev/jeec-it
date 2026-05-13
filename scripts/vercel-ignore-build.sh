@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 
-echo "VERCEL_ENV: ${VERCEL_ENV}"
-echo "VERCEL_GIT_COMMIT_REF: ${VERCEL_GIT_COMMIT_REF}"
+set -euo pipefail
 
-if [[ "$VERCEL_ENV" == "production" && "$VERCEL_GIT_COMMIT_REF" == "main" ]]; then
-  echo "✅ Production build allowed for branch: main"
+echo "VERCEL_ENV=${VERCEL_ENV:-}"
+echo "VERCEL_GIT_COMMIT_REF=${VERCEL_GIT_COMMIT_REF:-}"
+
+if [ "${VERCEL_GIT_COMMIT_REF:-}" = "main" ]; then
+  echo "✅ Build allowed for main"
   exit 1
 fi
 
-if [[ "$VERCEL_ENV" == "preview" && "$VERCEL_GIT_COMMIT_REF" == "staging" ]]; then
-  echo "✅ Preview build allowed for branch: staging"
+if [ "${VERCEL_GIT_COMMIT_REF:-}" = "staging" ]; then
+  echo "✅ Build allowed for staging"
   exit 1
 fi
 
-echo "🛑 Build ignored for env=${VERCEL_ENV}, branch=${VERCEL_GIT_COMMIT_REF}"
+echo "⏭️ Build skipped for branch ${VERCEL_GIT_COMMIT_REF:-unknown}"
 exit 0

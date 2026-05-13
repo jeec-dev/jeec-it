@@ -6,7 +6,7 @@ import styles from "./DiaryIndex.module.css";
 export const metadata = {
   title: "Diario di Jay",
   description:
-    "Il diario di bordo fantasy di Jay: un viaggio narrativo tra passato, futuro, amore, perdita e frammenti musicali.",
+    "Il Diario di Jay: racconto narrativo e fantasy collegato all’universo musicale di Pensieri Ultimi, il prossimo album di JeeC.",
 };
 
 export default async function DiarioDiJayPage() {
