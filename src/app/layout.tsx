@@ -6,25 +6,12 @@ import { Footer } from "@/components/layout/Footer";
 const siteUrl = "https://www.jeec.it";
 
 export const metadata: Metadata = {
-<<<<<<< Updated upstream
-  metadataBase: new URL("https://www.jeec.it"),
-=======
   metadataBase: new URL(siteUrl),
->>>>>>> Stashed changes
   title: {
     default: "JeeC — Official Website",
     template: "%s | JeeC",
   },
   description:
-<<<<<<< Updated upstream
-    "Sito ufficiale di JeeC: musica, eventi, Diario di Jay, media kit e universo NEW.",
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-icon.png", type: "image/png" }],
-=======
     "Sito ufficiale di JeeC: musica, eventi live, Diario di Jay, media kit, contatti e universo NEW.",
   applicationName: "JeeC",
   authors: [{ name: "JeeC", url: siteUrl }],
@@ -33,6 +20,13 @@ export const metadata: Metadata = {
   category: "music",
   alternates: {
     canonical: siteUrl,
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
   },
   openGraph: {
     type: "website",
@@ -68,7 +62,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
       "max-video-preview": -1,
     },
->>>>>>> Stashed changes
   },
 };
 
