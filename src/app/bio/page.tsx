@@ -51,7 +51,7 @@ const stats = [
 ];
 
 export const metadata = {
-  title: "Bio | JeeC",
+  title: "Bio",
   description:
     "Biografia artistica di JeeC: origini, percorso musicale, immaginario narrativo e progetto NEW.",
 };

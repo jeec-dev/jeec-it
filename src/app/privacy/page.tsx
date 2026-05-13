@@ -2,7 +2,7 @@ import Link from "next/link";
 import styles from "./Legal.module.css";
 
 export const metadata = {
-  title: "Privacy Policy | JeeC",
+  title: "Privacy Policy",
   description:
     "Informativa privacy del sito jeec.it: dati trattati, finalità, basi giuridiche, cookie, servizi terzi e diritti degli utenti.",
 };

@@ -15,6 +15,11 @@ function getAlbumTime(album: (typeof albums)[number]) {
   return new Date(`${album.year}-01-01`).getTime();
 }
 
+export const metadata = {
+  title: "Musica",
+  description: "Discografia ufficiale di JeeC.",
+};
+
 export default function MusicPage() {
   const orderedAlbums = [...albums].sort(
     (firstAlbum, secondAlbum) =>

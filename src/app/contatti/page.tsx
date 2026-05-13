@@ -45,7 +45,7 @@ const socialLinks = [
 ];
 
 export const metadata = {
-  title: "Contatti | JeeC",
+  title: "Contatti",
   description:
     "Contatti professionali per booking, media, collaborazioni e richieste legate a JeeC.",
 };
