@@ -442,10 +442,9 @@ export function InteractiveCover() {
         <div className={styles.winOverlay} role="status" aria-live="polite">
           <div className={styles.winDialog}>
             <div className={styles.winBadge}>13/13</div>
-            <p className={styles.winKicker}>Arcade clear</p>
+            <p className={styles.winKicker}>Arcade clear</p>0
             <h2>NEW archive unlocked</h2>
             <p>Conversione XP in corso...</p>
-
             <div className={styles.winProgressTrack}>
               <div className={styles.winProgressFill} />
             </div>
