@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styles from "./Contacts.module.css";
+import { ContactForm } from "./ContactForm";
 
 const contactChannels = [
   {
@@ -75,6 +76,8 @@ export default function ContactsPage() {
             </Link>
           </div>
         </section>
+
+        <ContactForm />
 
         <section className={styles.channels} aria-label="Canali di contatto">
           {contactChannels.map((channel) => (
