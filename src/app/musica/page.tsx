@@ -14,10 +14,6 @@ function getAlbumTime(album: (typeof albums)[number]) {
 
   return new Date(`${album.year}-01-01`).getTime();
 }
-export const metadata = {
-  title: "Musica",
-  description: "La discografia ufficiale di JeeC.",
-};
 
 export const metadata = {
   title: "Musica",
