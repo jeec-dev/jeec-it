@@ -25,6 +25,11 @@ export const metadata = {
     "Discografia ufficiale di JeeC: album, singoli, tracce, player, testi, credits e release dell’universo NEW.",
 };
 
+export const metadata = {
+  title: "Musica",
+  description: "Discografia ufficiale di JeeC.",
+};
+
 export default function MusicPage() {
   const orderedAlbums = [...albums].sort(
     (firstAlbum, secondAlbum) =>
