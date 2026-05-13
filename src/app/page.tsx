@@ -77,6 +77,21 @@ function HomeVideoHero() {
   );
 }
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  name: "JeeC",
+  alternateName: "Giosuè Rasi",
+  url: "https://www.jeec.it",
+  genre: ["Pop", "Hip-Hop", "Rap"],
+  sameAs: [
+    "https://open.spotify.com/artist/3m21RYc8hGmj86j7758WEI",
+    "https://www.youtube.com/@jeec",
+    "https://www.instagram.com/sonojeec",
+    "https://soundcloud.com/sonojeec",
+  ],
+};
+
 export default async function HomePage() {
   const events = await getLiveEvents();
   const now = new Date();
@@ -89,6 +104,11 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-[var(--jeec-space-black)] px-6 py-12 text-[var(--jeec-moon-white)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <HomeVideoHero />
 
       <section

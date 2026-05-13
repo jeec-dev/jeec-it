@@ -14,6 +14,16 @@ function getAlbumTime(album: (typeof albums)[number]) {
 
   return new Date(`${album.year}-01-01`).getTime();
 }
+export const metadata = {
+  title: "Musica",
+  description: "La discografia ufficiale di JeeC.",
+};
+
+export const metadata = {
+  title: "Musica",
+  description:
+    "Discografia ufficiale di JeeC: album, singoli, tracce, player, testi, credits e release dell’universo NEW.",
+};
 
 export const metadata = {
   title: "Musica",
