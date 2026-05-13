@@ -11,6 +11,13 @@ export const metadata: Metadata = {
   },
   description:
     "Sito ufficiale di JeeC: musica, eventi, Diario di Jay, media kit e universo NEW.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({
