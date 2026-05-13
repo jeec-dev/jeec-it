@@ -2,7 +2,7 @@ import Link from "next/link";
 import styles from "./Legal.module.css";
 
 export const metadata = {
-  title: "Termini di servizio | JeeC",
+  title: "Termini di servizio",
   description:
     "Termini di utilizzo del sito jeec.it: contenuti, link esterni, download, proprietà intellettuale e limitazioni.",
 };

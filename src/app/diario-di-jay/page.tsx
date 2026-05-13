@@ -4,7 +4,7 @@ import { getDiaryEntries } from "@/lib/diary";
 import styles from "./DiaryIndex.module.css";
 
 export const metadata = {
-  title: "Diario di Jay | JeeC",
+  title: "Diario di Jay",
   description:
     "Il diario di bordo fantasy di Jay: un viaggio narrativo tra passato, futuro, amore, perdita e frammenti musicali.",
 };

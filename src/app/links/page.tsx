@@ -3,7 +3,7 @@ import { featuredLinks, linktreeProfile, socialLinks } from "@/data/links";
 import styles from "./Links.module.css";
 
 export const metadata = {
-  title: "Links | JeeC",
+  title: "Links",
   description:
     "Tutti i link ufficiali di JeeC: musica, video, eventi, Diario di Jay, media kit e contatti.",
 };

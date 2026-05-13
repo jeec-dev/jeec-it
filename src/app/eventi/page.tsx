@@ -4,7 +4,7 @@ import { getEventStatusLabel, getLiveEvents } from "@/lib/events/events";
 import styles from "./EventsPage.module.css";
 
 export const metadata = {
-  title: "Eventi | JeeC",
+  title: "Eventi",
   description:
     "Date live, biglietti, dettagli evento e coordinate live di JeeC.",
 };
