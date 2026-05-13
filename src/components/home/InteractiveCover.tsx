@@ -202,7 +202,7 @@ export function InteractiveCover() {
         finalRewardUnlocked: unlockedReward,
       });
     });
-  }, []);
+  }, [discoveredIds, hasClaimedFinalReward]);
 
   useEffect(() => {
     if (!canClaimFinalReward) {
@@ -216,16 +216,20 @@ export function InteractiveCover() {
     }
 
     window.localStorage.setItem(finalRewardUnlockedKey, "true");
-    setSelectedHotspotId(null);
-    setIsRewardSequencePlaying(true);
 
-    const timeoutId = window.setTimeout(() => {
+    const startSequenceTimeoutId = window.setTimeout(() => {
+      setSelectedHotspotId(null);
+      setIsRewardSequencePlaying(true);
+    }, 0);
+
+    const openDialogTimeoutId = window.setTimeout(() => {
       setIsRewardSequencePlaying(false);
       setIsRewardDialogOpen(true);
     }, 2200);
 
     return () => {
-      window.clearTimeout(timeoutId);
+      window.clearTimeout(startSequenceTimeoutId);
+      window.clearTimeout(openDialogTimeoutId);
     };
   }, [canClaimFinalReward]);
 
