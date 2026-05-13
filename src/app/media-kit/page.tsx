@@ -38,7 +38,7 @@ const links = [
 ];
 
 export const metadata = {
-  title: "Media Kit | JeeC",
+  title: "Media Kit",
   description:
     "Bio, materiali stampa, link ufficiali e contatti professionali per JeeC.",
 };
