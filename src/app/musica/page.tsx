@@ -1,13 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { albums } from "@/data/albums";
+import { getCatalogAlbums } from "@/lib/music/catalog";
 import styles from "./MusicCatalog.module.css";
+import { Album } from "@/types/music";
 
 function getTypeLabel(type: string) {
   return type.toUpperCase();
 }
 
-function getAlbumTime(album: (typeof albums)[number]) {
+function getAlbumTime(album: Album) {
   if (album.releaseDate) {
     return new Date(album.releaseDate).getTime();
   }
@@ -21,7 +22,9 @@ export const metadata = {
     "Discografia ufficiale di JeeC: album, singoli, tracce, player, testi, credits e release dell’universo NEW.",
 };
 
-export default function MusicPage() {
+export default async function MusicPage() {
+  const albums = await getCatalogAlbums();
+
   const orderedAlbums = [...albums].sort(
     (firstAlbum, secondAlbum) =>
       getAlbumTime(secondAlbum) - getAlbumTime(firstAlbum),
