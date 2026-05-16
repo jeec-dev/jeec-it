@@ -1,5 +1,5 @@
 import { albums as staticAlbums } from "@/data/albums";
-import type { Album } from "@/types/music";
+import type { Album, Track } from "@/types/music";
 import { dbReleaseToAlbum } from "@/lib/music/catalog-adapter";
 import {
   getDbCatalogReleaseBySlug,
@@ -54,4 +54,343 @@ export async function getCatalogAlbumSlugs(): Promise<string[]> {
   const albums = await getCatalogAlbums();
 
   return albums.map((album) => album.slug);
+}
+
+export type CatalogListeningLink = {
+  key: string;
+  sourceCode: string;
+  sourceName: string;
+  label: string;
+  url: string;
+  isPrimary: boolean;
+  order: number;
+  supportsEmbed: boolean;
+  embedUrl?: string;
+};
+
+export type CatalogRelatedElement = {
+  id: string;
+  type:
+    | "release"
+    | "video"
+    | "lyrics"
+    | "diary"
+    | "merch"
+    | "broadcast"
+    | "event";
+  title: string;
+  description?: string;
+  href: string;
+  eyebrow?: string;
+};
+
+export type CatalogTrackPageData = {
+  album: Album;
+  track: Track;
+  listeningLinks: CatalogListeningLink[];
+  relatedElements: CatalogRelatedElement[];
+};
+
+type TrackWithKnownLinks = Track & {
+  spotifyUrl?: string;
+  appleMusicUrl?: string;
+  youtubeUrl?: string;
+  youtubeMusicUrl?: string;
+  deezerUrl?: string;
+  tidalUrl?: string;
+  soundcloudUrl?: string;
+  soundCloudUrl?: string;
+  geniusUrl?: string;
+  lyricsUrl?: string;
+};
+
+const platformPriority = [
+  "deezer",
+  "apple_music",
+  "youtube",
+  "youtube_music",
+  "tidal",
+  "soundcloud",
+  "spotify",
+];
+
+function getPlatformOrder(sourceCode: string, fallbackOrder: number) {
+  const index = platformPriority.indexOf(sourceCode);
+
+  if (index === -1) {
+    return fallbackOrder + platformPriority.length;
+  }
+
+  return index;
+}
+
+function getYouTubeEmbedUrl(url: string) {
+  try {
+    const parsedUrl = new URL(url);
+    const videoId = parsedUrl.hostname.includes("youtu.be")
+      ? parsedUrl.pathname.replace("/", "")
+      : parsedUrl.searchParams.get("v");
+
+    if (!videoId) {
+      return undefined;
+    }
+
+    return `https://www.youtube-nocookie.com/embed/${videoId}`;
+  } catch {
+    return undefined;
+  }
+}
+
+function getSoundCloudEmbedUrl(url: string) {
+  try {
+    const encodedUrl = encodeURIComponent(url);
+
+    return `https://w.soundcloud.com/player/?url=${encodedUrl}&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`;
+  } catch {
+    return undefined;
+  }
+}
+
+function getStableEmbedUrl(sourceCode: string, url: string) {
+  if (sourceCode === "youtube" || sourceCode === "youtube_music") {
+    return getYouTubeEmbedUrl(url);
+  }
+
+  if (sourceCode === "soundcloud") {
+    return getSoundCloudEmbedUrl(url);
+  }
+
+  return undefined;
+}
+
+function buildListeningLinksFromDbTrack(track: {
+  externalLinks: Array<{
+    id: string;
+    type: string;
+    label: string;
+    url: string;
+    isPrimary: boolean;
+    order: number;
+    source: {
+      code: string;
+      name: string;
+    };
+  }>;
+}): CatalogListeningLink[] {
+  return track.externalLinks
+    .filter((link) => link.type === "STREAMING")
+    .map((link) => {
+      const sourceCode = link.source.code;
+      const embedUrl = getStableEmbedUrl(sourceCode, link.url);
+
+      return {
+        key: link.id,
+        sourceCode,
+        sourceName: link.source.name,
+        label: link.label,
+        url: link.url,
+        isPrimary: link.isPrimary,
+        order: getPlatformOrder(sourceCode, link.order),
+        supportsEmbed: Boolean(embedUrl),
+        embedUrl,
+      };
+    })
+    .sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
+}
+
+function buildListeningLinksFromStaticTrack(
+  track: TrackWithKnownLinks,
+): CatalogListeningLink[] {
+  const rawLinks: Array<{
+    sourceCode: string;
+    sourceName: string;
+    label: string;
+    url?: string;
+  }> = [
+    {
+      sourceCode: "deezer",
+      sourceName: "Deezer",
+      label: "Ascolta su Deezer",
+      url: track.deezerUrl,
+    },
+    {
+      sourceCode: "apple_music",
+      sourceName: "Apple Music",
+      label: "Ascolta su Apple Music",
+      url: track.appleMusicUrl,
+    },
+    {
+      sourceCode: "youtube_music",
+      sourceName: "YouTube Music",
+      label: "Ascolta su YouTube Music",
+      url: track.youtubeMusicUrl,
+    },
+    {
+      sourceCode: "youtube",
+      sourceName: "YouTube",
+      label: "Guarda/ascolta su YouTube",
+      url: track.youtubeUrl,
+    },
+    {
+      sourceCode: "tidal",
+      sourceName: "TIDAL",
+      label: "Ascolta su TIDAL",
+      url: track.tidalUrl,
+    },
+    {
+      sourceCode: "soundcloud",
+      sourceName: "SoundCloud",
+      label: "Ascolta su SoundCloud",
+      url: track.soundcloudUrl ?? track.soundCloudUrl,
+    },
+    {
+      sourceCode: "spotify",
+      sourceName: "Spotify",
+      label: "Apri su Spotify",
+      url: track.spotifyUrl,
+    },
+  ];
+
+  return rawLinks
+    .filter((link): link is typeof link & { url: string } => Boolean(link.url))
+    .map((link, index) => {
+      const embedUrl = getStableEmbedUrl(link.sourceCode, link.url);
+
+      return {
+        key: `${link.sourceCode}-${index}`,
+        sourceCode: link.sourceCode,
+        sourceName: link.sourceName,
+        label: link.label,
+        url: link.url,
+        isPrimary: index === 0,
+        order: getPlatformOrder(link.sourceCode, index),
+        supportsEmbed: Boolean(embedUrl),
+        embedUrl,
+      };
+    })
+    .sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
+}
+
+function buildRelatedElements(
+  album: Album,
+  track: TrackWithKnownLinks,
+): CatalogRelatedElement[] {
+  const relatedElements: CatalogRelatedElement[] = [
+    {
+      id: `release-${album.slug}`,
+      type: "release",
+      title: album.title,
+      description: "Release ufficiale che contiene questa traccia.",
+      href: `/musica/${album.slug}`,
+      eyebrow: "Release",
+    },
+  ];
+
+  if (track.youtubeUrl) {
+    relatedElements.push({
+      id: `video-${track.slug}`,
+      type: "video",
+      title: `Video / visual correlato a ${track.title}`,
+      description:
+        "I video saranno separati nella nuova sezione Video nelle prossime fasi.",
+      href: track.youtubeUrl,
+      eyebrow: "Video",
+    });
+  }
+
+  if (track.geniusUrl || track.lyricsUrl) {
+    relatedElements.push({
+      id: `lyrics-${track.slug}`,
+      type: "lyrics",
+      title: "Lyrics / testo",
+      description: "Testo o fonte lyrics collegata alla traccia.",
+      href: track.geniusUrl ?? track.lyricsUrl ?? "#",
+      eyebrow: "Lyrics",
+    });
+  }
+
+  return relatedElements;
+}
+
+export async function getCatalogTrackPageData(
+  albumSlug: string,
+  trackSlug: string,
+): Promise<CatalogTrackPageData | null> {
+  try {
+    const dbRelease = await getDbCatalogReleaseBySlug(albumSlug);
+
+    if (dbRelease) {
+      const album = dbReleaseToAlbum(dbRelease);
+      const track = album.tracks.find((item) => item.slug === trackSlug);
+      const dbTrack = dbRelease.tracks.find((item) => item.slug === trackSlug);
+
+      if (track && dbTrack) {
+        const staticAlbum = staticAlbums.find(
+          (item) => item.slug === albumSlug,
+        );
+        const staticTrack = staticAlbum?.tracks.find(
+          (item) => item.slug === trackSlug,
+        ) as TrackWithKnownLinks | undefined;
+
+        const dbListeningLinks = buildListeningLinksFromDbTrack(dbTrack);
+        const staticListeningLinks = staticTrack
+          ? buildListeningLinksFromStaticTrack(staticTrack)
+          : [];
+
+        const listeningLinks =
+          dbListeningLinks.length > 0 ? dbListeningLinks : staticListeningLinks;
+
+        return {
+          album,
+          track,
+          listeningLinks,
+          relatedElements: buildRelatedElements(
+            album,
+            (staticTrack ?? track) as TrackWithKnownLinks,
+          ),
+        };
+      }
+    }
+  } catch (error) {
+    if (
+      process.env.NODE_ENV === "development" &&
+      process.env.DB_CATALOG_DEBUG === "true"
+    ) {
+      console.warn("[Catalog] Falling back to static track page:", error);
+    }
+  }
+
+  const staticAlbum = staticAlbums.find((album) => album.slug === albumSlug);
+
+  if (!staticAlbum) {
+    return null;
+  }
+
+  const staticTrack = staticAlbum.tracks.find(
+    (track) => track.slug === trackSlug,
+  ) as TrackWithKnownLinks | undefined;
+
+  if (!staticTrack) {
+    return null;
+  }
+
+  return {
+    album: staticAlbum,
+    track: staticTrack,
+    listeningLinks: buildListeningLinksFromStaticTrack(staticTrack),
+    relatedElements: buildRelatedElements(staticAlbum, staticTrack),
+  };
+}
+
+export async function getCatalogTrackStaticParams(): Promise<
+  Array<{ albumSlug: string; trackSlug: string }>
+> {
+  const albums = await getCatalogAlbums();
+
+  return albums.flatMap((album) =>
+    album.tracks.map((track) => ({
+      albumSlug: album.slug,
+      trackSlug: track.slug,
+    })),
+  );
 }
