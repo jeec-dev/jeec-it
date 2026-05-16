@@ -12,6 +12,7 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "db:catalog:check": "tsx scripts/compare-catalog-db.ts",
     "postinstall": "prisma generate",
     "vercel-build": "prisma migrate deploy && next build",
     "prisma": {
