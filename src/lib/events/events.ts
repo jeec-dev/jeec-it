@@ -45,18 +45,12 @@ function sortEventsOldestFirst(events: LiveEvent[]): LiveEvent[] {
 }
 
 export async function getLiveEvents(): Promise<LiveEvent[]> {
-  console.log("[Events] getLiveEvents called");
-
   const bandsintownEvents = await getBandsintownEvents();
-
-  console.log("[Events] Bandsintown events:", bandsintownEvents.length);
 
   const events =
     bandsintownEvents.length > 0
       ? mergeEventsWithFallbackOverrides(bandsintownEvents, fallbackEvents)
       : fallbackEvents;
-
-  console.log("[Events] final events:", events.length);
 
   return sortEventsNewestFirst(events);
 }
