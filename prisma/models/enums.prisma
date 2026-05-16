@@ -22,3 +22,45 @@ enum VerificationStatus {
   REJECTED
   MANUAL
 }
+
+enum ExternalEntityType {
+  ARTIST
+  RELEASE
+  TRACK
+  VIDEO
+  EVENT
+  VENUE
+  PLAYLIST
+}
+
+enum ExternalLinkType {
+  STREAMING
+  VIDEO
+  LYRICS
+  TICKETS
+  SOCIAL
+  PRESS
+  STORE
+  OTHER
+}
+
+enum SyncStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+  PARTIAL
+}
+
+enum SyncIssueSeverity {
+  INFO
+  WARNING
+  ERROR
+}
+
+enum SyncIssueStatus {
+  OPEN
+  ACCEPTED_REMOTE
+  KEPT_LOCAL
+  IGNORED
+  RESOLVED
+}
