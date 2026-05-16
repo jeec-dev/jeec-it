@@ -1,0 +1,24 @@
+enum PublishStatus {
+  DRAFT
+  PRIVATE
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ReleaseType {
+  ALBUM
+  EP
+  SINGLE
+  DELUXE
+  COMPILATION
+  LIVE
+  DEMO
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  CONFLICT
+  REJECTED
+  MANUAL
+}
