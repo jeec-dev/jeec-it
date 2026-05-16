@@ -1,8 +1,10 @@
 // ======================================================
 // EXTERNAL INTEGRATIONS
 // Spotify, Apple Music, YouTube, Deezer, Bandsintown,
-// Eventbrite, MusicBrainz, Genius, etc.
-// These records validate/enrich the canonical catalog.
+// Eventbrite, MusicBrainz, Genius, Amazon Music, SoundCloud.
+//
+// External integrations enrich, validate and synchronize data.
+// They must not overwrite canonical JeeC editorial fields directly.
 // ======================================================
 
 model ExternalSource {
@@ -12,6 +14,145 @@ model ExternalSource {
   baseUrl   String?
   enabled   Boolean  @default(true)
 
+  identifiers ExternalIdentifier[]
+  links       ExternalLink[]
+  snapshots  ApiSnapshot[]
+  syncRuns   SyncRun[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ExternalIdentifier {
+  id         String @id @default(uuid())
+
+  sourceId   String
+  source     ExternalSource @relation(fields: [sourceId], references: [id])
+
+  entityType ExternalEntityType
+  externalId String
+  externalUrl String?
+
+  artistId   String?
+  artist     Artist?  @relation(fields: [artistId], references: [id])
+
+  releaseId  String?
+  release    Release? @relation(fields: [releaseId], references: [id])
+
+  trackId    String?
+  track      Track?   @relation(fields: [trackId], references: [id])
+
+  verificationStatus VerificationStatus @default(PENDING)
+  lastSyncedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceId, entityType, externalId])
+  @@index([entityType])
+  @@index([artistId])
+  @@index([releaseId])
+  @@index([trackId])
+  @@index([verificationStatus])
+}
+
+model ExternalLink {
+  id        String @id @default(uuid())
+
+  sourceId  String
+  source    ExternalSource @relation(fields: [sourceId], references: [id])
+
+  type      ExternalLinkType
+  label     String
+  url       String
+  isPrimary Boolean @default(false)
+  isPublic  Boolean @default(true)
+  order     Int     @default(0)
+
+  releaseId String?
+  release   Release? @relation(fields: [releaseId], references: [id])
+
+  trackId   String?
+  track     Track?   @relation(fields: [trackId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sourceId])
+  @@index([type])
+  @@index([releaseId])
+  @@index([trackId])
+  @@index([isPublic])
+}
+
+model SyncRun {
+  id        String @id @default(uuid())
+
+  sourceId  String
+  source    ExternalSource @relation(fields: [sourceId], references: [id])
+
+  status    SyncStatus @default(RUNNING)
+  startedAt DateTime   @default(now())
+  finishedAt DateTime?
+
+  summary   Json?
+  error     String?
+
+  snapshots ApiSnapshot[]
+  issues    SyncIssue[]
+
+  @@index([sourceId])
+  @@index([status])
+  @@index([startedAt])
+}
+
+model ApiSnapshot {
+  id          String @id @default(uuid())
+
+  sourceId    String
+  source      ExternalSource @relation(fields: [sourceId], references: [id])
+
+  syncRunId   String?
+  syncRun     SyncRun? @relation(fields: [syncRunId], references: [id])
+
+  entityType  ExternalEntityType
+  externalId  String?
+  payload     Json
+  payloadHash String?
+
+  fetchedAt   DateTime @default(now())
+
+  @@index([sourceId])
+  @@index([syncRunId])
+  @@index([entityType])
+  @@index([externalId])
+  @@index([fetchedAt])
+}
+
+model SyncIssue {
+  id          String @id @default(uuid())
+
+  syncRunId   String?
+  syncRun     SyncRun? @relation(fields: [syncRunId], references: [id])
+
+  sourceId    String?
+  entityType  ExternalEntityType
+  entityId    String?
+
+  fieldName   String?
+  localValue  String?
+  remoteValue String?
+
+  severity    SyncIssueSeverity @default(INFO)
+  status      SyncIssueStatus   @default(OPEN)
+
+  createdAt   DateTime @default(now())
+  resolvedAt  DateTime?
+
+  @@index([syncRunId])
+  @@index([sourceId])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([severity])
+  @@index([status])
 }

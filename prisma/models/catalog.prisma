@@ -12,6 +12,7 @@ model Artist {
   legalName String?
 
   releases  Release[]
+  externalIds ExternalIdentifier[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -33,6 +34,8 @@ model Release {
   artist      Artist        @relation(fields: [artistId], references: [id])
 
   tracks      Track[]
+  externalIds   ExternalIdentifier[]
+  externalLinks ExternalLink[]
 
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -48,6 +51,9 @@ model Track {
 
   releaseId   String
   release     Release  @relation(fields: [releaseId], references: [id])
+
+  externalIds   ExternalIdentifier[]
+  externalLinks ExternalLink[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
