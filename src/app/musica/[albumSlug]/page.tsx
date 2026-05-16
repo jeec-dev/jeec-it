@@ -3,6 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { albums } from "@/data/albums";
 import styles from "./AlbumDetail.module.css";
+import {
+  getCatalogAlbumBySlug,
+  getCatalogAlbumSlugs,
+} from "@/lib/music/catalog";
 
 type AlbumPageProps = {
   params: Promise<{
@@ -10,9 +14,11 @@ type AlbumPageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return albums.map((album) => ({
-    albumSlug: album.slug,
+export async function generateStaticParams() {
+  const slugs = await getCatalogAlbumSlugs();
+
+  return slugs.map((albumSlug) => ({
+    albumSlug,
   }));
 }
 
@@ -38,7 +44,7 @@ export async function generateMetadata({ params }: AlbumPageProps) {
 
 export default async function AlbumDetailPage({ params }: AlbumPageProps) {
   const { albumSlug } = await params;
-  const album = albums.find((item) => item.slug === albumSlug);
+  const album = await getCatalogAlbumBySlug(albumSlug);
 
   if (!album) {
     notFound();
