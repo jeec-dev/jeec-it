@@ -1,0 +1,17 @@
+// ======================================================
+// EXTERNAL INTEGRATIONS
+// Spotify, Apple Music, YouTube, Deezer, Bandsintown,
+// Eventbrite, MusicBrainz, Genius, etc.
+// These records validate/enrich the canonical catalog.
+// ======================================================
+
+model ExternalSource {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  baseUrl   String?
+  enabled   Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

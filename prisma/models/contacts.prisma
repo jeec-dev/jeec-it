@@ -1,0 +1,90 @@
+// ======================================================
+// CONTACTS & BROADCAST
+// Existing production models.
+//
+// These models power:
+// - /contatti server-side contact form
+// - saved contact requests
+// - future broadcast/newsletter signup
+// - future unsubscribe flow
+// - future admin review workflow
+//
+// IMPORTANT:
+// During the multi-file Prisma refactor, keep these models
+// structurally equivalent to the current production schema.
+// Do not rename fields or change column types here unless you
+// intentionally want a real database migration.
+// ======================================================
+
+model ContactMessage {
+  id             String   @id @default(uuid())
+
+  // Sender data from the public contact form.
+  name           String
+  email          String
+  topic          String
+  message        String
+
+  // Required privacy consent checkbox from /contatti.
+  consentPrivacy Boolean  @default(false)
+
+  // Internal workflow status.
+  // Suggested values for now:
+  // "new", "read", "replied", "archived", "spam"
+  //
+  // Kept as String instead of enum for now to avoid making
+  // the first schema refactor more invasive.
+  status         String   @default("new")
+
+  // Useful to distinguish future origins:
+  // "contact_form", "admin", "import", "api", etc.
+  source         String   @default("contact_form")
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([email])
+  @@index([topic])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model BroadcastSubscriber {
+  id                String    @id @default(uuid())
+
+  // Main subscriber identity.
+  email             String    @unique
+  name              String?
+
+  // Subscription lifecycle.
+  // Suggested values for now:
+  // "pending", "active", "unsubscribed", "bounced", "complained"
+  //
+  // Kept as String instead of enum for now to preserve flexibility
+  // and avoid premature migration complexity.
+  status            String    @default("pending")
+
+  // Origin of the subscription:
+  // "broadcast_form", "contact_form", "admin", "import", etc.
+  source            String    @default("broadcast_form")
+
+  // Marketing consent tracking.
+  consentMarketing  Boolean   @default(false)
+  consentAt         DateTime?
+
+  // Double opt-in / lifecycle dates.
+  confirmedAt       DateTime?
+  unsubscribedAt    DateTime?
+
+  // Token used by future unsubscribe links.
+  // Keep this unique so unsubscribe URLs can safely target one record.
+  unsubscribeToken  String    @unique
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
+}
