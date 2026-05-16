@@ -1,10 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { albums } from "@/data/albums";
-import { getSpotifyEmbedUrl, getYouTubeEmbedUrl } from "@/lib/music/embeds";
 import { GeniusEmbed } from "./GeniusEmbed";
 import styles from "./TrackDetail.module.css";
+import {
+  getCatalogTrackPageData,
+  getCatalogTrackStaticParams,
+} from "@/lib/music/catalog";
+import { ListeningPanel } from "@/components/music/ListeningPanel";
+import { RelatedElements } from "@/components/music/RelatedElements";
 
 type TrackPageProps = {
   params: Promise<{
@@ -13,49 +17,19 @@ type TrackPageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return albums.flatMap((album) =>
-    album.tracks.map((track) => ({
-      albumSlug: album.slug,
-      trackSlug: track.slug,
-    })),
-  );
+export async function generateStaticParams() {
+  return getCatalogTrackStaticParams();
 }
 
-export async function generateMetadata({ params }: TrackPageProps) {
+export default async function TrackPage({ params }: TrackPageProps) {
   const { albumSlug, trackSlug } = await params;
-  const album = albums.find((item) => item.slug === albumSlug);
-  const track = album?.tracks.find((item) => item.slug === trackSlug);
+  const data = await getCatalogTrackPageData(albumSlug, trackSlug);
 
-  if (!album || !track) {
-    return {
-      title: "Traccia non trovata",
-    };
-  }
-
-  return {
-    title: `${track.title} | ${album.title} | JeeC`,
-    description:
-      track.loreEntry ??
-      `Scheda traccia di ${track.title}, dal progetto ${album.title}.`,
-  };
-}
-
-export default async function TrackDetailPage({ params }: TrackPageProps) {
-  const { albumSlug, trackSlug } = await params;
-
-  const album = albums.find((item) => item.slug === albumSlug);
-  const track = album?.tracks.find((item) => item.slug === trackSlug);
-
-  if (!album || !track) {
+  if (!data) {
     notFound();
   }
 
-  const spotifyEmbedUrl =
-    track.spotifyEmbedUrl ?? getSpotifyEmbedUrl(track.spotifyUrl);
-
-  const youtubeEmbedUrl =
-    track.youtubeEmbedUrl ?? getYouTubeEmbedUrl(track.youtubeUrl);
+  const { album, track, listeningLinks, relatedElements } = data;
 
   const externalLinks = [
     track.spotifyUrl ? { label: "Spotify", href: track.spotifyUrl } : null,
@@ -127,78 +101,47 @@ export default async function TrackDetailPage({ params }: TrackPageProps) {
         </section>
 
         <section className={styles.sections}>
-          <div className={styles.panel}>
-            <h2 className={styles.panelTitle}>Spotify player</h2>
+          <section className={styles.sections}>
+            <ListeningPanel links={listeningLinks} />
 
-            {spotifyEmbedUrl ? (
-              <iframe
-                title={`Spotify player — ${track.title}`}
-                src={spotifyEmbedUrl}
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-                className={`${styles.embed} ${styles.spotifyEmbed}`}
-              />
-            ) : (
-              <p className={styles.empty}>
-                Spotify player non ancora collegato per questa traccia.
-              </p>
-            )}
-          </div>
-
-          <div className={styles.panel}>
-            <h2 className={styles.panelTitle}>Video</h2>
-
-            {youtubeEmbedUrl ? (
-              <iframe
-                title={`YouTube video — ${track.title}`}
-                src={youtubeEmbedUrl}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                loading="lazy"
-                className={`${styles.embed} ${styles.youtubeEmbed}`}
-              />
-            ) : (
-              <p className={styles.empty}>
-                Video YouTube non ancora collegato per questa traccia.
-              </p>
-            )}
-          </div>
-
-          <div className={styles.panel}>
-            <h2 className={styles.panelTitle}>Lyrics by Genius</h2>
-
-            {track.geniusSongId ? (
-              <div className={styles.geniusEmbed}>
-                <GeniusEmbed
-                  songId={track.geniusSongId}
-                  title={track.title}
-                  geniusUrl={track.geniusUrl}
-                />
-              </div>
-            ) : track.geniusUrl ? (
-              <p className={styles.empty}>
-                Testo disponibile su{" "}
-                <a href={track.geniusUrl} target="_blank" rel="noreferrer">
-                  Genius
-                </a>
-                . L’embed verrà attivato quando sarà collegato il Genius song
-                ID.
-              </p>
-            ) : track.lyrics ? (
-              <div className={styles.lyrics}>{track.lyrics}</div>
-            ) : (
-              <p className={styles.empty}>
-                Lyrics Genius non ancora collegati per questa traccia.
-              </p>
-            )}
-          </div>
-
-          {track.loreEntry ? (
             <div className={styles.panel}>
-              <h2 className={styles.panelTitle}>Lore</h2>
-              <p className={styles.empty}>{track.loreEntry}</p>
+              <h2 className={styles.panelTitle}>Lyrics</h2>
+
+              {track.geniusSongId ? (
+                <div className={styles.geniusEmbed}>
+                  <GeniusEmbed
+                    songId={track.geniusSongId}
+                    title={track.title}
+                    geniusUrl={track.geniusUrl}
+                  />
+                </div>
+              ) : track.geniusUrl ? (
+                <p className={styles.empty}>
+                  Testo disponibile su{" "}
+                  <a href={track.geniusUrl} target="_blank" rel="noreferrer">
+                    Genius
+                  </a>
+                  . L’embed verrà attivato quando sarà collegato il Genius song
+                  ID.
+                </p>
+              ) : track.lyrics ? (
+                <div className={styles.lyrics}>{track.lyrics}</div>
+              ) : (
+                <p className={styles.empty}>
+                  Testo ufficiale non ancora collegato per questa traccia.
+                </p>
+              )}
             </div>
-          ) : null}
+
+            {track.loreEntry ? (
+              <div className={styles.panel}>
+                <h2 className={styles.panelTitle}>Lore</h2>
+                <p className={styles.empty}>{track.loreEntry}</p>
+              </div>
+            ) : null}
+
+            <RelatedElements elements={relatedElements} />
+          </section>
         </section>
       </div>
     </main>
