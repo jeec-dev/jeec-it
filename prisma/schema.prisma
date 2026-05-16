@@ -6,31 +6,3 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
-model ContactMessage {
-  id             String   @id @default(uuid())
-  name           String
-  email          String
-  topic          String
-  message        String
-  consentPrivacy Boolean  @default(false)
-  status         String   @default("new")
-  source         String   @default("contact-page")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model BroadcastSubscriber {
-  id               String    @id @default(uuid())
-  email            String    @unique
-  name             String?
-  status           String    @default("pending")
-  source           String    @default("broadcasts-page")
-  consentMarketing Boolean   @default(false)
-  consentAt        DateTime?
-  confirmedAt      DateTime?
-  unsubscribedAt   DateTime?
-  unsubscribeToken String    @unique
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-}
