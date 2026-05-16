@@ -32,6 +32,10 @@ type BandsintownEvent = {
 
 const BANDSINTOWN_API_BASE = "https://rest.bandsintown.com";
 
+const shouldLogBandsintownDebug =
+  process.env.NODE_ENV === "development" &&
+  process.env.BANDSINTOWN_DEBUG === "true";
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -119,10 +123,12 @@ export async function getBandsintownEvents(): Promise<LiveEvent[]> {
   const appId = process.env.BANDSINTOWN_APP_ID;
 
   if (!artistName || !appId) {
-    console.error("[Bandsintown] Missing env vars", {
-      artistName,
-      hasAppId: Boolean(appId),
-    });
+    if (shouldLogBandsintownDebug) {
+      console.warn("[Bandsintown] Missing env vars", {
+        artistName,
+        appId,
+      });
+    }
 
     return [];
   }
@@ -143,9 +149,11 @@ export async function getBandsintownEvents(): Promise<LiveEvent[]> {
     });
 
     if (!response.ok) {
-      console.error(
-        `[Bandsintown] Request failed: ${response.status} ${response.statusText}`,
-      );
+      if (shouldLogBandsintownDebug) {
+        console.warn(
+          `[Bandsintown] Request failed: ${response.status} ${response.statusText}`,
+        );
+      }
       return [];
     }
 
@@ -154,7 +162,9 @@ export async function getBandsintownEvents(): Promise<LiveEvent[]> {
       | { error?: string };
 
     if (!Array.isArray(data)) {
-      console.error("[Bandsintown] Unexpected response:", data);
+      if (shouldLogBandsintownDebug) {
+        console.warn("[Bandsintown] Unexpected response:", data);
+      }
       return [];
     }
 
@@ -164,7 +174,9 @@ export async function getBandsintownEvents(): Promise<LiveEvent[]> {
 
     return normalizedEvents;
   } catch (error) {
-    console.error("[Bandsintown] Fetch failed:", error);
+    if (shouldLogBandsintownDebug) {
+      console.warn("[Bandsintown] Fetch failed:", error);
+    }
     return [];
   }
 }
