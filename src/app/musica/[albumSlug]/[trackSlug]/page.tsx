@@ -29,7 +29,7 @@ export default async function TrackPage({ params }: TrackPageProps) {
     notFound();
   }
 
-  const { album, track, listeningLinks, relatedElements } = data;
+  const { album, track, listeningLinks } = data;
 
   return (
     <main className={styles.page}>

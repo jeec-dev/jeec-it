@@ -68,27 +68,10 @@ export type CatalogListeningLink = {
   embedUrl?: string;
 };
 
-export type CatalogRelatedElement = {
-  id: string;
-  type:
-    | "release"
-    | "video"
-    | "lyrics"
-    | "diary"
-    | "merch"
-    | "broadcast"
-    | "event";
-  title: string;
-  description?: string;
-  href: string;
-  eyebrow?: string;
-};
-
 export type CatalogTrackPageData = {
   album: Album;
   track: Track;
   listeningLinks: CatalogListeningLink[];
-  relatedElements: CatalogRelatedElement[];
 };
 
 type TrackWithKnownLinks = Track & {
@@ -271,47 +254,6 @@ function buildListeningLinksFromStaticTrack(
     .sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
 }
 
-function buildRelatedElements(
-  album: Album,
-  track: TrackWithKnownLinks,
-): CatalogRelatedElement[] {
-  const relatedElements: CatalogRelatedElement[] = [
-    {
-      id: `release-${album.slug}`,
-      type: "release",
-      title: album.title,
-      description: "Release ufficiale che contiene questa traccia.",
-      href: `/musica/${album.slug}`,
-      eyebrow: "Release",
-    },
-  ];
-
-  if (track.youtubeUrl) {
-    relatedElements.push({
-      id: `video-${track.slug}`,
-      type: "video",
-      title: `Video / visual correlato a ${track.title}`,
-      description:
-        "I video saranno separati nella nuova sezione Video nelle prossime fasi.",
-      href: track.youtubeUrl,
-      eyebrow: "Video",
-    });
-  }
-
-  if (track.geniusUrl || track.lyricsUrl) {
-    relatedElements.push({
-      id: `lyrics-${track.slug}`,
-      type: "lyrics",
-      title: "Lyrics / testo",
-      description: "Testo o fonte lyrics collegata alla traccia.",
-      href: track.geniusUrl ?? track.lyricsUrl ?? "#",
-      eyebrow: "Lyrics",
-    });
-  }
-
-  return relatedElements;
-}
-
 export async function getCatalogTrackPageData(
   albumSlug: string,
   trackSlug: string,
@@ -344,10 +286,6 @@ export async function getCatalogTrackPageData(
           album,
           track,
           listeningLinks,
-          relatedElements: buildRelatedElements(
-            album,
-            (staticTrack ?? track) as TrackWithKnownLinks,
-          ),
         };
       }
     }
@@ -378,7 +316,6 @@ export async function getCatalogTrackPageData(
     album: staticAlbum,
     track: staticTrack,
     listeningLinks: buildListeningLinksFromStaticTrack(staticTrack),
-    relatedElements: buildRelatedElements(staticAlbum, staticTrack),
   };
 }
 
