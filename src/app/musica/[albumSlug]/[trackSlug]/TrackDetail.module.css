@@ -105,15 +105,16 @@
 
 .sections {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.5rem;
   margin-top: 3rem;
 }
 
 .panel {
   border: 1px solid rgb(255 255 255 / 0.1);
-  border-radius: 1.25rem;
+  border-radius: 1.5rem;
   background: rgb(255 255 255 / 0.035);
   padding: 1rem;
+  overflow: hidden;
 }
 
 .panelTitle {
