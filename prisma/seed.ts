@@ -1,7 +1,7 @@
 import { config as loadEnv } from "dotenv";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../src/generated/prisma/client";
+import { db } from "../src/lib/db";
 
 loadEnv({ path: ".env" });
 loadEnv({ path: ".env.local", override: true });
@@ -14,7 +14,6 @@ if (!connectionString) {
 
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
 
 type SourceSeed = {
   code: string;
@@ -27,6 +26,7 @@ type TrackSeed = {
   title: string;
   position: number;
   durationMs?: number;
+  publishedAt?: string;
 };
 
 type ReleaseSeed = {
@@ -34,11 +34,16 @@ type ReleaseSeed = {
   title: string;
   type: "ALBUM" | "EP" | "SINGLE" | "DELUXE" | "COMPILATION" | "LIVE" | "DEMO";
   year?: number;
+  publishedAt?: string;
   label?: string;
   description?: string;
   lore?: string;
   tracks?: TrackSeed[];
 };
+
+function toSeedDate(value?: string) {
+  return value ? new Date(`${value}T00:00:00.000Z`) : null;
+}
 
 const externalSources: SourceSeed[] = [
   {
@@ -244,6 +249,7 @@ const releases: ReleaseSeed[] = [
     title: "NEW (Tutto Quello Che Non Ti Ho Detto)",
     type: "DELUXE",
     year: 2026,
+    publishedAt: "2026-02-06",
     label: "Urban Film Music",
     description:
       "NEW (Tutto Quello Che Non Ti Ho Detto) è la deluxe edition che riapre l’universo di NEW a cinque anni dalla sua prima uscita. Il progetto raccoglie i 14 brani originali in versione remastered e 4 bonus track, trasformando l’album in un viaggio più completo tra ricordi, pensieri sospesi, relazioni, notti irrisolte e parole rimaste fuori campo.",
@@ -254,6 +260,7 @@ const releases: ReleaseSeed[] = [
     title: "NEW",
     type: "ALBUM",
     year: 2021,
+    publishedAt: "2021-02-05",
     label: "1254940 Records DK",
     tracks: newOriginalTracks,
   },
@@ -262,6 +269,7 @@ const releases: ReleaseSeed[] = [
     title: "19 Aprile",
     type: "ALBUM",
     year: 2019,
+    publishedAt: "2019-04-19",
     tracks: nineteenAprileTracks,
   },
   {
@@ -269,22 +277,33 @@ const releases: ReleaseSeed[] = [
     title: "Umami",
     type: "SINGLE",
     year: 2024,
+    publishedAt: "2024-10-18",
     tracks: [{ position: 1, slug: "umami", title: "Umami" }],
+  },
+  {
+    slug: "sentoleiche",
+    title: "Sentoleiche",
+    type: "SINGLE",
+    year: 2023,
+    publishedAt: "2023-10-27",
+    tracks: [{ position: 1, slug: "sentoleiche", title: "Sentoleiche" }],
   },
   {
     slug: "da-domani",
     title: "Da domani",
     type: "SINGLE",
     year: 2023,
+    publishedAt: "2023-06-16",
     tracks: [{ position: 1, slug: "da-domani", title: "Da domani" }],
   },
   {
-    slug: "pedine-come-voi-single",
-    title: "Pedine (Come Voi)",
+    slug: "dentro-una-fantasy",
+    title: "Dentro Una Fantasy",
     type: "SINGLE",
-    year: 2022,
+    year: 2023,
+    publishedAt: "2023-03-10",
     tracks: [
-      { position: 1, slug: "pedine-come-voi", title: "Pedine (Come Voi)" },
+      { position: 1, slug: "dentro-una-fantasy", title: "Dentro Una Fantasy" },
     ],
   },
   {
@@ -292,35 +311,25 @@ const releases: ReleaseSeed[] = [
     title: "Muovi",
     type: "SINGLE",
     year: 2022,
+    publishedAt: "2022-06-17",
     tracks: [{ position: 1, slug: "muovi", title: "MUOVI" }],
   },
   {
-    slug: "dentro-una-fantasy",
-    title: "Dentro Una Fantasy",
+    slug: "pedine-come-voi-single",
+    title: "Pedine (Come Voi)",
     type: "SINGLE",
+    year: 2022,
+    publishedAt: "2022-04-01",
     tracks: [
-      { position: 1, slug: "dentro-una-fantasy", title: "Dentro Una Fantasy" },
-    ],
-  },
-  {
-    slug: "sentoleiche",
-    title: "Sentoleiche",
-    type: "SINGLE",
-    tracks: [{ position: 1, slug: "sentoleiche", title: "Sentoleiche" }],
-  },
-  {
-    slug: "if-i-die-tonight-single",
-    title: "If I Die Tonight",
-    type: "SINGLE",
-    year: 2020,
-    tracks: [
-      { position: 1, slug: "if-i-die-tonight", title: "If I Die Tonight" },
+      { position: 1, slug: "pedine-come-voi", title: "Pedine (Come Voi)" },
     ],
   },
   {
     slug: "una-formica-sulla-34esima-strada-single",
     title: "Una Formica Sulla 34esima Strada",
     type: "SINGLE",
+    year: 2022,
+    publishedAt: "2022-01-13",
     tracks: [
       {
         position: 1,
@@ -333,26 +342,26 @@ const releases: ReleaseSeed[] = [
     slug: "stammi-vicino-dai-single",
     title: "Stammi Vicino Dai",
     type: "SINGLE",
+    year: 2021,
+    publishedAt: "2021-02-05",
     tracks: [
       { position: 1, slug: "stammi-vicino-dai", title: "Stammi Vicino Dai" },
     ],
   },
   {
-    slug: "vada-come-vada-single",
-    title: "Vada Come Vada",
-    type: "SINGLE",
-    tracks: [{ position: 1, slug: "vada-come-vada", title: "Vada Come Vada" }],
-  },
-  {
     slug: "hope",
     title: "Hope",
     type: "SINGLE",
+    year: 2020,
+    publishedAt: "2020-09-24",
     tracks: [{ position: 1, slug: "hope", title: "Hope" }],
   },
   {
     slug: "if-i-die-tonight-acoustic-version-single",
     title: "If I Die Tonight (Acoustic Version)",
     type: "SINGLE",
+    year: 2020,
+    publishedAt: "2020-05-22",
     tracks: [
       {
         position: 1,
@@ -362,10 +371,29 @@ const releases: ReleaseSeed[] = [
     ],
   },
   {
+    slug: "if-i-die-tonight-single",
+    title: "If I Die Tonight",
+    type: "SINGLE",
+    year: 2020,
+    publishedAt: "2020-02-28",
+    tracks: [
+      { position: 1, slug: "if-i-die-tonight", title: "If I Die Tonight" },
+    ],
+  },
+  {
+    slug: "vada-come-vada-single",
+    title: "Vada Come Vada",
+    type: "SINGLE",
+    year: 2019,
+    publishedAt: "2019-12-14",
+    tracks: [{ position: 1, slug: "vada-come-vada", title: "Vada Come Vada" }],
+  },
+  {
     slug: "the-right-path-to-climb-ntd-version",
     title: "The Right Path to Climb (Ntd Version)",
     type: "SINGLE",
     year: 2019,
+    publishedAt: "2019-04-19",
     tracks: [
       {
         position: 1,
@@ -375,23 +403,27 @@ const releases: ReleaseSeed[] = [
     ],
   },
   {
+    slug: "not-enough",
+    title: "Not Enough",
+    type: "SINGLE",
+    year: 2019,
+    publishedAt: "2019-04-19",
+    tracks: [{ position: 1, slug: "not-enough", title: "Not Enough" }],
+  },
+  {
     slug: "one-beautiful-day",
     title: "One Beautiful Day",
     type: "SINGLE",
+    year: 2019,
+    publishedAt: "2019-04-19",
     tracks: [
       { position: 1, slug: "one-beautiful-day", title: "One Beautiful Day" },
     ],
   },
-  {
-    slug: "not-enough",
-    title: "Not Enough",
-    type: "SINGLE",
-    tracks: [{ position: 1, slug: "not-enough", title: "Not Enough" }],
-  },
 ];
 
 async function getSourceId(code: string) {
-  const source = await prisma.externalSource.findUnique({
+  const source = await db.externalSource.findUnique({
     where: { code },
     select: { id: true },
   });
@@ -421,7 +453,7 @@ async function upsertExternalIdentifier(input: {
 }) {
   const sourceId = await getSourceId(input.sourceCode);
 
-  return prisma.externalIdentifier.upsert({
+  return db.externalIdentifier.upsert({
     where: {
       sourceId_entityType_externalId: {
         sourceId,
@@ -469,7 +501,7 @@ async function upsertExternalLink(input: {
 }) {
   const sourceId = await getSourceId(input.sourceCode);
 
-  const existing = await prisma.externalLink.findFirst({
+  const existing = await db.externalLink.findFirst({
     where: {
       sourceId,
       type: input.type,
@@ -481,7 +513,7 @@ async function upsertExternalLink(input: {
   });
 
   if (existing) {
-    return prisma.externalLink.update({
+    return db.externalLink.update({
       where: { id: existing.id },
       data: {
         label: input.label,
@@ -492,7 +524,7 @@ async function upsertExternalLink(input: {
     });
   }
 
-  return prisma.externalLink.create({
+  return db.externalLink.create({
     data: {
       sourceId,
       type: input.type,
@@ -510,7 +542,7 @@ async function upsertExternalLink(input: {
 async function seed() {
   console.log("🌱 Seeding canonical JeeC catalog...");
 
-  const artist = await prisma.artist.upsert({
+  const artist = await db.artist.upsert({
     where: { slug: "jeec" },
     update: {
       stageName: "JeeC",
@@ -524,7 +556,7 @@ async function seed() {
   });
 
   for (const source of externalSources) {
-    await prisma.externalSource.upsert({
+    await db.externalSource.upsert({
       where: { code: source.code },
       update: {
         name: source.name,
@@ -576,13 +608,16 @@ async function seed() {
   const trackByReleaseAndSlug = new Map<string, { id: string }>();
 
   for (const releaseSeed of releases) {
-    const release = await prisma.release.upsert({
+    const releasePublishedAt = toSeedDate(releaseSeed.publishedAt);
+
+    const release = await db.release.upsert({
       where: { slug: releaseSeed.slug },
       update: {
         title: releaseSeed.title,
         type: releaseSeed.type,
         status: "PUBLISHED",
         year: releaseSeed.year,
+        publishedAt: releasePublishedAt,
         label: releaseSeed.label,
         description: releaseSeed.description,
         lore: releaseSeed.lore,
@@ -594,6 +629,7 @@ async function seed() {
         type: releaseSeed.type,
         status: "PUBLISHED",
         year: releaseSeed.year,
+        publishedAt: releasePublishedAt,
         label: releaseSeed.label,
         description: releaseSeed.description,
         lore: releaseSeed.lore,
@@ -605,7 +641,10 @@ async function seed() {
     releaseBySlug.set(release.slug, { id: release.id });
 
     for (const trackSeed of releaseSeed.tracks ?? []) {
-      const track = await prisma.track.upsert({
+      const trackPublishedAt =
+        toSeedDate(trackSeed.publishedAt) ?? releasePublishedAt;
+
+      const track = await db.track.upsert({
         where: {
           releaseId_slug: {
             releaseId: release.id,
@@ -616,6 +655,7 @@ async function seed() {
           title: trackSeed.title,
           position: trackSeed.position,
           durationMs: trackSeed.durationMs,
+          publishedAt: trackPublishedAt,
         },
         create: {
           releaseId: release.id,
@@ -623,6 +663,7 @@ async function seed() {
           title: trackSeed.title,
           position: trackSeed.position,
           durationMs: trackSeed.durationMs,
+          publishedAt: trackPublishedAt,
         },
         select: { id: true, slug: true },
       });
@@ -762,6 +803,46 @@ async function seed() {
     });
   }
 
+  for (const releaseSeed of releases) {
+    const releasePublishedAt = toSeedDate(releaseSeed.publishedAt);
+
+    const result = await db.release.updateMany({
+      where: {
+        slug: releaseSeed.slug,
+      },
+      data: {
+        publishedAt: releasePublishedAt,
+      },
+    });
+
+    const release = await db.release.findUnique({
+      where: {
+        slug: releaseSeed.slug,
+      },
+      select: {
+        id: true,
+        slug: true,
+        publishedAt: true,
+      },
+    });
+
+    for (const trackSeed of releaseSeed.tracks ?? []) {
+      const trackPublishedAt =
+        toSeedDate(trackSeed.publishedAt) ?? releasePublishedAt;
+
+      await db.track.updateMany({
+        where: {
+          releaseId: release?.id,
+          slug: trackSeed.slug,
+        },
+        data: {
+          publishedAt: trackPublishedAt,
+        },
+      });
+    }
+  }
+
+  console.log("✅ Release and track publication dates backfilled.");
   console.log("✅ Canonical JeeC catalog seed completed.");
 }
 
@@ -772,6 +853,6 @@ seed()
     process.exitCode = 1;
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
     await pool.end();
   });
