@@ -24,7 +24,7 @@ type HotspotStyle = CSSProperties & {
   "--hotspot-ring-opacity": number;
 };
 
-const coverImageSrc = "/images/covers/Copertina_NEW_TQCNTHD.jpg";
+const coverImageSrc = "/images/covers/new-tutto-quello-che-non-ti-ho-detto.jpg";
 const storageKey = "jeec:new-cover-discoveries";
 const finalRewardClaimedKey = "jeec:new-cover-final-reward-claimed";
 const finalRewardUnlockedKey = "jeec:new-cover-final-reward-unlocked";
