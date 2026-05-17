@@ -2,7 +2,11 @@
   border: 1px solid rgb(241 187 223 / 0.16);
   border-radius: 1.5rem;
   background:
-    radial-gradient(circle at top left, rgb(241 187 223 / 0.1), transparent 24rem),
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.1),
+      transparent 24rem
+    ),
     rgb(255 255 255 / 0.035);
   padding: 1rem;
   box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 0.24);
@@ -65,7 +69,7 @@
 .embed {
   display: block;
   width: 100%;
-  min-height: clamp(13rem, 42vw, 28rem);
+  height: var(--embed-height, 152px);
   border: 0;
   background: rgb(0 0 0 / 0.35);
 }
@@ -77,15 +81,15 @@
 }
 
 .platformLink {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  min-height: 4.5rem;
+  min-height: 4rem;
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 1rem;
   background: rgb(12 10 25 / 0.62);
-  padding: 0.85rem 1rem;
+  padding: 0.85rem 0.9rem;
   color: var(--jeec-moon-white);
   text-decoration: none;
   transition:
@@ -108,6 +112,16 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: rgb(249 235 244 / 0.48);
+}
+
+.platformLink span {
+  min-width: 0;
+}
+
+.platformLink strong {
+  display: block;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
 }
 
 .badge {
@@ -149,5 +163,11 @@
 
   .linkGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .linkGrid {
+    grid-template-columns: 1fr;
   }
 }

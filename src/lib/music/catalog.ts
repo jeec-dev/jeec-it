@@ -1,7 +1,7 @@
 import { albums as staticAlbums } from "@/data/albums";
 import type { Album, Track } from "@/types/music";
 import { dbReleaseToAlbum } from "@/lib/music/catalog-adapter";
-import { getStableEmbedUrl } from "@/lib/music/embeds";
+import { getStableEmbedHeight, getStableEmbedUrl } from "@/lib/music/embeds";
 import {
   getDbCatalogReleaseBySlug,
   getDbCatalogReleases,
@@ -67,6 +67,7 @@ export type CatalogListeningLink = {
   order: number;
   supportsEmbed: boolean;
   embedUrl?: string;
+  embedHeight?: number;
 };
 
 export type CatalogTrackPageData = {
@@ -137,6 +138,9 @@ function buildListeningLinksFromDbTrack(track: {
         isPrimary: link.isPrimary,
         order: getPlatformOrder(sourceCode, link.order),
         supportsEmbed: Boolean(embedUrl),
+        embedHeight: embedUrl
+          ? getStableEmbedHeight(link.source.code)
+          : undefined,
         embedUrl,
       };
     })
@@ -211,6 +215,9 @@ function buildListeningLinksFromStaticTrack(
         order: getPlatformOrder(link.sourceCode, index),
         supportsEmbed: Boolean(embedUrl),
         embedUrl,
+        embedHeight: embedUrl
+          ? getStableEmbedHeight(link.sourceCode)
+          : undefined,
       };
     })
     .sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));

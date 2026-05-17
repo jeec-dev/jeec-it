@@ -1,5 +1,6 @@
 import type { CatalogListeningLink } from "@/lib/music/catalog";
 import styles from "./ListeningPanel.module.css";
+import type { CSSProperties } from "react";
 
 type ListeningPanelProps = {
   links: CatalogListeningLink[];
@@ -16,28 +17,28 @@ export function ListeningPanel({ links }: ListeningPanelProps) {
         <div>
           <p className={styles.eyebrow}>Ascolta</p>
           <h2 id="listening-title" className={styles.title}>
-            Piattaforme ufficiali
+            Player
           </h2>
         </div>
-
-        <p className={styles.description}>
-          Embed solo dove stabile. Link ufficiali sempre disponibili.
-        </p>
       </div>
 
       {embeddableLink?.embedUrl ? (
-        <div className={styles.embedShell}>
-          <div className={styles.embedMeta}>
-            <span>{embeddableLink.sourceName}</span>
-            {embeddableLink.isPrimary ? <strong>Consigliato</strong> : null}
-          </div>
-
+        <div
+          className={styles.embedShell}
+          style={
+            embeddableLink.embedHeight
+              ? ({
+                  "--embed-height": `${embeddableLink.embedHeight}px`,
+                } as CSSProperties)
+              : undefined
+          }
+        >
           <iframe
-            title={`Player ${embeddableLink.sourceName}`}
-            src={embeddableLink.embedUrl}
-            loading="lazy"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             className={styles.embed}
+            src={embeddableLink.embedUrl}
+            title={`${embeddableLink.label} player`}
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
           />
         </div>
       ) : null}

@@ -120,7 +120,9 @@ export default async function AlbumDetailPage({ params }: AlbumPageProps) {
           </div>
         </section>
 
-        <RelatedContent releaseSlug={album.slug} />
+        <div className={styles.relatedContentSlot}>
+          <RelatedContent releaseSlug={album.slug} />
+        </div>
       </div>
     </main>
   );

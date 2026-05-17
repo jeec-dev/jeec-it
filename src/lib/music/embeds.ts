@@ -76,3 +76,19 @@ export function getStableEmbedUrl(sourceCode: string, url: string) {
 
   return undefined;
 }
+
+export function getStableEmbedHeight(sourceCode: string) {
+  if (sourceCode === "spotify") {
+    return 152;
+  }
+
+  if (sourceCode === "soundcloud") {
+    return 166;
+  }
+
+  if (sourceCode === "youtube" || sourceCode === "youtube_music") {
+    return 315;
+  }
+
+  return undefined;
+}
