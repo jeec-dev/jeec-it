@@ -297,3 +297,26 @@ export async function getRelatedContentForReleaseSlug(releaseSlug: string) {
 
   return getRelatedContentForEntity(`music:release:${release.id}`);
 }
+
+export async function getRelatedContentForTrackSlug(
+  releaseSlug: string,
+  trackSlug: string,
+) {
+  const track = await db.track.findFirst({
+    where: {
+      slug: trackSlug,
+      release: {
+        slug: releaseSlug,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!track) {
+    return null;
+  }
+
+  return getRelatedContentForEntity(`music:track:${track.id}`);
+}

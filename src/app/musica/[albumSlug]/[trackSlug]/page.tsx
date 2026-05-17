@@ -8,7 +8,7 @@ import {
   getCatalogTrackStaticParams,
 } from "@/lib/music/catalog";
 import { ListeningPanel } from "@/components/music/ListeningPanel";
-import { RelatedElements } from "@/components/music/RelatedElements";
+import { RelatedContent } from "@/components/related-content/RelatedContent";
 
 type TrackPageProps = {
   params: Promise<{
@@ -110,7 +110,7 @@ export default async function TrackPage({ params }: TrackPageProps) {
             </div>
           ) : null}
 
-          <RelatedElements elements={relatedElements} />
+          <RelatedContent albumSlug={album.slug} trackSlug={track.slug} />
         </section>
       </div>
     </main>

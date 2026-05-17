@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   getRelatedContentForEntity,
   getRelatedContentForReleaseSlug,
+  getRelatedContentForTrackSlug,
 } from "@/lib/related-content/related-content";
 import styles from "./RelatedContent.module.css";
 
@@ -9,10 +10,20 @@ type RelatedContentProps =
   | {
       ownerEntityKey: string;
       releaseSlug?: never;
+      albumSlug?: never;
+      trackSlug?: never;
     }
   | {
       ownerEntityKey?: never;
       releaseSlug: string;
+      albumSlug?: never;
+      trackSlug?: never;
+    }
+  | {
+      ownerEntityKey?: never;
+      releaseSlug?: never;
+      albumSlug: string;
+      trackSlug: string;
     };
 
 function isExternalHref(href: string) {
@@ -21,11 +32,13 @@ function isExternalHref(href: string) {
 
 export async function RelatedContent(props: RelatedContentProps) {
   const block =
-    typeof props.releaseSlug === "string"
-      ? await getRelatedContentForReleaseSlug(props.releaseSlug)
-      : typeof props.ownerEntityKey === "string"
-        ? await getRelatedContentForEntity(props.ownerEntityKey)
-        : null;
+    typeof props.albumSlug === "string" && typeof props.trackSlug === "string"
+      ? await getRelatedContentForTrackSlug(props.albumSlug, props.trackSlug)
+      : typeof props.releaseSlug === "string"
+        ? await getRelatedContentForReleaseSlug(props.releaseSlug)
+        : typeof props.ownerEntityKey === "string"
+          ? await getRelatedContentForEntity(props.ownerEntityKey)
+          : null;
 
   if (!block) {
     return null;
