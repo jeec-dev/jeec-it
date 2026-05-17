@@ -1,7 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GeniusEmbed } from "../../../../components/music/GeniusEmbed";
 import styles from "./TrackDetail.module.css";
 import {
   getCatalogTrackPageData,
