@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { RelatedContentItemView } from "@/lib/related-content/types";
 import styles from "./RelatedContent.module.css";
 
@@ -82,23 +83,39 @@ function getDefaultCta(item: RelatedContentItemView) {
 function CardInner({ item }: { item: RelatedContentItemView }) {
   return (
     <>
-      <span className={styles.cardEyebrow}>{getTypeLabel(item)}</span>
+      {item.imageUrl ? (
+        <span className={styles.imageFrame}>
+          <Image
+            src={item.imageUrl}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 18rem, (min-width: 768px) 14rem, 90vw"
+            className={styles.image}
+          />
+        </span>
+      ) : null}
 
-      <strong>{item.title}</strong>
+      <div className={styles.cardBody}>
+        <span className={styles.cardEyebrow}>{getTypeLabel(item)}</span>
 
-      {item.description ? <p>{item.description}</p> : null}
+        <strong>{item.title}</strong>
 
-      <span className={styles.cardFooter}>
-        {item.isPinned ? <span className={styles.flag}>Pinned</span> : null}
-        {item.isFeatured ? <span className={styles.flag}>Featured</span> : null}
-        <span className={styles.cardCta}>{getDefaultCta(item)} →</span>
-      </span>
+        {item.description ? <p>{item.description}</p> : null}
+
+        <span className={styles.cardFooter}>
+          {item.isPinned ? <span className={styles.flag}>Pinned</span> : null}
+          {item.isFeatured ? (
+            <span className={styles.flag}>Featured</span>
+          ) : null}
+          <span className={styles.cardCta}>{getDefaultCta(item)} →</span>
+        </span>
+      </div>
     </>
   );
 }
 
 export function RelatedContentCard({ item, layout }: RelatedContentCardProps) {
-  const className = styles.card;
+  const className = `${styles.card} ${item.imageUrl ? styles.withImage : ""}`;
 
   if (!item.href) {
     return (

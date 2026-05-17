@@ -11,6 +11,232 @@ const KIND_DEFINITIONS = [
   },
 ];
 
+async function upsertContentRelation(input: {
+  sourceEntityId: string;
+  targetEntityId: string;
+  type: $Enums.ContentRelationType;
+  isFeatured?: boolean;
+  priority?: number;
+  order?: number;
+  reason?: string;
+}) {
+  const existing = await db.contentRelation.findFirst({
+    where: {
+      sourceEntityId: input.sourceEntityId,
+      targetEntityId: input.targetEntityId,
+      type: input.type,
+    },
+    select: { id: true },
+  });
+
+  const data = {
+    sourceEntityId: input.sourceEntityId,
+    targetEntityId: input.targetEntityId,
+    type: input.type,
+    status: $Enums.ContentRelationStatus.APPROVED,
+    source: $Enums.ContentRelationSource.SEED,
+    isPublic: true,
+    isFeatured: input.isFeatured ?? false,
+    priority: input.priority ?? 0,
+    order: input.order ?? 0,
+    reason: input.reason,
+  };
+
+  if (existing) {
+    return db.contentRelation.update({
+      where: { id: existing.id },
+      data,
+    });
+  }
+
+  return db.contentRelation.create({ data });
+}
+
+async function upsertRelatedContentSection(input: {
+  relatedContentId: string;
+  key: string;
+  title: string;
+  description?: string;
+  layout: $Enums.RelatedContentLayout;
+  relationType?: $Enums.ContentRelationType;
+  targetType?: $Enums.ContentEntityType;
+  targetKindKey?: string;
+  maxItems?: number;
+  priority?: number;
+  order?: number;
+}) {
+  const existing = await db.relatedContentSection.findFirst({
+    where: {
+      relatedContentId: input.relatedContentId,
+      key: input.key,
+    },
+    select: { id: true },
+  });
+
+  const data = {
+    relatedContentId: input.relatedContentId,
+    key: input.key,
+    title: input.title,
+    description: input.description,
+    layout: input.layout,
+    relationType: input.relationType,
+    targetType: input.targetType,
+    targetKindKey: input.targetKindKey,
+    maxItems: input.maxItems,
+    priority: input.priority ?? 0,
+    order: input.order ?? 0,
+    isPublic: true,
+  };
+
+  if (existing) {
+    return db.relatedContentSection.update({
+      where: { id: existing.id },
+      data,
+    });
+  }
+
+  return db.relatedContentSection.create({ data });
+}
+
+async function seedTrackRelatedContentBlocks() {
+  const releases = await db.release.findMany({
+    include: {
+      tracks: {
+        orderBy: { position: "asc" },
+      },
+    },
+    orderBy: { publishedAt: "desc" },
+  });
+
+  for (const release of releases) {
+    const releaseEntity = await db.contentEntity.findUnique({
+      where: { key: `music:release:${release.id}` },
+      select: { id: true, title: true },
+    });
+
+    if (!releaseEntity) {
+      continue;
+    }
+
+    const trackEntities = await db.contentEntity.findMany({
+      where: {
+        type: $Enums.ContentEntityType.MUSIC,
+        kindKey: "TRACK",
+        targetId: {
+          in: release.tracks.map((track) => track.id),
+        },
+      },
+      select: {
+        id: true,
+        targetId: true,
+      },
+    });
+
+    const trackEntityByTrackId = new Map(
+      trackEntities.map((entity) => [entity.targetId, entity]),
+    );
+
+    for (
+      let trackIndex = 0;
+      trackIndex < release.tracks.length;
+      trackIndex += 1
+    ) {
+      const track = release.tracks[trackIndex];
+      const trackEntity = trackEntityByTrackId.get(track.id);
+
+      if (!trackEntity) {
+        continue;
+      }
+
+      const block = await db.relatedContent.upsert({
+        where: {
+          ownerEntityId: trackEntity.id,
+        },
+        update: {
+          title: `Nel mondo di ${track.title}`,
+          description:
+            "Contenuti collegati alla traccia, alla release e al percorso musicale.",
+          sourceMode: $Enums.RelatedContentSourceMode.AUTO,
+        },
+        create: {
+          ownerEntityId: trackEntity.id,
+          title: `Nel mondo di ${track.title}`,
+          description:
+            "Contenuti collegati alla traccia, alla release e al percorso musicale.",
+          sourceMode: $Enums.RelatedContentSourceMode.AUTO,
+        },
+      });
+
+      await upsertContentRelation({
+        sourceEntityId: trackEntity.id,
+        targetEntityId: releaseEntity.id,
+        type: $Enums.ContentRelationType.RELATED,
+        priority: 80,
+        order: 10,
+        reason: `La traccia appartiene alla release ${release.title}.`,
+      });
+
+      await upsertRelatedContentSection({
+        relatedContentId: block.id,
+        key: "parent-release",
+        title: "Release di appartenenza",
+        description: "Il progetto discografico che contiene questa traccia.",
+        layout: $Enums.RelatedContentLayout.COMPACT,
+        relationType: $Enums.ContentRelationType.RELATED,
+        targetType: $Enums.ContentEntityType.MUSIC,
+        targetKindKey: "RELEASE",
+        maxItems: 1,
+        priority: 90,
+        order: 10,
+      });
+
+      await upsertRelatedContentSection({
+        relatedContentId: block.id,
+        key: "same-release-tracks",
+        title: "Altre tracce della stessa release",
+        description: "Altri capitoli dello stesso percorso musicale.",
+        layout: $Enums.RelatedContentLayout.RAIL,
+        relationType: $Enums.ContentRelationType.RELATED,
+        targetType: $Enums.ContentEntityType.MUSIC,
+        targetKindKey: "TRACK",
+        maxItems: 6,
+        priority: 70,
+        order: 20,
+      });
+
+      for (
+        let siblingIndex = 0;
+        siblingIndex < release.tracks.length;
+        siblingIndex += 1
+      ) {
+        const siblingTrack = release.tracks[siblingIndex];
+
+        if (siblingTrack.id === track.id) {
+          continue;
+        }
+
+        const siblingEntity = trackEntityByTrackId.get(siblingTrack.id);
+
+        if (!siblingEntity) {
+          continue;
+        }
+
+        const trackPosition = track.position ?? trackIndex + 1;
+        const siblingPosition = siblingTrack.position ?? siblingIndex + 1;
+
+        await upsertContentRelation({
+          sourceEntityId: trackEntity.id,
+          targetEntityId: siblingEntity.id,
+          type: $Enums.ContentRelationType.RELATED,
+          priority: Math.max(0, 50 - Math.abs(trackPosition - siblingPosition)),
+          order: siblingPosition,
+          reason: `Traccia collegata perché appartiene alla stessa release: ${release.title}.`,
+        });
+      }
+    }
+  }
+}
+
 async function seedKindDefinitions() {
   for (const kind of KIND_DEFINITIONS) {
     await db.contentEntityKindDefinition.upsert({
@@ -268,6 +494,7 @@ async function main() {
   await seedKindDefinitions();
   await backfillReleasesAndTracks();
   await seedNewInteractiveExperience();
+  await seedTrackRelatedContentBlocks();
 
   console.log("Related content seed/backfill completed.");
 }

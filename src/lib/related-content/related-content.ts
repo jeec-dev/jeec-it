@@ -1,5 +1,9 @@
+import {
+  $Enums,
+  type ContentEntityType,
+  type ContentRelationType,
+} from "@/generated/prisma";
 import { db } from "@/lib/db";
-import type { ContentEntityType } from "@/generated/prisma";
 import { sortAndDedupeRelatedCandidates } from "./sorting";
 import type {
   RelatedCandidate,
@@ -14,7 +18,7 @@ type SectionRecord = {
   title: string;
   description: string | null;
   layout: RelatedContentBlockView["sections"][number]["layout"];
-  relationType: string | null;
+  relationType: ContentRelationType | null;
   targetType: ContentEntityType | null;
   targetKindKey: string | null;
   maxItems: number | null;
@@ -25,25 +29,19 @@ function isWithinDateWindow(
   endsAt: Date | null | undefined,
   now: Date,
 ) {
-  if (startsAt && startsAt > now) {
-    return false;
-  }
-
-  if (endsAt && endsAt < now) {
-    return false;
-  }
-
+  if (startsAt && startsAt > now) return false;
+  if (endsAt && endsAt < now) return false;
   return true;
 }
 
 function isPublicTargetEntity(
   entity: RelatedTargetEntity & {
-    status?: string;
+    status?: $Enums.ContentEntityStatus;
     availableAt?: Date | null;
   },
   now: Date,
 ) {
-  if (entity.status !== "PUBLISHED") {
+  if (entity.status !== $Enums.ContentEntityStatus.PUBLISHED) {
     return false;
   }
 
@@ -70,27 +68,57 @@ function matchesSectionTarget(
 }
 
 function getDefaultEyebrow(entity: RelatedTargetEntity) {
-  if (entity.type === "MUSIC" && entity.kindKey === "TRACK") {
+  if (
+    entity.type === $Enums.ContentEntityType.MUSIC &&
+    entity.kindKey === "TRACK"
+  ) {
     return "Traccia";
   }
 
-  if (entity.type === "MUSIC" && entity.kindKey === "RELEASE") {
+  if (
+    entity.type === $Enums.ContentEntityType.MUSIC &&
+    entity.kindKey === "RELEASE"
+  ) {
     return "Release";
   }
 
-  if (entity.type === "EXPERIENCE") {
+  if (entity.type === $Enums.ContentEntityType.EXPERIENCE) {
     return "Esperienza";
   }
 
-  if (entity.type === "ARTICLE") {
+  if (entity.type === $Enums.ContentEntityType.ARTICLE) {
     return "Articolo";
   }
 
-  if (entity.type === "VIDEO") {
+  if (entity.type === $Enums.ContentEntityType.VIDEO) {
     return "Video";
   }
 
+  if (entity.type === $Enums.ContentEntityType.EVENT) {
+    return "Evento";
+  }
+
+  if (entity.type === $Enums.ContentEntityType.COMMERCE) {
+    return "Store";
+  }
+
+  if (entity.type === $Enums.ContentEntityType.EXTERNAL) {
+    return "Link";
+  }
+
   return entity.type;
+}
+
+function getDefaultCta(href: string | null | undefined) {
+  if (!href) {
+    return "In arrivo";
+  }
+
+  if (href.startsWith("http://") || href.startsWith("https://")) {
+    return "Apri link";
+  }
+
+  return "Esplora";
 }
 
 function toViewItem(candidate: RelatedCandidate): RelatedContentItemView {
@@ -105,13 +133,12 @@ function toViewItem(candidate: RelatedCandidate): RelatedContentItemView {
     title: candidate.overrides?.title ?? target.title,
     description: candidate.overrides?.description ?? target.description,
     eyebrow: candidate.overrides?.eyebrow ?? getDefaultEyebrow(target),
-    ctaLabel:
-      candidate.overrides?.ctaLabel ??
-      (href?.startsWith("http://") || href?.startsWith("https://")
-        ? "Apri link"
-        : "Esplora"),
+    ctaLabel: candidate.overrides?.ctaLabel ?? getDefaultCta(href),
     href,
-    imageUrl: candidate.overrides?.imageUrl ?? target.imageUrl,
+    imageUrl:
+      candidate.overrides?.imageUrl ??
+      candidate.targetEntity.imageUrl ??
+      undefined,
     isPinned: candidate.isPinned,
     isFeatured: candidate.isFeatured,
     publishedAt: target.publishedAt,
@@ -125,7 +152,10 @@ export async function getRelatedContentForEntity(
 
   const ownerEntity = await db.contentEntity.findUnique({
     where: { key: ownerEntityKey },
-    select: { id: true, key: true },
+    select: {
+      id: true,
+      key: true,
+    },
   });
 
   if (!ownerEntity) {
@@ -133,14 +163,18 @@ export async function getRelatedContentForEntity(
   }
 
   const block = await db.relatedContent.findUnique({
-    where: { ownerEntityId: ownerEntity.id },
+    where: {
+      ownerEntityId: ownerEntity.id,
+    },
     select: {
       id: true,
       title: true,
       description: true,
       sourceMode: true,
       sections: {
-        where: { isPublic: true },
+        where: {
+          isPublic: true,
+        },
         orderBy: [{ order: "asc" }, { priority: "desc" }],
         select: {
           id: true,
@@ -161,12 +195,15 @@ export async function getRelatedContentForEntity(
     return null;
   }
 
-  const sections = [];
+  const sections: RelatedContentBlockView["sections"] = [];
 
   for (const section of block.sections) {
     const candidates: RelatedCandidate[] = [];
 
-    if (block.sourceMode === "MANUAL" || block.sourceMode === "HYBRID") {
+    if (
+      block.sourceMode === $Enums.RelatedContentSourceMode.MANUAL ||
+      block.sourceMode === $Enums.RelatedContentSourceMode.HYBRID
+    ) {
       const manualItems = await db.relatedContentItem.findMany({
         where: {
           sectionId: section.id,
@@ -178,17 +215,9 @@ export async function getRelatedContentForEntity(
       });
 
       for (const item of manualItems) {
-        if (!isWithinDateWindow(item.startsAt, item.endsAt, now)) {
-          continue;
-        }
-
-        if (!isPublicTargetEntity(item.targetEntity, now)) {
-          continue;
-        }
-
-        if (!matchesSectionTarget(item.targetEntity, section)) {
-          continue;
-        }
+        if (!isWithinDateWindow(item.startsAt, item.endsAt, now)) continue;
+        if (!isPublicTargetEntity(item.targetEntity, now)) continue;
+        if (!matchesSectionTarget(item.targetEntity, section)) continue;
 
         candidates.push({
           source: "manual",
@@ -210,11 +239,14 @@ export async function getRelatedContentForEntity(
       }
     }
 
-    if (block.sourceMode === "AUTO" || block.sourceMode === "HYBRID") {
+    if (
+      block.sourceMode === $Enums.RelatedContentSourceMode.AUTO ||
+      block.sourceMode === $Enums.RelatedContentSourceMode.HYBRID
+    ) {
       const relations = await db.contentRelation.findMany({
         where: {
           sourceEntityId: ownerEntity.id,
-          status: "APPROVED",
+          status: $Enums.ContentRelationStatus.APPROVED,
           isPublic: true,
           ...(section.relationType ? { type: section.relationType } : {}),
         },

@@ -38,15 +38,15 @@ export type RelatedCandidate = {
 
 export type RelatedContentItemView = {
   id: string;
-  source: RelatedCandidateSource;
+  source: "manual" | "auto";
   type: ContentEntityType;
   kindKey: string;
   title: string;
   description: string | null;
-  eyebrow: string | null;
-  ctaLabel: string;
+  eyebrow?: string | null;
+  ctaLabel?: string | null;
   href: string | null;
-  imageUrl: string | null;
+  imageUrl?: string;
   isPinned: boolean;
   isFeatured: boolean;
   publishedAt: Date | null;

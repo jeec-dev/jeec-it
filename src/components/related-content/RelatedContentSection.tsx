@@ -13,7 +13,6 @@ export function RelatedContentSection({ section }: RelatedContentSectionProps) {
     <section className={styles.section} data-layout={layout}>
       <div className={styles.sectionHeader}>
         <div>
-          <p className={styles.sectionEyebrow}>{layout}</p>
           <h3>{section.title}</h3>
         </div>
 

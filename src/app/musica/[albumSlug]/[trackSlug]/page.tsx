@@ -47,7 +47,9 @@ export default async function TrackPage({ params }: TrackPageProps) {
           </aside>
         </section>
 
-        <RelatedContent albumSlug={album.slug} trackSlug={track.slug} />
+        <div className={styles.relatedContentSlot}>
+          <RelatedContent albumSlug={album.slug} trackSlug={track.slug} />
+        </div>
       </div>
     </main>
   );
