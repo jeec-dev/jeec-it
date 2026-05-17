@@ -31,19 +31,6 @@ export default async function TrackPage({ params }: TrackPageProps) {
 
   const { album, track, listeningLinks, relatedElements } = data;
 
-  const externalLinks = [
-    track.spotifyUrl ? { label: "Spotify", href: track.spotifyUrl } : null,
-    track.youtubeUrl ? { label: "YouTube", href: track.youtubeUrl } : null,
-    track.geniusUrl ? { label: "Genius", href: track.geniusUrl } : null,
-    track.appleMusicUrl
-      ? { label: "Apple Music", href: track.appleMusicUrl }
-      : null,
-    track.youtubeMusicUrl
-      ? { label: "YouTube Music", href: track.youtubeMusicUrl }
-      : null,
-    ...(track.externalLinks ?? []),
-  ].filter(Boolean) as { label: string; href: string }[];
-
   return (
     <main className={styles.page}>
       <div className={styles.inner}>
@@ -81,67 +68,49 @@ export default async function TrackPage({ params }: TrackPageProps) {
                 Credits: {track.credits.join(", ")}
               </p>
             ) : null}
-
-            {externalLinks.length ? (
-              <div className={styles.actions}>
-                {externalLinks.map((link) => (
-                  <a
-                    key={`${link.label}-${link.href}`}
-                    href={link.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.action}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            ) : null}
           </div>
         </section>
 
         <section className={styles.sections}>
-          <section className={styles.sections}>
-            <ListeningPanel links={listeningLinks} />
+          <ListeningPanel links={listeningLinks} />
 
-            <div className={styles.panel}>
-              <h2 className={styles.panelTitle}>Lyrics</h2>
+          <div className={styles.panel}>
+            <h2 className={styles.panelTitle}>Lyrics</h2>
 
-              {track.geniusSongId ? (
-                <div className={styles.geniusEmbed}>
-                  <GeniusEmbed
-                    songId={track.geniusSongId}
-                    title={track.title}
-                    geniusUrl={track.geniusUrl}
-                  />
-                </div>
-              ) : track.geniusUrl ? (
-                <p className={styles.empty}>
-                  Testo disponibile su{" "}
-                  <a href={track.geniusUrl} target="_blank" rel="noreferrer">
-                    Genius
-                  </a>
-                  . L’embed verrà attivato quando sarà collegato il Genius song
-                  ID.
-                </p>
-              ) : track.lyrics ? (
-                <div className={styles.lyrics}>{track.lyrics}</div>
-              ) : (
-                <p className={styles.empty}>
-                  Testo ufficiale non ancora collegato per questa traccia.
-                </p>
-              )}
-            </div>
-
-            {track.loreEntry ? (
-              <div className={styles.panel}>
-                <h2 className={styles.panelTitle}>Lore</h2>
-                <p className={styles.empty}>{track.loreEntry}</p>
+            {track.geniusSongId ? (
+              <div className={styles.geniusEmbed}>
+                <GeniusEmbed
+                  songId={track.geniusSongId}
+                  title={track.title}
+                  geniusUrl={track.geniusUrl}
+                />
               </div>
-            ) : null}
+            ) : track.geniusUrl ? (
+              <p className={styles.empty}>
+                Testo disponibile su{" "}
+                <a href={track.geniusUrl} target="_blank" rel="noreferrer">
+                  Genius
+                </a>
+                . L’embed verrà attivato quando sarà collegato il Genius song
+                ID.
+              </p>
+            ) : track.lyrics ? (
+              <div className={styles.lyrics}>{track.lyrics}</div>
+            ) : (
+              <p className={styles.empty}>
+                Testo ufficiale non ancora collegato per questa traccia.
+              </p>
+            )}
+          </div>
 
-            <RelatedElements elements={relatedElements} />
-          </section>
+          {track.loreEntry ? (
+            <div className={styles.panel}>
+              <h2 className={styles.panelTitle}>Lore</h2>
+              <p className={styles.empty}>{track.loreEntry}</p>
+            </div>
+          ) : null}
+
+          <RelatedElements elements={relatedElements} />
         </section>
       </div>
     </main>
