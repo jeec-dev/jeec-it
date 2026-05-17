@@ -1,0 +1,142 @@
+.panel {
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(241 187 223 / 0.08),
+      transparent 26rem
+    ),
+    rgb(255 255 255 / 0.035);
+  padding: 1rem;
+}
+
+.header {
+  max-width: 42rem;
+  margin-bottom: 1.25rem;
+}
+
+.eyebrow,
+.cardEyebrow,
+.cardCta {
+  font-family: monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  color: var(--jeec-new-pink);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.description {
+  margin: 0.75rem 0 0;
+  color: rgb(249 235 244 / 0.56);
+  line-height: 1.65;
+}
+
+.sections {
+  display: grid;
+  gap: 1rem;
+}
+
+.section {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.sectionHeader p {
+  margin: 0.35rem 0 0;
+  color: rgb(249 235 244 / 0.52);
+  line-height: 1.55;
+}
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.card {
+  display: grid;
+  gap: 0.45rem;
+  min-height: 9rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 1rem;
+  background:
+    linear-gradient(135deg, rgb(241 187 223 / 0.08), transparent 52%),
+    rgb(12 10 25 / 0.58);
+  padding: 1rem;
+  color: var(--jeec-moon-white);
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgb(241 187 223 / 0.42);
+  background:
+    linear-gradient(135deg, rgb(241 187 223 / 0.13), transparent 56%),
+    rgb(12 10 25 / 0.74);
+}
+
+.cardEyebrow {
+  font-size: 0.62rem;
+  color: var(--jeec-new-pink);
+}
+
+.card strong {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.card p {
+  margin: 0;
+  color: rgb(249 235 244 / 0.56);
+  line-height: 1.55;
+}
+
+.cardCta {
+  align-self: end;
+  margin-top: 0.45rem;
+  font-size: 0.66rem;
+  color: rgb(249 235 244 / 0.58);
+}
+
+.section[data-layout="featured"] .card {
+  min-height: 12rem;
+}
+
+@media (min-width: 768px) {
+  .panel {
+    padding: 1.25rem;
+  }
+
+  .section[data-layout="grid"] .grid,
+  .section[data-layout="rail"] .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .section[data-layout="compact"] .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .section[data-layout="featured"] .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

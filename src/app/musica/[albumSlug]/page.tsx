@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { albums } from "@/data/albums";
 import styles from "./AlbumDetail.module.css";
 import {
   getCatalogAlbumBySlug,
   getCatalogAlbumSlugs,
 } from "@/lib/music/catalog";
+import { RelatedContent } from "@/components/related-content/RelatedContent";
 
 type AlbumPageProps = {
   params: Promise<{
@@ -28,7 +28,7 @@ function getTypeLabel(type: string) {
 
 export async function generateMetadata({ params }: AlbumPageProps) {
   const { albumSlug } = await params;
-  const album = albums.find((item) => item.slug === albumSlug);
+  const album = await getCatalogAlbumBySlug(albumSlug);
 
   if (!album) {
     return {
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: AlbumPageProps) {
 
   return {
     title: `${album.title} | JeeC`,
-    description: album.description,
+    description: album.description ?? undefined,
   };
 }
 
@@ -119,6 +119,8 @@ export default async function AlbumDetailPage({ params }: AlbumPageProps) {
             ))}
           </div>
         </section>
+
+        <RelatedContent releaseSlug={album.slug} />
       </div>
     </main>
   );

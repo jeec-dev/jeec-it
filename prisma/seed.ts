@@ -1,6 +1,4 @@
 import { config as loadEnv } from "dotenv";
-import { Pool } from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
 import { db } from "../src/lib/db";
 
 loadEnv({ path: ".env" });
@@ -11,9 +9,6 @@ const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 if (!connectionString) {
   throw new Error("Missing DIRECT_URL or DATABASE_URL for seed script.");
 }
-
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
 
 type SourceSeed = {
   code: string;
@@ -610,66 +605,42 @@ async function seed() {
   for (const releaseSeed of releases) {
     const releasePublishedAt = toSeedDate(releaseSeed.publishedAt);
 
-    const release = await db.release.upsert({
-      where: { slug: releaseSeed.slug },
-      update: {
-        title: releaseSeed.title,
-        type: releaseSeed.type,
-        status: "PUBLISHED",
-        year: releaseSeed.year,
-        publishedAt: releasePublishedAt,
-        label: releaseSeed.label,
-        description: releaseSeed.description,
-        lore: releaseSeed.lore,
-        artistId: artist.id,
-      },
-      create: {
+    await db.release.updateMany({
+      where: {
         slug: releaseSeed.slug,
-        title: releaseSeed.title,
-        type: releaseSeed.type,
-        status: "PUBLISHED",
-        year: releaseSeed.year,
-        publishedAt: releasePublishedAt,
-        label: releaseSeed.label,
-        description: releaseSeed.description,
-        lore: releaseSeed.lore,
-        artistId: artist.id,
       },
-      select: { id: true, slug: true },
+      data: {
+        publishedAt: releasePublishedAt,
+      },
     });
 
-    releaseBySlug.set(release.slug, { id: release.id });
+    const release = await db.release.findUnique({
+      where: {
+        slug: releaseSeed.slug,
+      },
+      select: {
+        id: true,
+        slug: true,
+        publishedAt: true,
+      },
+    });
+
+    if (!release) {
+      continue;
+    }
 
     for (const trackSeed of releaseSeed.tracks ?? []) {
       const trackPublishedAt =
         toSeedDate(trackSeed.publishedAt) ?? releasePublishedAt;
 
-      const track = await db.track.upsert({
+      await db.track.updateMany({
         where: {
-          releaseId_slug: {
-            releaseId: release.id,
-            slug: trackSeed.slug,
-          },
-        },
-        update: {
-          title: trackSeed.title,
-          position: trackSeed.position,
-          durationMs: trackSeed.durationMs,
-          publishedAt: trackPublishedAt,
-        },
-        create: {
           releaseId: release.id,
           slug: trackSeed.slug,
-          title: trackSeed.title,
-          position: trackSeed.position,
-          durationMs: trackSeed.durationMs,
+        },
+        data: {
           publishedAt: trackPublishedAt,
         },
-        select: { id: true, slug: true },
-      });
-
-      trackByReleaseAndSlug.set(`${release.slug}:${track.slug}`, {
-        id: track.id,
       });
     }
   }
@@ -806,7 +777,7 @@ async function seed() {
   for (const releaseSeed of releases) {
     const releasePublishedAt = toSeedDate(releaseSeed.publishedAt);
 
-    const result = await db.release.updateMany({
+    await db.release.updateMany({
       where: {
         slug: releaseSeed.slug,
       },
@@ -854,5 +825,4 @@ seed()
   })
   .finally(async () => {
     await db.$disconnect();
-    await pool.end();
   });
