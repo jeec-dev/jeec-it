@@ -1,14 +1,9 @@
 import { config as loadEnv } from "dotenv";
+import { albums as staticAlbums } from "../src/data/albums";
 import { db } from "../src/lib/db";
 
 loadEnv({ path: ".env" });
 loadEnv({ path: ".env.local", override: true });
-
-const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
-
-if (!connectionString) {
-  throw new Error("Missing DIRECT_URL or DATABASE_URL for seed script.");
-}
 
 type SourceSeed = {
   code: string;
@@ -22,12 +17,19 @@ type TrackSeed = {
   position: number;
   durationMs?: number;
   publishedAt?: string;
+  spotifyUrl?: string;
+  appleMusicUrl?: string;
+  youtubeMusicUrl?: string;
+  youtubeUrl?: string;
+  geniusUrl?: string;
+  geniusSongId?: string;
 };
 
 type ReleaseSeed = {
   slug: string;
   title: string;
   type: "ALBUM" | "EP" | "SINGLE" | "DELUXE" | "COMPILATION" | "LIVE" | "DEMO";
+  coverUrl: string;
   year?: number;
   publishedAt?: string;
   label?: string;
@@ -36,8 +38,29 @@ type ReleaseSeed = {
   tracks?: TrackSeed[];
 };
 
+type VerificationStatus =
+  | "PENDING"
+  | "VERIFIED"
+  | "CONFLICT"
+  | "REJECTED"
+  | "MANUAL";
+
 function toSeedDate(value?: string) {
   return value ? new Date(`${value}T00:00:00.000Z`) : null;
+}
+
+function durationToMs(duration?: string) {
+  if (!duration) {
+    return undefined;
+  }
+
+  const [minutes, seconds] = duration.split(":").map(Number);
+
+  if (!Number.isFinite(minutes) || !Number.isFinite(seconds)) {
+    return undefined;
+  }
+
+  return (minutes * 60 + seconds) * 1000;
 }
 
 const externalSources: SourceSeed[] = [
@@ -60,6 +83,11 @@ const externalSources: SourceSeed[] = [
     code: "youtube",
     name: "YouTube",
     baseUrl: "https://www.youtube.com",
+  },
+  {
+    code: "youtube_music",
+    name: "YouTube Music",
+    baseUrl: "https://music.youtube.com",
   },
   {
     code: "deezer",
@@ -198,7 +226,7 @@ const newOriginalTracks: TrackSeed[] = [
   },
   {
     position: 7,
-    slug: "inverno-soldi-rick-morty",
+    slug: "inverno-e-soldi-rick-e-morty",
     title: "Inverno & Soldi (Rick & Morty)",
   },
   { position: 8, slug: "if-i-die-tonight", title: "If I Die Tonight" },
@@ -238,11 +266,12 @@ const newDeluxeTracks: TrackSeed[] = [
   },
 ];
 
-const releases: ReleaseSeed[] = [
+const baseReleases: ReleaseSeed[] = [
   {
     slug: "new-tutto-quello-che-non-ti-ho-detto",
     title: "NEW (Tutto Quello Che Non Ti Ho Detto)",
     type: "DELUXE",
+    coverUrl: "/images/covers/new-tutto-quello-che-non-ti-ho-detto.jpg",
     year: 2026,
     publishedAt: "2026-02-06",
     label: "Urban Film Music",
@@ -254,6 +283,7 @@ const releases: ReleaseSeed[] = [
     slug: "new",
     title: "NEW",
     type: "ALBUM",
+    coverUrl: "/images/covers/new.jpg",
     year: 2021,
     publishedAt: "2021-02-05",
     label: "1254940 Records DK",
@@ -263,6 +293,7 @@ const releases: ReleaseSeed[] = [
     slug: "19-aprile",
     title: "19 Aprile",
     type: "ALBUM",
+    coverUrl: "/images/covers/19-aprile.jpg",
     year: 2019,
     publishedAt: "2019-04-19",
     tracks: nineteenAprileTracks,
@@ -271,6 +302,7 @@ const releases: ReleaseSeed[] = [
     slug: "umami",
     title: "Umami",
     type: "SINGLE",
+    coverUrl: "/images/covers/umami.jpg",
     year: 2024,
     publishedAt: "2024-10-18",
     tracks: [{ position: 1, slug: "umami", title: "Umami" }],
@@ -279,6 +311,7 @@ const releases: ReleaseSeed[] = [
     slug: "sentoleiche",
     title: "Sentoleiche",
     type: "SINGLE",
+    coverUrl: "/images/covers/sentoleiche.jpg",
     year: 2023,
     publishedAt: "2023-10-27",
     tracks: [{ position: 1, slug: "sentoleiche", title: "Sentoleiche" }],
@@ -287,6 +320,7 @@ const releases: ReleaseSeed[] = [
     slug: "da-domani",
     title: "Da domani",
     type: "SINGLE",
+    coverUrl: "/images/covers/da-domani.jpg",
     year: 2023,
     publishedAt: "2023-06-16",
     tracks: [{ position: 1, slug: "da-domani", title: "Da domani" }],
@@ -295,6 +329,7 @@ const releases: ReleaseSeed[] = [
     slug: "dentro-una-fantasy",
     title: "Dentro Una Fantasy",
     type: "SINGLE",
+    coverUrl: "/images/covers/dentro-una-fantasy.jpg",
     year: 2023,
     publishedAt: "2023-03-10",
     tracks: [
@@ -305,6 +340,7 @@ const releases: ReleaseSeed[] = [
     slug: "muovi-single",
     title: "Muovi",
     type: "SINGLE",
+    coverUrl: "/images/covers/muovi.jpg",
     year: 2022,
     publishedAt: "2022-06-17",
     tracks: [{ position: 1, slug: "muovi", title: "MUOVI" }],
@@ -313,6 +349,7 @@ const releases: ReleaseSeed[] = [
     slug: "pedine-come-voi-single",
     title: "Pedine (Come Voi)",
     type: "SINGLE",
+    coverUrl: "/images/covers/pedine-come-voi.jpg",
     year: 2022,
     publishedAt: "2022-04-01",
     tracks: [
@@ -323,6 +360,7 @@ const releases: ReleaseSeed[] = [
     slug: "una-formica-sulla-34esima-strada-single",
     title: "Una Formica Sulla 34esima Strada",
     type: "SINGLE",
+    coverUrl: "/images/covers/una-formica-sulla-34esima-strada.jpg",
     year: 2022,
     publishedAt: "2022-01-13",
     tracks: [
@@ -337,6 +375,7 @@ const releases: ReleaseSeed[] = [
     slug: "stammi-vicino-dai-single",
     title: "Stammi Vicino Dai",
     type: "SINGLE",
+    coverUrl: "/images/covers/new.jpg",
     year: 2021,
     publishedAt: "2021-02-05",
     tracks: [
@@ -347,6 +386,7 @@ const releases: ReleaseSeed[] = [
     slug: "hope",
     title: "Hope",
     type: "SINGLE",
+    coverUrl: "/images/covers/hope.jpg",
     year: 2020,
     publishedAt: "2020-09-24",
     tracks: [{ position: 1, slug: "hope", title: "Hope" }],
@@ -355,6 +395,7 @@ const releases: ReleaseSeed[] = [
     slug: "if-i-die-tonight-acoustic-version-single",
     title: "If I Die Tonight (Acoustic Version)",
     type: "SINGLE",
+    coverUrl: "/images/covers/if-i-die-tonight-acoustic-version.jpg",
     year: 2020,
     publishedAt: "2020-05-22",
     tracks: [
@@ -369,6 +410,7 @@ const releases: ReleaseSeed[] = [
     slug: "if-i-die-tonight-single",
     title: "If I Die Tonight",
     type: "SINGLE",
+    coverUrl: "/images/covers/if-i-die-tonight.jpg",
     year: 2020,
     publishedAt: "2020-02-28",
     tracks: [
@@ -379,6 +421,7 @@ const releases: ReleaseSeed[] = [
     slug: "vada-come-vada-single",
     title: "Vada Come Vada",
     type: "SINGLE",
+    coverUrl: "/images/covers/vada-come-vada.jpg",
     year: 2019,
     publishedAt: "2019-12-14",
     tracks: [{ position: 1, slug: "vada-come-vada", title: "Vada Come Vada" }],
@@ -387,6 +430,7 @@ const releases: ReleaseSeed[] = [
     slug: "the-right-path-to-climb-ntd-version",
     title: "The Right Path to Climb (Ntd Version)",
     type: "SINGLE",
+    coverUrl: "/images/covers/19-aprile.jpg",
     year: 2019,
     publishedAt: "2019-04-19",
     tracks: [
@@ -401,6 +445,7 @@ const releases: ReleaseSeed[] = [
     slug: "not-enough",
     title: "Not Enough",
     type: "SINGLE",
+    coverUrl: "/images/covers/not-enough.jpg",
     year: 2019,
     publishedAt: "2019-04-19",
     tracks: [{ position: 1, slug: "not-enough", title: "Not Enough" }],
@@ -409,6 +454,7 @@ const releases: ReleaseSeed[] = [
     slug: "one-beautiful-day",
     title: "One Beautiful Day",
     type: "SINGLE",
+    coverUrl: "/images/covers/one-beautiful-day.jpg",
     year: 2019,
     publishedAt: "2019-04-19",
     tracks: [
@@ -417,6 +463,36 @@ const releases: ReleaseSeed[] = [
   },
 ];
 
+function getStaticAlbum(slug: string) {
+  return staticAlbums.find((album) => album.slug === slug);
+}
+
+function getStaticTrack(albumSlug: string, trackSlug: string) {
+  return getStaticAlbum(albumSlug)?.tracks.find((track) => {
+    return track.slug === trackSlug;
+  });
+}
+
+function enrichTrackSeed(releaseSlug: string, trackSeed: TrackSeed): TrackSeed {
+  const staticTrack = getStaticTrack(releaseSlug, trackSeed.slug);
+
+  return {
+    ...trackSeed,
+    durationMs: trackSeed.durationMs ?? durationToMs(staticTrack?.duration),
+    spotifyUrl: trackSeed.spotifyUrl ?? staticTrack?.spotifyUrl,
+    appleMusicUrl: trackSeed.appleMusicUrl ?? staticTrack?.appleMusicUrl,
+    youtubeMusicUrl: trackSeed.youtubeMusicUrl ?? staticTrack?.youtubeMusicUrl,
+    youtubeUrl: trackSeed.youtubeUrl ?? staticTrack?.youtubeUrl,
+    geniusUrl: trackSeed.geniusUrl ?? staticTrack?.geniusUrl,
+    geniusSongId: trackSeed.geniusSongId ?? staticTrack?.geniusSongId,
+  };
+}
+
+const releases: ReleaseSeed[] = baseReleases.map((release) => ({
+  ...release,
+  tracks: release.tracks?.map((track) => enrichTrackSeed(release.slug, track)),
+}));
+
 async function getSourceId(code: string) {
   const source = await db.externalSource.findUnique({
     where: { code },
@@ -424,7 +500,7 @@ async function getSourceId(code: string) {
   });
 
   if (!source) {
-    throw new Error(`Missing ExternalSource: ${code}`);
+    throw new Error(`Missing ExternalSource with code: ${code}`);
   }
 
   return source.id;
@@ -442,28 +518,52 @@ async function upsertExternalIdentifier(input: {
     | "PLAYLIST";
   externalId: string;
   externalUrl?: string;
+  verificationStatus?: VerificationStatus;
   artistId?: string;
   releaseId?: string;
   trackId?: string;
 }) {
   const sourceId = await getSourceId(input.sourceCode);
+  const verificationStatus = input.verificationStatus ?? "VERIFIED";
 
-  return db.externalIdentifier.upsert({
+  const ownerCount = [input.artistId, input.releaseId, input.trackId].filter(
+    Boolean,
+  ).length;
+
+  if (ownerCount !== 1) {
+    throw new Error(
+      `ExternalIdentifier ${input.sourceCode}:${input.entityType}:${input.externalId} must have exactly one owner id.`,
+    );
+  }
+
+  const existing = await db.externalIdentifier.findFirst({
     where: {
-      sourceId_entityType_externalId: {
-        sourceId,
-        entityType: input.entityType,
-        externalId: input.externalId,
-      },
-    },
-    update: {
-      externalUrl: input.externalUrl,
+      sourceId,
+      entityType: input.entityType,
+      externalId: input.externalId,
       artistId: input.artistId,
       releaseId: input.releaseId,
       trackId: input.trackId,
-      verificationStatus: "VERIFIED",
     },
-    create: {
+    select: {
+      id: true,
+    },
+  });
+
+  if (existing) {
+    return db.externalIdentifier.update({
+      where: {
+        id: existing.id,
+      },
+      data: {
+        externalUrl: input.externalUrl,
+        verificationStatus,
+      },
+    });
+  }
+
+  return db.externalIdentifier.create({
+    data: {
       sourceId,
       entityType: input.entityType,
       externalId: input.externalId,
@@ -471,7 +571,7 @@ async function upsertExternalIdentifier(input: {
       artistId: input.artistId,
       releaseId: input.releaseId,
       trackId: input.trackId,
-      verificationStatus: "VERIFIED",
+      verificationStatus,
     },
   });
 }
@@ -515,6 +615,8 @@ async function upsertExternalLink(input: {
         isPrimary: input.isPrimary ?? false,
         isPublic: true,
         order: input.order ?? 0,
+        releaseId: input.releaseId,
+        trackId: input.trackId,
       },
     });
   }
@@ -531,6 +633,126 @@ async function upsertExternalLink(input: {
       releaseId: input.releaseId,
       trackId: input.trackId,
     },
+  });
+}
+
+async function getTrackExternalLinks(trackSeed: TrackSeed) {
+  return [
+    trackSeed.spotifyUrl
+      ? {
+          sourceCode: "spotify",
+          type: "STREAMING" as const,
+          label: "Spotify",
+          url: trackSeed.spotifyUrl,
+          isPrimary: true,
+          order: 10,
+        }
+      : null,
+    trackSeed.appleMusicUrl
+      ? {
+          sourceCode: "apple_music",
+          type: "STREAMING" as const,
+          label: "Apple Music",
+          url: trackSeed.appleMusicUrl,
+          isPrimary: false,
+          order: 20,
+        }
+      : null,
+    trackSeed.youtubeMusicUrl
+      ? {
+          sourceCode: "youtube_music",
+          type: "STREAMING" as const,
+          label: "YouTube Music",
+          url: trackSeed.youtubeMusicUrl,
+          isPrimary: false,
+          order: 30,
+        }
+      : null,
+    trackSeed.youtubeUrl
+      ? {
+          sourceCode: "youtube",
+          type: "VIDEO" as const,
+          label: "YouTube",
+          url: trackSeed.youtubeUrl,
+          isPrimary: false,
+          order: 40,
+        }
+      : null,
+    trackSeed.geniusUrl
+      ? {
+          sourceCode: "genius",
+          type: "LYRICS" as const,
+          label: "Genius",
+          url: trackSeed.geniusUrl,
+          isPrimary: false,
+          order: 50,
+        }
+      : null,
+  ].filter((item): item is NonNullable<typeof item> => item !== null);
+}
+
+async function refreshTrackExternalLinks(
+  trackId: string,
+  trackSeed: TrackSeed,
+) {
+  const managedSourceIds = await Promise.all(
+    ["spotify", "apple_music", "youtube_music", "youtube", "genius"].map(
+      getSourceId,
+    ),
+  );
+
+  await db.externalLink.deleteMany({
+    where: {
+      trackId,
+      sourceId: {
+        in: managedSourceIds,
+      },
+      type: {
+        in: ["STREAMING", "VIDEO", "LYRICS"],
+      },
+    },
+  });
+
+  const links = await getTrackExternalLinks(trackSeed);
+
+  for (const link of links) {
+    await upsertExternalLink({
+      sourceCode: link.sourceCode,
+      type: link.type,
+      label: link.label,
+      url: link.url,
+      isPrimary: link.isPrimary,
+      order: link.order,
+      trackId,
+    });
+  }
+}
+
+async function refreshTrackGeniusIdentifier(
+  trackId: string,
+  trackSeed: TrackSeed,
+) {
+  const geniusSourceId = await getSourceId("genius");
+
+  await db.externalIdentifier.deleteMany({
+    where: {
+      trackId,
+      sourceId: geniusSourceId,
+      entityType: "TRACK",
+    },
+  });
+
+  if (!trackSeed.geniusSongId) {
+    return;
+  }
+
+  await upsertExternalIdentifier({
+    sourceCode: "genius",
+    entityType: "TRACK",
+    externalId: trackSeed.geniusSongId,
+    externalUrl: trackSeed.geniusUrl,
+    verificationStatus: "MANUAL",
+    trackId,
   });
 }
 
@@ -605,45 +827,85 @@ async function seed() {
   for (const releaseSeed of releases) {
     const releasePublishedAt = toSeedDate(releaseSeed.publishedAt);
 
-    await db.release.updateMany({
+    const release = await db.release.upsert({
       where: {
         slug: releaseSeed.slug,
       },
-      data: {
+      update: {
+        artistId: artist.id,
+        title: releaseSeed.title,
+        type: releaseSeed.type,
+        status: "PUBLISHED",
+        year: releaseSeed.year,
         publishedAt: releasePublishedAt,
+        coverUrl: releaseSeed.coverUrl,
+        label: releaseSeed.label,
+        description: releaseSeed.description,
+        lore: releaseSeed.lore,
       },
-    });
-
-    const release = await db.release.findUnique({
-      where: {
+      create: {
+        artistId: artist.id,
         slug: releaseSeed.slug,
+        title: releaseSeed.title,
+        type: releaseSeed.type,
+        status: "PUBLISHED",
+        year: releaseSeed.year,
+        publishedAt: releasePublishedAt,
+        coverUrl: releaseSeed.coverUrl,
+        label: releaseSeed.label,
+        description: releaseSeed.description,
+        lore: releaseSeed.lore,
       },
       select: {
         id: true,
         slug: true,
-        publishedAt: true,
       },
     });
 
-    if (!release) {
-      continue;
-    }
+    releaseBySlug.set(release.slug, { id: release.id });
 
     for (const trackSeed of releaseSeed.tracks ?? []) {
       const trackPublishedAt =
         toSeedDate(trackSeed.publishedAt) ?? releasePublishedAt;
 
-      await db.track.updateMany({
+      const track = await db.track.upsert({
         where: {
-          releaseId: release.id,
-          slug: trackSeed.slug,
+          releaseId_slug: {
+            releaseId: release.id,
+            slug: trackSeed.slug,
+          },
         },
-        data: {
+        update: {
+          title: trackSeed.title,
+          position: trackSeed.position,
+          durationMs: trackSeed.durationMs,
           publishedAt: trackPublishedAt,
         },
+        create: {
+          releaseId: release.id,
+          slug: trackSeed.slug,
+          title: trackSeed.title,
+          position: trackSeed.position,
+          durationMs: trackSeed.durationMs,
+          publishedAt: trackPublishedAt,
+        },
+        select: {
+          id: true,
+        },
       });
+
+      trackByReleaseAndSlug.set(`${release.slug}:${trackSeed.slug}`, {
+        id: track.id,
+      });
+
+      await refreshTrackExternalLinks(track.id, trackSeed);
+      await refreshTrackGeniusIdentifier(track.id, trackSeed);
     }
   }
+
+  console.log(
+    "✅ Canonical releases, tracks, cover URLs and track links seeded.",
+  );
 
   const newDeluxe = releaseBySlug.get("new-tutto-quello-che-non-ti-ho-detto");
   const newOriginal = releaseBySlug.get("new");
@@ -702,6 +964,14 @@ async function seed() {
   }
 
   if (newOriginal) {
+    await upsertExternalIdentifier({
+      sourceCode: "spotify",
+      entityType: "RELEASE",
+      externalId: "4JwxzP77OVoH90y5owgaTI",
+      externalUrl: "https://open.spotify.com/album/4JwxzP77OVoH90y5owgaTI",
+      releaseId: newOriginal.id,
+    });
+
     await upsertExternalLink({
       sourceCode: "official_site",
       type: "OTHER",
@@ -709,6 +979,16 @@ async function seed() {
       url: "https://www.jeec.it/musica/new",
       isPrimary: true,
       order: 0,
+      releaseId: newOriginal.id,
+    });
+
+    await upsertExternalLink({
+      sourceCode: "spotify",
+      type: "STREAMING",
+      label: "Ascolta su Spotify",
+      url: "https://open.spotify.com/album/4JwxzP77OVoH90y5owgaTI",
+      isPrimary: true,
+      order: 1,
       releaseId: newOriginal.id,
     });
   }
@@ -774,46 +1054,6 @@ async function seed() {
     });
   }
 
-  for (const releaseSeed of releases) {
-    const releasePublishedAt = toSeedDate(releaseSeed.publishedAt);
-
-    await db.release.updateMany({
-      where: {
-        slug: releaseSeed.slug,
-      },
-      data: {
-        publishedAt: releasePublishedAt,
-      },
-    });
-
-    const release = await db.release.findUnique({
-      where: {
-        slug: releaseSeed.slug,
-      },
-      select: {
-        id: true,
-        slug: true,
-        publishedAt: true,
-      },
-    });
-
-    for (const trackSeed of releaseSeed.tracks ?? []) {
-      const trackPublishedAt =
-        toSeedDate(trackSeed.publishedAt) ?? releasePublishedAt;
-
-      await db.track.updateMany({
-        where: {
-          releaseId: release?.id,
-          slug: trackSeed.slug,
-        },
-        data: {
-          publishedAt: trackPublishedAt,
-        },
-      });
-    }
-  }
-
-  console.log("✅ Release and track publication dates backfilled.");
   console.log("✅ Canonical JeeC catalog seed completed.");
 }
 

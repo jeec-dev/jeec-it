@@ -47,13 +47,18 @@ model ExternalIdentifier {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([sourceId, entityType, externalId])
+  
   @@index([entityType])
   @@index([artistId])
   @@index([releaseId])
   @@index([trackId])
   @@index([verificationStatus])
+  @@index([sourceId, entityType, externalId])
+
+  @@unique([sourceId, entityType, externalId, artistId], name: "external_identifier_artist_unique")
+  @@unique([sourceId, entityType, externalId, releaseId], name: "external_identifier_release_unique")
+  @@unique([sourceId, entityType, externalId, trackId], name: "external_identifier_track_unique")
+  
 }
 
 model ExternalLink {

@@ -25,6 +25,8 @@ model Release {
   type        ReleaseType
   status      PublishStatus @default(DRAFT)
 
+  coverUrl String?
+
   year        Int?
   publishedAt DateTime?
   label       String?

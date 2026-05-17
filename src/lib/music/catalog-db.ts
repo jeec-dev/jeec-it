@@ -19,6 +19,17 @@ export type DbCatalogTrack = {
       name: string;
     };
   }[];
+  externalIds: {
+    id: string;
+    entityType: string;
+    externalId: string;
+    externalUrl: string | null;
+    verificationStatus: string;
+    source: {
+      code: string;
+      name: string;
+    };
+  }[];
 };
 
 export type DbCatalogRelease = {
@@ -31,6 +42,7 @@ export type DbCatalogRelease = {
   label: string | null;
   description: string | null;
   lore: string | null;
+  coverUrl: string | null;
   artist: {
     slug: string;
     stageName: string;
@@ -83,6 +95,17 @@ export async function getDbCatalogReleases(): Promise<DbCatalogRelease[]> {
               isPublic: true,
             },
             orderBy: [{ order: "asc" }, { label: "asc" }],
+            include: {
+              source: {
+                select: {
+                  code: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          externalIds: {
+            orderBy: [{ entityType: "asc" }, { externalId: "asc" }],
             include: {
               source: {
                 select: {
@@ -149,6 +172,17 @@ export async function getDbCatalogReleaseBySlug(
               isPublic: true,
             },
             orderBy: [{ order: "asc" }, { label: "asc" }],
+            include: {
+              source: {
+                select: {
+                  code: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          externalIds: {
+            orderBy: [{ entityType: "asc" }, { externalId: "asc" }],
             include: {
               source: {
                 select: {
@@ -226,6 +260,17 @@ export async function getDbCatalogTrackBySlugs(
           isPublic: true,
         },
         orderBy: [{ order: "asc" }, { label: "asc" }],
+        include: {
+          source: {
+            select: {
+              code: true,
+              name: true,
+            },
+          },
+        },
+      },
+      externalIds: {
+        orderBy: [{ entityType: "asc" }, { externalId: "asc" }],
         include: {
           source: {
             select: {

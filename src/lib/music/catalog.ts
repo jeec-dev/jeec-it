@@ -1,6 +1,7 @@
 import { albums as staticAlbums } from "@/data/albums";
 import type { Album, Track } from "@/types/music";
 import { dbReleaseToAlbum } from "@/lib/music/catalog-adapter";
+import { getStableEmbedUrl } from "@/lib/music/embeds";
 import {
   getDbCatalogReleaseBySlug,
   getDbCatalogReleases,
@@ -105,45 +106,6 @@ function getPlatformOrder(sourceCode: string, fallbackOrder: number) {
   }
 
   return index;
-}
-
-function getYouTubeEmbedUrl(url: string) {
-  try {
-    const parsedUrl = new URL(url);
-    const videoId = parsedUrl.hostname.includes("youtu.be")
-      ? parsedUrl.pathname.replace("/", "")
-      : parsedUrl.searchParams.get("v");
-
-    if (!videoId) {
-      return undefined;
-    }
-
-    return `https://www.youtube-nocookie.com/embed/${videoId}`;
-  } catch {
-    return undefined;
-  }
-}
-
-function getSoundCloudEmbedUrl(url: string) {
-  try {
-    const encodedUrl = encodeURIComponent(url);
-
-    return `https://w.soundcloud.com/player/?url=${encodedUrl}&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`;
-  } catch {
-    return undefined;
-  }
-}
-
-function getStableEmbedUrl(sourceCode: string, url: string) {
-  if (sourceCode === "youtube" || sourceCode === "youtube_music") {
-    return getYouTubeEmbedUrl(url);
-  }
-
-  if (sourceCode === "soundcloud") {
-    return getSoundCloudEmbedUrl(url);
-  }
-
-  return undefined;
 }
 
 function buildListeningLinksFromDbTrack(track: {
