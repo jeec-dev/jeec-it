@@ -88,12 +88,21 @@ export default async function AdminArticlesPage() {
                     <td>{formatDate(article.renderedAt)}</td>
                     <td>v{article.contentVersion}</td>
                     <td>
-                      <Link
-                        className={styles.previewLink}
-                        href={`/diario-di-jay/${article.slug}`}
-                      >
-                        Apri
-                      </Link>
+                      <div className={styles.actions}>
+                        <Link
+                          className={styles.previewLink}
+                          href={`/admin/articles/${article.id}`}
+                        >
+                          Admin
+                        </Link>
+
+                        <Link
+                          className={styles.previewLink}
+                          href={`/diario-di-jay/${article.slug}`}
+                        >
+                          Public
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}

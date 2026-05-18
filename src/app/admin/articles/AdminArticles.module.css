@@ -3,8 +3,16 @@
   padding: 7rem 1.25rem 4rem;
   color: var(--jeec-moon-white);
   background:
-    radial-gradient(circle at top left, rgba(125, 247, 240, 0.16), transparent 34rem),
-    radial-gradient(circle at bottom right, rgba(241, 187, 223, 0.14), transparent 34rem),
+    radial-gradient(
+      circle at top left,
+      rgba(125, 247, 240, 0.16),
+      transparent 34rem
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(241, 187, 223, 0.14),
+      transparent 34rem
+    ),
     var(--jeec-space-black);
 }
 
@@ -136,6 +144,12 @@
   color: rgba(249, 235, 244, 0.52);
   font-family: var(--font-geist-mono);
   font-size: 0.75rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
 }
 
 .status {
