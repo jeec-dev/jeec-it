@@ -89,19 +89,28 @@ export default async function AdminArticlesPage() {
                     <td>v{article.contentVersion}</td>
                     <td>
                       <div className={styles.actions}>
-                        <Link
-                          className={styles.previewLink}
-                          href={`/admin/articles/${article.id}`}
-                        >
-                          Admin
-                        </Link>
+                        <div className={styles.actions}>
+                          <Link
+                            className={styles.previewLink}
+                            href={`/admin/articles/${article.id}`}
+                          >
+                            Admin
+                          </Link>
 
-                        <Link
-                          className={styles.previewLink}
-                          href={`/diario-di-jay/${article.slug}`}
-                        >
-                          Public
-                        </Link>
+                          <Link
+                            className={styles.previewLink}
+                            href={`/admin/articles/${article.id}/edit`}
+                          >
+                            Edit
+                          </Link>
+
+                          <Link
+                            className={styles.previewLink}
+                            href={`/diario-di-jay/${article.slug}`}
+                          >
+                            Public
+                          </Link>
+                        </div>
                       </div>
                     </td>
                   </tr>

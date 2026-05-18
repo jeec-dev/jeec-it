@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { ArticleRenderer } from "@/components/articles/ArticleRenderer";
@@ -55,15 +56,22 @@ export default async function AdminArticlePreviewPage({
       <section className={styles.shell}>
         <div className={styles.topbar}>
           <Link href="/admin/articles">← Torna agli articoli</Link>
-          <Link href={`/diario-di-jay/${article.slug}`}>Apri pagina pubblica</Link>
+          <Link href={`/diario-di-jay/${article.slug}`}>
+            Apri pagina pubblica
+          </Link>
+          <Link href={`/admin/articles/${article.id}/edit`}>Modifica</Link>
         </div>
 
         <header className={styles.header}>
           <p className={styles.eyebrow}>Admin preview · {article.kind}</p>
           <h1>{article.title}</h1>
 
-          {article.subtitle ? <p className={styles.subtitle}>{article.subtitle}</p> : null}
-          {article.excerpt ? <p className={styles.excerpt}>{article.excerpt}</p> : null}
+          {article.subtitle ? (
+            <p className={styles.subtitle}>{article.subtitle}</p>
+          ) : null}
+          {article.excerpt ? (
+            <p className={styles.excerpt}>{article.excerpt}</p>
+          ) : null}
 
           <dl className={styles.metaGrid}>
             <div>
@@ -95,7 +103,13 @@ export default async function AdminArticlePreviewPage({
 
         {article.coverAsset ? (
           <figure className={styles.cover}>
-            <img src={article.coverAsset.url} alt={article.coverAsset.alt ?? article.title} />
+            <Image
+              src={article.coverAsset.url}
+              alt={article.coverAsset.alt ?? article.title}
+              width={1400}
+              height={800}
+              className={styles.coverImage}
+            />
             {article.coverAsset.caption ? (
               <figcaption>{article.coverAsset.caption}</figcaption>
             ) : null}

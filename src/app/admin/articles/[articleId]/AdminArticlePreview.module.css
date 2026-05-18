@@ -3,8 +3,16 @@
   padding: 7rem 1.25rem 4rem;
   color: var(--jeec-moon-white);
   background:
-    radial-gradient(circle at top left, rgba(125, 247, 240, 0.14), transparent 34rem),
-    radial-gradient(circle at bottom right, rgba(241, 187, 223, 0.13), transparent 34rem),
+    radial-gradient(
+      circle at top left,
+      rgba(125, 247, 240, 0.14),
+      transparent 34rem
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(241, 187, 223, 0.13),
+      transparent 34rem
+    ),
     var(--jeec-space-black);
 }
 
@@ -114,9 +122,10 @@
   background: rgba(12, 10, 25, 0.5);
 }
 
-.cover img {
+.coverImage {
   display: block;
   width: 100%;
+  height: auto;
   max-height: 520px;
   object-fit: cover;
 }

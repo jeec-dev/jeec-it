@@ -1,5 +1,9 @@
 import { renderArticleBlocksToHtml } from "@/lib/articles/render-html";
-
+import type {
+  ArticleBlockLayout,
+  ArticleBlockType,
+  Prisma,
+} from "@/generated/prisma";
 import { db } from "../db";
 
 export type AdminArticleListItem = {
@@ -34,11 +38,11 @@ export type AdminArticleDetail = {
   } | null;
   blocks: {
     id: string;
-    type: string;
-    layout: string;
+    type: ArticleBlockType;
+    layout: ArticleBlockLayout;
     order: number;
     isPublic: boolean;
-    content: unknown;
+    content: Prisma.JsonValue;
   }[];
 };
 
