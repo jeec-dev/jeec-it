@@ -13,6 +13,8 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:related-content": "tsx prisma/seed-related-content.ts",
+    "db:seed:articles": "tsx prisma/seed-articles.ts",
+    "db:seed:all": "npm run db:seed && npm run db:seed:related-content && npm run db:seed:articles",
     "db:catalog:check": "tsx scripts/compare-catalog-db.ts",
     "postinstall": "prisma generate",
     "vercel-build": "prisma migrate deploy && next build",
