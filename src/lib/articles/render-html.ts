@@ -47,14 +47,18 @@ function getOptionalString(
     : undefined;
 }
 
-function renderImageBlock(content: unknown) {
+function renderImageBlock(content: unknown, mediaById: MediaAssetMap) {
   const record = getRecordContent(content);
 
+  const mediaAssetId = getOptionalString(record, "mediaAssetId");
+  const mediaAsset = mediaAssetId ? mediaById.get(mediaAssetId) : undefined;
+
   const image: ImageBlockContent = {
-    mediaAssetId: getOptionalString(record, "mediaAssetId"),
-    url: getOptionalString(record, "url"),
-    alt: getOptionalString(record, "alt"),
-    caption: getOptionalString(record, "caption"),
+    mediaAssetId,
+    url: mediaAsset?.url ?? getOptionalString(record, "url"),
+    alt: getOptionalString(record, "alt") ?? mediaAsset?.alt ?? undefined,
+    caption:
+      getOptionalString(record, "caption") ?? mediaAsset?.caption ?? undefined,
   };
 
   if (!image.url) {
@@ -78,14 +82,18 @@ function renderImageBlock(content: unknown) {
   `;
 }
 
-function renderImageTextBlock(content: unknown) {
+function renderImageTextBlock(content: unknown, mediaById: MediaAssetMap) {
   const record = getRecordContent(content);
 
+  const mediaAssetId = getOptionalString(record, "mediaAssetId");
+  const mediaAsset = mediaAssetId ? mediaById.get(mediaAssetId) : undefined;
+
   const imageText: ImageTextBlockContent = {
-    mediaAssetId: getOptionalString(record, "mediaAssetId"),
-    url: getOptionalString(record, "url"),
-    alt: getOptionalString(record, "alt"),
-    caption: getOptionalString(record, "caption"),
+    mediaAssetId,
+    url: mediaAsset?.url ?? getOptionalString(record, "url"),
+    alt: getOptionalString(record, "alt") ?? mediaAsset?.alt ?? undefined,
+    caption:
+      getOptionalString(record, "caption") ?? mediaAsset?.caption ?? undefined,
     title: getOptionalString(record, "title"),
     text: getOptionalString(record, "text") ?? "",
     imagePosition:
@@ -119,7 +127,11 @@ function renderImageTextBlock(content: unknown) {
 
   return `
     <section class="article-block article-image-text-block article-image-text-block--${imageText.imagePosition}">
-      ${imageText.imagePosition === "right" ? textMarkup + imageMarkup : imageMarkup + textMarkup}
+      ${
+        imageText.imagePosition === "right"
+          ? textMarkup + imageMarkup
+          : imageMarkup + textMarkup
+      }
     </section>
   `;
 }
@@ -245,10 +257,10 @@ export function renderArticleBlocksToHtml(
           return renderParagraph(block);
 
         case $Enums.ArticleBlockType.IMAGE:
-          return renderImageBlock(block.content);
+          return renderImageBlock(block.content, mediaById);
 
         case $Enums.ArticleBlockType.IMAGE_TEXT:
-          return renderImageTextBlock(block.content);
+          return renderImageTextBlock(block.content, mediaById);
 
         case $Enums.ArticleBlockType.QUOTE:
           return renderQuote(block);

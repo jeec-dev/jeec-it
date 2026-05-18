@@ -22,6 +22,40 @@ export async function saveArticleEditorBlocks(
     parsedBlocks,
   );
 
+  const mediaAssetIds = Array.from(
+    new Set(
+      parsedBlocks
+        .map((item) => {
+          if (item.block.type === "IMAGE" || item.block.type === "IMAGE_TEXT") {
+            return item.block.content.mediaAssetId;
+          }
+
+          return undefined;
+        })
+        .filter((value): value is string => Boolean(value)),
+    ),
+  );
+
+  const mediaAssets =
+    mediaAssetIds.length > 0
+      ? await db.mediaAsset.findMany({
+          where: {
+            id: {
+              in: mediaAssetIds,
+            },
+          },
+          select: {
+            id: true,
+            url: true,
+            thumbnailUrl: true,
+            alt: true,
+            caption: true,
+          },
+        })
+      : [];
+
+  const mediaById = new Map(mediaAssets.map((asset) => [asset.id, asset]));
+
   const renderableBlocks = createManyInput.map((block) => ({
     id: "",
     articleId: block.articleId,
@@ -34,7 +68,7 @@ export async function saveArticleEditorBlocks(
     updatedAt: new Date(),
   }));
 
-  const renderedHtml = renderArticleBlocksToHtml(renderableBlocks);
+  const renderedHtml = renderArticleBlocksToHtml(renderableBlocks, mediaById);
 
   const article = await db.$transaction(async (tx) => {
     await tx.articleContentBlock.deleteMany({

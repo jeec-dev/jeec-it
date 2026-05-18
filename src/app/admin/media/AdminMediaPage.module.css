@@ -1,0 +1,115 @@
+.page {
+  min-height: 100vh;
+  padding: 7rem 1.25rem 4rem;
+  color: var(--jeec-moon-white);
+  background:
+    radial-gradient(circle at top left, rgba(125, 247, 240, 0.14), transparent 34rem),
+    radial-gradient(circle at bottom right, rgba(241, 187, 223, 0.12), transparent 34rem),
+    var(--jeec-space-black);
+}
+
+.shell {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.topbar {
+  margin-bottom: 1rem;
+}
+
+.topbar a {
+  display: inline-flex;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgba(125, 247, 240, 0.24);
+  border-radius: 999px;
+  color: var(--jeec-cyan-ice);
+  text-decoration: none;
+  background: rgba(56, 214, 208, 0.1);
+}
+
+.header {
+  margin-bottom: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(249, 235, 244, 0.12);
+  border-radius: 1.5rem;
+  background: rgba(28, 22, 52, 0.72);
+}
+
+.eyebrow {
+  margin: 0 0 0.7rem;
+  color: var(--jeec-cyan-glow);
+  font-family: var(--font-geist-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+}
+
+.header p {
+  max-width: 720px;
+  color: rgba(249, 235, 244, 0.72);
+  line-height: 1.7;
+}
+
+.empty {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed rgba(249, 235, 244, 0.14);
+  border-radius: 1rem;
+  color: rgba(249, 235, 244, 0.62);
+  background: rgba(12, 10, 25, 0.38);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid rgba(249, 235, 244, 0.12);
+  border-radius: 1.25rem;
+  background: rgba(12, 10, 25, 0.56);
+}
+
+.preview,
+.placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-color: rgba(249, 235, 244, 0.08);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--jeec-cyan-glow);
+  font-family: var(--font-geist-mono);
+}
+
+.cardBody {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.9rem;
+}
+
+.cardBody strong {
+  color: var(--jeec-moon-white);
+  font-size: 0.92rem;
+}
+
+.cardBody span,
+.cardBody code {
+  color: rgba(249, 235, 244, 0.58);
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
