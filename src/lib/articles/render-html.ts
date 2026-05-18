@@ -1,4 +1,8 @@
 import { $Enums, type MediaAsset } from "@/generated/prisma";
+import {
+  getVideoEmbedUrl,
+  normalizeVideoProvider,
+} from "@/lib/articles/video-embeds";
 
 type ArticleBlockForRender = {
   type: $Enums.ArticleBlockType;
@@ -45,6 +49,46 @@ function getOptionalString(
   return typeof value === "string" && value.trim().length > 0
     ? value
     : undefined;
+}
+
+function renderVideoBlock(content: unknown) {
+  const record = getRecordContent(content);
+
+  const url = getOptionalString(record, "url");
+  const title = getOptionalString(record, "title");
+  const caption = getOptionalString(record, "caption");
+  const provider = normalizeVideoProvider(
+    getOptionalString(record, "provider"),
+  );
+
+  if (!url) {
+    return "";
+  }
+
+  const embedUrl = getVideoEmbedUrl(url, provider);
+
+  if (!embedUrl) {
+    return `
+      <p class="article-block article-video-link-block">
+        <a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">
+          ${escapeHtml(title ?? "Apri video")}
+        </a>
+      </p>
+    `;
+  }
+
+  return `
+    <figure class="article-block article-video-block">
+      <iframe
+        src="${escapeHtml(embedUrl)}"
+        title="${escapeHtml(title ?? "Video embedded")}"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+      ${caption ? `<figcaption>${escapeHtml(caption)}</figcaption>` : ""}
+    </figure>
+  `;
 }
 
 function renderImageBlock(content: unknown, mediaById: MediaAssetMap) {
@@ -323,6 +367,9 @@ export function renderArticleBlocksToHtml(
 
         case $Enums.ArticleBlockType.PARAGRAPH:
           return renderParagraph(block);
+
+        case $Enums.ArticleBlockType.VIDEO:
+          return renderVideoBlock(block.content);
 
         case $Enums.ArticleBlockType.IMAGE:
           return renderImageBlock(block.content, mediaById);

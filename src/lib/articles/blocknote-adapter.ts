@@ -1,5 +1,5 @@
 import type { PartialBlock } from "@blocknote/core";
-
+import { normalizeVideoProvider } from "./video-embeds";
 import type { ArticleEditorBlockInput } from "./editor-contract";
 
 export type UnknownBlock = {
@@ -169,10 +169,15 @@ export function editorBlocksToBlockNote(
     }
 
     if (block.type === "VIDEO") {
-      return {
-        type: "paragraph",
-        content: `[VIDEO] ${block.content.title ?? block.content.url}`,
-      };
+      return asBlockNotePartialBlock({
+        type: "jeecVideo",
+        props: {
+          url: block.content.url,
+          title: block.content.title ?? "",
+          caption: block.content.caption ?? "",
+          provider: block.content.provider,
+        },
+      });
     }
 
     return {
@@ -213,6 +218,23 @@ export function blockNoteToEditorBlocks(
           layout: "DEFAULT",
           content: {
             text: inlineContentToText(block.content),
+          },
+        },
+      };
+    }
+
+    if (block.type === "jeecVideo") {
+      return {
+        order: index,
+        isPublic: true,
+        block: {
+          type: "VIDEO",
+          layout: "WIDE",
+          content: {
+            url: getString(block.props?.url) || "/",
+            title: getOptionalString(block.props?.title),
+            caption: getOptionalString(block.props?.caption),
+            provider: normalizeVideoProvider(block.props?.provider),
           },
         },
       };

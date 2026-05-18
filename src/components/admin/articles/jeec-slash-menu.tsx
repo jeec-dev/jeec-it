@@ -30,6 +30,25 @@ function insertCustomBlock(editor: unknown, block: unknown) {
   insertForSlashMenu(editor, block);
 }
 
+function jeecVideoItem(editor: unknown): DefaultReactSuggestionItem {
+  return {
+    title: "JeeC Video",
+    group: "JeeC blocks",
+    aliases: ["video", "youtube", "vimeo", "embed"],
+    subtext: "Inserisce un blocco VIDEO embedded.",
+    onItemClick: () =>
+      insertCustomBlock(editor, {
+        type: "jeecVideo",
+        props: {
+          url: "",
+          title: "",
+          caption: "",
+          provider: "YOUTUBE",
+        },
+      }),
+  };
+}
+
 function jeecImageItem(editor: unknown): DefaultReactSuggestionItem {
   return {
     title: "JeeC Image",
@@ -153,6 +172,7 @@ export function getJeecSlashMenuItems(
     jeecImageTextItem(editor),
     jeecCalloutItem(editor),
     jeecDividerItem(editor),
+    jeecVideoItem(editor),
     jeecCtaItem(editor),
     jeecRelatedContentItem(editor),
   ];

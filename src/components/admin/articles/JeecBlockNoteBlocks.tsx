@@ -10,6 +10,12 @@ import {
 
 import { MediaAssetPicker } from "@/components/admin/media/MediaAssetPicker";
 import type { AdminMediaAssetListItem } from "@/lib/admin/media-assets";
+import {
+  detectVideoProvider,
+  getVideoEmbedUrl,
+  normalizeVideoProvider,
+  type ArticleVideoProvider,
+} from "@/lib/articles/video-embeds";
 import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
 
@@ -51,6 +57,18 @@ function getAssetImageProps(asset: AdminMediaAssetListItem) {
     caption: asset.caption ?? "",
   };
 }
+
+type JeecVideoBlockViewProps = {
+  block: {
+    props: {
+      url?: unknown;
+      title?: unknown;
+      caption?: unknown;
+      provider?: unknown;
+    };
+  };
+  editor: JeecBlockEditorBridge;
+};
 
 type JeecBlockEditorBridge = {
   updateBlock: (block: unknown, update: unknown) => void;
@@ -778,9 +796,152 @@ export const JeecRelatedContentBlock = createReactBlockSpec(
   },
 );
 
+function JeecVideoBlockView({ block, editor }: JeecVideoBlockViewProps) {
+  const url = cleanString(block.props.url);
+  const title = cleanString(block.props.title);
+  const caption = cleanString(block.props.caption);
+  const provider = normalizeVideoProvider(block.props.provider);
+  const detectedProvider = url ? detectVideoProvider(url) : provider;
+  const embedUrl = getVideoEmbedUrl(url, detectedProvider);
+
+  function updateVideoProps(nextProps: {
+    url?: string;
+    title?: string;
+    caption?: string;
+    provider?: ArticleVideoProvider;
+  }) {
+    const nextUrl = nextProps.url ?? url;
+    const nextProvider =
+      nextProps.provider ?? (nextUrl ? detectVideoProvider(nextUrl) : provider);
+
+    editor.updateBlock(block, {
+      type: "jeecVideo",
+      props: {
+        url: nextUrl,
+        title: nextProps.title ?? title,
+        caption: nextProps.caption ?? caption,
+        provider: nextProvider,
+      },
+    });
+  }
+
+  return (
+    <section className={styles.card} contentEditable={false}>
+      <div className={styles.cardHeader}>
+        <strong>JeeC Video</strong>
+        <span>VIDEO · blocco canonico</span>
+      </div>
+
+      {embedUrl ? (
+        <figure className={styles.videoPreview}>
+          <iframe
+            src={embedUrl}
+            title={title || "Video embedded"}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+          {caption ? <figcaption>{caption}</figcaption> : null}
+        </figure>
+      ) : (
+        <div className={styles.emptyPreview}>
+          Inserisci un link YouTube o Vimeo per vedere l’embed.
+        </div>
+      )}
+
+      <div className={styles.fields}>
+        <label>
+          Provider
+          <select
+            value={provider}
+            onChange={(event) =>
+              updateVideoProps({
+                provider: normalizeVideoProvider(event.target.value),
+              })
+            }
+          >
+            <option value="YOUTUBE">YOUTUBE</option>
+            <option value="VIMEO">VIMEO</option>
+            <option value="EXTERNAL">EXTERNAL</option>
+          </select>
+        </label>
+
+        <label>
+          Video URL
+          <input
+            value={url}
+            placeholder="https://www.youtube.com/watch?v=..."
+            onChange={(event) =>
+              updateVideoProps({
+                url: event.target.value,
+              })
+            }
+          />
+        </label>
+
+        <label>
+          Title
+          <input
+            value={title}
+            placeholder="Titolo video"
+            onChange={(event) =>
+              updateVideoProps({
+                title: event.target.value,
+              })
+            }
+          />
+        </label>
+
+        <label>
+          Caption
+          <input
+            value={caption}
+            placeholder="Didascalia opzionale"
+            onChange={(event) =>
+              updateVideoProps({
+                caption: event.target.value,
+              })
+            }
+          />
+        </label>
+      </div>
+    </section>
+  );
+}
+
+export const JeecVideoBlock = createReactBlockSpec(
+  {
+    type: "jeecVideo",
+    propSchema: {
+      url: {
+        default: "",
+      },
+      title: {
+        default: "",
+      },
+      caption: {
+        default: "",
+      },
+      provider: {
+        default: "YOUTUBE",
+        values: ["YOUTUBE", "VIMEO", "EXTERNAL"],
+      },
+    },
+    content: "none",
+  },
+  {
+    render: ({ block, editor }) => (
+      <JeecVideoBlockView
+        block={block as JeecVideoBlockViewProps["block"]}
+        editor={editor as unknown as JeecBlockEditorBridge}
+      />
+    ),
+  },
+);
+
 export const jeecBlockNoteSchema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
+    jeecVideo: JeecVideoBlock(),
     jeecImage: JeecImageBlock(),
     jeecImageText: JeecImageTextBlock(),
     jeecCallout: JeecCalloutBlock(),
