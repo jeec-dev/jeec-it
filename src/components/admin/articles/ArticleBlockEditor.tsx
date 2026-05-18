@@ -13,6 +13,7 @@ import {
 } from "@/lib/articles/blocknote-adapter";
 import type { ArticleEditorBlockInput } from "@/lib/articles/editor-contract";
 
+import { StructuredBlockInspector } from "./StructuredBlockInspector";
 import styles from "./ArticleBlockEditor.module.css";
 
 type ArticleBlockEditorProps = {
@@ -24,17 +25,28 @@ type ArticleBlockEditorProps = {
   ) => Promise<void>;
 };
 
+const inlineEditorTypes = new Set(["PARAGRAPH", "HEADING", "QUOTE"]);
+
 export function ArticleBlockEditor({
   articleId,
   initialBlocks,
   onSave,
 }: ArticleBlockEditorProps) {
   const [message, setMessage] = useState<string | null>(null);
+  const [structuredBlocks, setStructuredBlocks] = useState<
+    ArticleEditorBlockInput[]
+  >(initialBlocks.filter((item) => !inlineEditorTypes.has(item.block.type)));
   const [isPending, startTransition] = useTransition();
 
-  const initialContent = useMemo(
-    () => editorBlocksToBlockNote(initialBlocks),
+  const inlineBlocks = useMemo(
+    () =>
+      initialBlocks.filter((item) => inlineEditorTypes.has(item.block.type)),
     [initialBlocks],
+  );
+
+  const initialContent = useMemo(
+    () => editorBlocksToBlockNote(inlineBlocks),
+    [inlineBlocks],
   );
 
   const editor = useCreateBlockNote({
@@ -45,16 +57,17 @@ export function ArticleBlockEditor({
     setMessage(null);
 
     startTransition(async () => {
-      const blocks = blockNoteToEditorBlocks(editor.document).map(
+      const textBlocks = blockNoteToEditorBlocks(editor.document);
+      const mergedBlocks = [...textBlocks, ...structuredBlocks].map(
         (block, index) => ({
           ...block,
           order: index,
         }),
       );
 
-      setMessage(`Salvataggio di ${blocks.length} blocchi...`);
+      setMessage(`Salvataggio di ${mergedBlocks.length} blocchi...`);
 
-      await onSave(articleId, blocks);
+      await onSave(articleId, mergedBlocks);
     });
   }
 
@@ -63,9 +76,7 @@ export function ArticleBlockEditor({
       <div className={styles.toolbar}>
         <div>
           <p>Block editor</p>
-          <span>
-            Paragraph, heading e quote salvati come ArticleContentBlock.
-          </span>
+          <span>Testo nel canvas, blocchi cinematici nell’inspector.</span>
         </div>
 
         <button type="button" onClick={handleSave} disabled={isPending}>
@@ -75,8 +86,15 @@ export function ArticleBlockEditor({
 
       {message ? <p className={styles.message}>{message}</p> : null}
 
-      <div className={styles.editorFrame}>
-        <BlockNoteView editor={editor} theme="dark" />
+      <div className={styles.editorGrid}>
+        <div className={styles.editorFrame}>
+          <BlockNoteView editor={editor} theme="dark" />
+        </div>
+
+        <StructuredBlockInspector
+          blocks={structuredBlocks}
+          onChange={setStructuredBlocks}
+        />
       </div>
     </section>
   );
