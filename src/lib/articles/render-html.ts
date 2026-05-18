@@ -145,6 +145,70 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#039;");
 }
 
+function normalizeDialogLine(line: string): string {
+  return line
+    .trim()
+    .replace(/^["“”«]\s*/, "")
+    .replace(/\s*["“”»]$/, "")
+    .trim();
+}
+
+function isDialogLine(line: string): boolean {
+  const trimmed = line.trim();
+
+  if (trimmed.length < 2) {
+    return false;
+  }
+
+  return (
+    (/^".*"$/.test(trimmed) ||
+      /^“.*”$/.test(trimmed) ||
+      /^«.*»$/.test(trimmed)) &&
+    normalizeDialogLine(trimmed).length > 0
+  );
+}
+
+function getDialogLines(text: string): string[] | null {
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length < 2) {
+    return null;
+  }
+
+  if (!lines.every(isDialogLine)) {
+    return null;
+  }
+
+  return lines.map(normalizeDialogLine);
+}
+
+function renderDialogBlock(text: string) {
+  const lines = getDialogLines(text);
+
+  if (!lines) {
+    return null;
+  }
+
+  return `
+    <div class="article-block article-dialog-block">
+      ${lines
+        .map(
+          (line) => `
+            <p>
+              <span class="article-dialog-block__mark">“</span>
+              <span>${escapeHtml(line)}</span>
+              <span class="article-dialog-block__mark">”</span>
+            </p>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
 function getStringRecord(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return {};
@@ -195,23 +259,27 @@ function renderHeading(block: ArticleBlockForRender) {
 </section>`;
 }
 
-function renderQuote(block: ArticleBlockForRender) {
-  const content = getStringRecord(block.content);
-  const text = asString(content.text);
+function renderQuote(content: unknown) {
+  const record = getRecordContent(content);
+  const text = getOptionalString(record, "text") ?? "";
+  const attribution = getOptionalString(record, "attribution");
 
   if (!text) {
     return "";
   }
 
-  const cite = asString(content.cite);
+  const dialogBlock = renderDialogBlock(text);
+
+  if (dialogBlock) {
+    return dialogBlock;
+  }
 
   return `
-<section class="article-block article-block--quote ${layoutClass(block.layout)}">
-  <blockquote>
-    <p>${escapeHtml(text)}</p>
-    ${cite ? `<cite>${escapeHtml(cite)}</cite>` : ""}
-  </blockquote>
-</section>`;
+    <blockquote class="article-block article-quote-block">
+      <p>${escapeHtml(text)}</p>
+      ${attribution ? `<cite>${escapeHtml(attribution)}</cite>` : ""}
+    </blockquote>
+  `;
 }
 
 function renderVideo(block: ArticleBlockForRender) {
