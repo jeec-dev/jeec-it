@@ -1,0 +1,119 @@
+enum ArticleKind {
+  DIARY_ENTRY
+  BLOG_POST
+  BROADCAST
+  PRESS_NOTE
+  LORE
+}
+
+enum ArticleStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ArticleBlockType {
+  PARAGRAPH
+  HEADING
+  IMAGE
+  VIDEO
+  GALLERY
+  QUOTE
+  CALLOUT
+  AUDIO
+  EMBED
+  DIVIDER
+  CTA
+  RELATED_CONTENT
+}
+
+enum ArticleBlockLayout {
+  DEFAULT
+  INLINE
+  WIDE
+  FULL_BLEED
+  GRID_2
+  GRID_3
+  CAROUSEL
+  SPLIT
+}
+
+enum MediaAssetType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  EMBED
+}
+
+enum MediaAssetProvider {
+  LOCAL
+  R2
+  CLOUDINARY
+  YOUTUBE
+  VIMEO
+  SPOTIFY
+  EXTERNAL
+}
+
+model Article {
+  id             String        @id @default(uuid())
+  kind           ArticleKind
+  slug           String        @unique
+  title          String
+  subtitle       String?
+  excerpt        String?
+  status         ArticleStatus @default(DRAFT)
+
+  coverAssetId   String?
+  coverAsset     MediaAsset?   @relation("ArticleCoverAsset", fields: [coverAssetId], references: [id])
+
+  renderedHtml   String?
+  renderedAt     DateTime?
+  contentVersion Int           @default(1)
+
+  publishedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  blocks         ArticleContentBlock[]
+
+  @@index([kind, status, publishedAt])
+}
+
+model ArticleContentBlock {
+  id        String             @id @default(uuid())
+  articleId String
+  article   Article            @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  type      ArticleBlockType
+  layout    ArticleBlockLayout @default(DEFAULT)
+  order     Int                @default(0)
+
+  content   Json
+  isPublic  Boolean            @default(true)
+
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([articleId, order])
+}
+
+model MediaAsset {
+  id           String             @id @default(uuid())
+  type         MediaAssetType
+  provider     MediaAssetProvider
+  url          String
+  thumbnailUrl String?
+  alt          String?
+  caption      String?
+  width        Int?
+  height       Int?
+  metadata     Json?
+
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  coverArticles Article[]         @relation("ArticleCoverAsset")
+}

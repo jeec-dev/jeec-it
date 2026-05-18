@@ -1,9 +1,11 @@
 import { config as loadEnv } from "dotenv";
-import { albums as staticAlbums } from "../src/data/albums";
-import { db } from "../src/lib/db";
+import type { PrismaClient } from "../src/generated/prisma";
 
 loadEnv({ path: ".env" });
 loadEnv({ path: ".env.local", override: true });
+
+let db: PrismaClient;
+let staticAlbums: typeof import("../src/data/albums").albums;
 
 type SourceSeed = {
   code: string;
@@ -488,10 +490,7 @@ function enrichTrackSeed(releaseSlug: string, trackSeed: TrackSeed): TrackSeed {
   };
 }
 
-const releases: ReleaseSeed[] = baseReleases.map((release) => ({
-  ...release,
-  tracks: release.tracks?.map((track) => enrichTrackSeed(release.slug, track)),
-}));
+let releases: ReleaseSeed[] = [];
 
 async function getSourceId(code: string) {
   const source = await db.externalSource.findUnique({
@@ -758,6 +757,21 @@ async function refreshTrackGeniusIdentifier(
 
 async function seed() {
   console.log("🌱 Seeding canonical JeeC catalog...");
+
+  const imports = await Promise.all([
+    import("../src/data/albums"),
+    import("../src/lib/db"),
+  ]);
+
+  staticAlbums = imports[0].albums;
+  db = imports[1].db;
+
+  releases = baseReleases.map((release) => ({
+    ...release,
+    tracks: release.tracks?.map((track) =>
+      enrichTrackSeed(release.slug, track),
+    ),
+  }));
 
   const artist = await db.artist.upsert({
     where: { slug: "jeec" },

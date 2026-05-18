@@ -1,5 +1,10 @@
-import { $Enums } from "../src/generated/prisma";
-import { db } from "../src/lib/db";
+import { config as loadEnv } from "dotenv";
+import { $Enums, type PrismaClient } from "../src/generated/prisma";
+
+loadEnv({ path: ".env" });
+loadEnv({ path: ".env.local", override: true });
+
+let db: PrismaClient;
 
 const KIND_DEFINITIONS = [
   { type: $Enums.ContentEntityType.MUSIC, key: "RELEASE", label: "Release" },
@@ -491,6 +496,9 @@ async function seedNewInteractiveExperience() {
 }
 
 async function main() {
+  const dbModule = await import("../src/lib/db");
+  db = dbModule.db;
+
   await seedKindDefinitions();
   await backfillReleasesAndTracks();
   await seedNewInteractiveExperience();
