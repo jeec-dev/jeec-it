@@ -1,10 +1,11 @@
-import { renderArticleBlocksToHtml } from "@/lib/articles/render-html";
 import type {
   ArticleBlockLayout,
   ArticleBlockType,
   Prisma,
 } from "@/generated/prisma";
-import { db } from "../db";
+
+import { renderArticleBlocksToHtml } from "@/lib/articles/render-html";
+import { db } from "@/lib/db";
 
 export type AdminArticleListItem = {
   id: string;
@@ -25,10 +26,11 @@ export type AdminArticleDetail = {
   excerpt: string | null;
   kind: string;
   status: string;
+  coverAssetId: string | null;
   publishedAt: Date | null;
   renderedAt: Date | null;
   contentVersion: number;
-  metadata: unknown;
+  metadata: Prisma.JsonValue;
   html: string;
   coverAsset: {
     id: string;
@@ -48,14 +50,7 @@ export type AdminArticleDetail = {
 
 export async function getAdminArticles(): Promise<AdminArticleListItem[]> {
   const articles = await db.article.findMany({
-    orderBy: [
-      {
-        publishedAt: "desc",
-      },
-      {
-        title: "asc",
-      },
-    ],
+    orderBy: [{ publishedAt: "desc" }, { title: "asc" }],
     select: {
       id: true,
       slug: true,
@@ -101,6 +96,14 @@ export async function getAdminArticleById(
       contentVersion: true,
       metadata: true,
       publishedAt: true,
+      coverAsset: {
+        select: {
+          id: true,
+          url: true,
+          alt: true,
+          caption: true,
+        },
+      },
     },
   });
 
@@ -108,29 +111,14 @@ export async function getAdminArticleById(
     return null;
   }
 
-  const [blocks, coverAsset] = await Promise.all([
-    db.articleContentBlock.findMany({
-      where: {
-        articleId: article.id,
-      },
-      orderBy: {
-        order: "asc",
-      },
-    }),
-    article.coverAssetId
-      ? db.mediaAsset.findUnique({
-          where: {
-            id: article.coverAssetId,
-          },
-          select: {
-            id: true,
-            url: true,
-            alt: true,
-            caption: true,
-          },
-        })
-      : null,
-  ]);
+  const blocks = await db.articleContentBlock.findMany({
+    where: {
+      articleId,
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
 
   const html = article.renderedHtml ?? renderArticleBlocksToHtml(blocks);
 
@@ -142,12 +130,13 @@ export async function getAdminArticleById(
     excerpt: article.excerpt,
     kind: article.kind,
     status: article.status,
+    coverAssetId: article.coverAssetId,
     publishedAt: article.publishedAt,
     renderedAt: article.renderedAt,
     contentVersion: article.contentVersion,
     metadata: article.metadata,
     html,
-    coverAsset,
+    coverAsset: article.coverAsset,
     blocks: blocks.map((block) => ({
       id: block.id,
       type: block.type,

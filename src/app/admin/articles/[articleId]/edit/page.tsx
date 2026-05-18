@@ -2,12 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ArticleBlockEditor } from "@/components/admin/articles/ArticleBlockEditor";
+import { ArticleMetadataEditor } from "@/components/admin/articles/ArticleMetadataEditor";
 import { getAdminArticleById } from "@/lib/admin/articles";
 import { getAdminMediaAssets } from "@/lib/admin/media-assets";
 import { dbBlocksToEditorBlocks } from "@/lib/articles/editor-blocks";
 import { hydrateEditorBlocksWithMediaAssets } from "@/lib/articles/editor-media-hydration";
 
-import { saveArticleEditorBlocks } from "./actions";
+import { saveArticleEditorBlocks, updateArticleMetadata } from "./actions";
 import styles from "./EditArticlePage.module.css";
 
 export const dynamic = "force-dynamic";
@@ -57,6 +58,17 @@ export default async function EditArticlePage({
             canonici jeec.it, cache HTML rigenerata lato server.
           </p>
         </header>
+
+        <ArticleMetadataEditor
+          articleId={article.id}
+          initialTitle={article.title}
+          initialSubtitle={article.subtitle}
+          initialExcerpt={article.excerpt}
+          initialPublishedAt={article.publishedAt}
+          initialCoverAssetId={article.coverAssetId ?? null}
+          mediaAssets={mediaAssets}
+          onSave={updateArticleMetadata}
+        />
 
         <ArticleBlockEditor
           articleId={article.id}
