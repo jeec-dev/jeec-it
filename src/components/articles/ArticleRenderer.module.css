@@ -1,0 +1,132 @@
+.articleRoot {
+  display: grid;
+  gap: clamp(1.35rem, 3vw, 2rem);
+}
+
+.articleRoot :global(.article-block) {
+  display: grid;
+  gap: 1rem;
+}
+
+.articleRoot :global(.article-layout--default) {
+  max-width: 46rem;
+}
+
+.articleRoot :global(.article-layout--wide) {
+  width: 100%;
+  max-width: 58rem;
+}
+
+.articleRoot :global(.article-layout--full-bleed) {
+  width: 100%;
+}
+
+.articleRoot :global(.article-block--paragraph p) {
+  margin: 0;
+  color: rgb(249 235 244 / 0.78);
+  font-size: clamp(1rem, 1.5vw, 1.08rem);
+  line-height: 1.9;
+}
+
+.articleRoot :global(.article-block--heading h2),
+.articleRoot :global(.article-block--heading h3) {
+  margin: 0;
+  color: var(--jeec-moon-white);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.articleRoot :global(.article-block--heading h2) {
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+}
+
+.articleRoot :global(.article-block--heading h3) {
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+}
+
+.articleRoot :global(figure) {
+  margin: 0;
+}
+
+.articleRoot :global(img) {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.04);
+}
+
+.articleRoot :global(figcaption) {
+  margin-top: 0.65rem;
+  color: rgb(249 235 244 / 0.48);
+  font-family: monospace;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.articleRoot :global(.article-block--image-text) {
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 1.25rem;
+  padding-block: 0.75rem;
+}
+
+.articleRoot :global(.article-block--image-text h3) {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  letter-spacing: -0.03em;
+}
+
+.articleRoot :global(.article-block--image-text p) {
+  margin: 0;
+  color: rgb(249 235 244 / 0.72);
+  line-height: 1.8;
+}
+
+.articleRoot :global(blockquote) {
+  margin: 0;
+  border-left: 2px solid rgb(241 187 223 / 0.65);
+  padding: 0.35rem 0 0.35rem 1rem;
+}
+
+.articleRoot :global(blockquote p) {
+  margin: 0;
+  color: var(--jeec-moon-white);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.55;
+}
+
+.articleRoot :global(blockquote cite) {
+  display: block;
+  margin-top: 0.75rem;
+  color: rgb(249 235 244 / 0.48);
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.articleRoot :global(.article-block--video iframe) {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.04);
+}
+
+.articleRoot :global(hr) {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+}
+
+@media (min-width: 768px) {
+  .articleRoot :global(.article-block--image-text) {
+    grid-template-columns: minmax(14rem, 0.85fr) minmax(0, 1fr);
+    gap: 2rem;
+  }
+}

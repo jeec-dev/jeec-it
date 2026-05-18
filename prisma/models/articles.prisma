@@ -17,6 +17,7 @@ enum ArticleBlockType {
   PARAGRAPH
   HEADING
   IMAGE
+  IMAGE_TEXT
   VIDEO
   GALLERY
   QUOTE
@@ -72,6 +73,7 @@ model Article {
   renderedHtml   String?
   renderedAt     DateTime?
   contentVersion Int           @default(1)
+  metadata       Json?
 
   publishedAt    DateTime?
   createdAt      DateTime      @default(now())
