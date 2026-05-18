@@ -1,56 +1,73 @@
 import type { CatalogListeningLink } from "@/lib/music/catalog";
+import styles from "./ListeningPanel.module.css";
+import type { CSSProperties } from "react";
 
 type ListeningPanelProps = {
   links: CatalogListeningLink[];
 };
 
 export function ListeningPanel({ links }: ListeningPanelProps) {
-  const embeddableLink = links.find((link) => link.supportsEmbed && link.embedUrl);
+  const embeddableLink = links.find(
+    (link) => link.supportsEmbed && link.embedUrl,
+  );
 
   return (
-    <section>
-      <div>
-        <p>Ascolta</p>
-        <h2>Piattaforme ufficiali</h2>
-        <p>
-          Scegli il canale che preferisci. Gli embed vengono mostrati solo dove
-          sono stabili; i link ufficiali restano sempre disponibili.
-        </p>
+    <section className={styles.panel} aria-labelledby="listening-title">
+      <div className={styles.header}>
+        <div>
+          <p className={styles.eyebrow}>Ascolta</p>
+          <h2 id="listening-title" className={styles.title}>
+            Player
+          </h2>
+        </div>
       </div>
 
       {embeddableLink?.embedUrl ? (
-        <div>
+        <div
+          className={styles.embedShell}
+          style={
+            embeddableLink.embedHeight
+              ? ({
+                  "--embed-height": `${embeddableLink.embedHeight}px`,
+                } as CSSProperties)
+              : undefined
+          }
+        >
           <iframe
-            title={`Player ${embeddableLink.sourceName}`}
+            className={styles.embed}
             src={embeddableLink.embedUrl}
-            loading="lazy"
+            title={`${embeddableLink.label} player`}
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            style={{
-              width: "100%",
-              minHeight: "180px",
-              border: 0,
-              borderRadius: "18px",
-            }}
+            loading="lazy"
           />
         </div>
       ) : null}
 
       {links.length > 0 ? (
-        <div>
+        <div className={styles.linkGrid}>
           {links.map((link) => (
             <a
               key={link.key}
               href={link.url}
               target="_blank"
               rel="noreferrer"
+              className={styles.platformLink}
             >
-              {link.label}
-              {link.isPrimary ? " · consigliato" : ""}
+              <span>
+                <small>{link.sourceName}</small>
+                {link.label}
+              </span>
+
+              {link.isPrimary ? (
+                <strong className={styles.badge}>Consigliato</strong>
+              ) : (
+                <span className={styles.arrow}>↗</span>
+              )}
             </a>
           ))}
         </div>
       ) : (
-        <p>
+        <p className={styles.empty}>
           I link ufficiali di ascolto per questa traccia arriveranno qui appena
           disponibili nel catalogo.
         </p>
@@ -58,4 +75,3 @@ export function ListeningPanel({ links }: ListeningPanelProps) {
     </section>
   );
 }
-

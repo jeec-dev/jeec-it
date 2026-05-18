@@ -1,0 +1,263 @@
+enum ContentEntityType {
+  MUSIC
+  ARTICLE
+  VIDEO
+  EXPERIENCE
+  COMMERCE
+  EVENT
+  PAGE
+  EXTERNAL
+}
+
+enum ContentEntityStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ContentRelationType {
+  RELATED
+  CONTAINS
+  ABOUT
+  FEATURES
+  VIDEO
+  LORE
+  ARTICLE
+  BROADCAST
+  MERCH
+  EVENT
+  STORE
+  EXTERNAL
+}
+
+enum ContentRelationStatus {
+  SUGGESTED
+  APPROVED
+  REJECTED
+  HIDDEN
+}
+
+enum ContentRelationSource {
+  SYSTEM
+  ADMIN
+  SEED
+  IMPORT
+}
+
+enum RelatedContentSourceMode {
+  MANUAL
+  AUTO
+  HYBRID
+}
+
+enum RelatedContentLayout {
+  FEATURED
+  RAIL
+  GRID
+  COMPACT
+}
+
+model ContentEntityKindDefinition {
+  type ContentEntityType
+  key  String
+
+  label       String
+  description String? @db.Text
+  isPreview   Boolean @default(false)
+  isEnabled   Boolean @default(true)
+
+  entities ContentEntity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([type, key])
+  @@index([type])
+  @@index([isEnabled])
+}
+
+model ContentEntity {
+  id String @id @default(uuid())
+
+  key String @unique
+
+  type    ContentEntityType
+  kindKey String
+
+  kindDefinition ContentEntityKindDefinition @relation(fields: [type, kindKey], references: [type, key])
+
+  targetId String?
+
+  title       String
+  description String? @db.Text
+  href        String?
+  imageUrl    String?
+
+  status ContentEntityStatus @default(DRAFT)
+
+  isPreview   Boolean @default(false)
+  availableAt DateTime?
+  publishedAt DateTime?
+
+  metadata Json?
+
+  outgoingRelations ContentRelation[] @relation("ContentRelationSource")
+  incomingRelations ContentRelation[] @relation("ContentRelationTarget")
+
+  ownedRelatedContent RelatedContent?
+
+  relatedContentItems RelatedContentItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([kindKey])
+  @@index([type, kindKey])
+  @@index([targetId])
+  @@index([status])
+  @@index([isPreview])
+  @@index([availableAt])
+  @@index([publishedAt])
+}
+
+model ContentRelation {
+  id String @id @default(uuid())
+
+  sourceEntityId String
+  sourceEntity   ContentEntity @relation("ContentRelationSource", fields: [sourceEntityId], references: [id], onDelete: Cascade)
+
+  targetEntityId String
+  targetEntity   ContentEntity @relation("ContentRelationTarget", fields: [targetEntityId], references: [id], onDelete: Cascade)
+
+  type ContentRelationType
+
+  status ContentRelationStatus @default(SUGGESTED)
+
+  isFeatured Boolean @default(false)
+  priority   Int     @default(0)
+  order      Int     @default(0)
+
+  isPublic Boolean @default(false)
+
+  confidence Float?
+  source     ContentRelationSource @default(SYSTEM)
+
+  reason   String? @db.Text
+  metadata Json?
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  approvedAt DateTime?
+  rejectedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceEntityId, targetEntityId, type])
+  @@index([sourceEntityId])
+  @@index([targetEntityId])
+  @@index([type])
+  @@index([status])
+  @@index([isFeatured])
+  @@index([priority])
+  @@index([isPublic])
+  @@index([confidence])
+}
+
+model RelatedContent {
+  id String @id @default(uuid())
+
+  ownerEntityId String @unique
+  ownerEntity   ContentEntity @relation(fields: [ownerEntityId], references: [id], onDelete: Cascade)
+
+  title       String?
+  description String? @db.Text
+
+  sourceMode RelatedContentSourceMode @default(AUTO)
+
+  sections RelatedContentSection[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RelatedContentSection {
+  id String @id @default(uuid())
+
+  relatedContentId String
+  relatedContent   RelatedContent @relation(fields: [relatedContentId], references: [id], onDelete: Cascade)
+
+  key String
+
+  title       String
+  description String? @db.Text
+
+  layout RelatedContentLayout @default(RAIL)
+
+  relationType  ContentRelationType?
+  targetType    ContentEntityType?
+  targetKindKey String?
+
+  maxItems Int?
+
+  priority Int @default(0)
+  order    Int @default(0)
+  isPublic Boolean @default(true)
+
+  items RelatedContentItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([relatedContentId, key])
+  @@index([relatedContentId, order])
+  @@index([relationType])
+  @@index([targetType])
+  @@index([targetKindKey])
+  @@index([priority])
+  @@index([isPublic])
+}
+
+model RelatedContentItem {
+  id String @id @default(uuid())
+
+  sectionId String
+  section   RelatedContentSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  targetEntityId String
+  targetEntity   ContentEntity @relation(fields: [targetEntityId], references: [id], onDelete: Cascade)
+
+  key String
+
+  isPinned   Boolean @default(false)
+  isFeatured Boolean @default(false)
+
+  priority Int @default(0)
+  order    Int @default(0)
+
+  titleOverride       String?
+  descriptionOverride String? @db.Text
+  eyebrowOverride     String?
+  ctaLabelOverride    String?
+  hrefOverride        String?
+  imageUrlOverride    String?
+
+  isPublic Boolean @default(true)
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sectionId, key])
+  @@index([sectionId, order])
+  @@index([targetEntityId])
+  @@index([isPinned])
+  @@index([isFeatured])
+  @@index([priority])
+  @@index([isPublic])
+}

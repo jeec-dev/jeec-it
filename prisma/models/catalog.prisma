@@ -25,7 +25,10 @@ model Release {
   type        ReleaseType
   status      PublishStatus @default(DRAFT)
 
+  coverUrl String?
+
   year        Int?
+  publishedAt DateTime?
   label       String?
   description String?
   lore        String?
@@ -39,6 +42,8 @@ model Release {
 
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+
+  @@index([publishedAt])
 }
 
 model Track {
@@ -48,6 +53,7 @@ model Track {
   position    Int?
   durationMs  Int?
   isrc        String?
+  publishedAt DateTime?
 
   releaseId   String
   release     Release  @relation(fields: [releaseId], references: [id])
@@ -59,4 +65,6 @@ model Track {
   updatedAt   DateTime @updatedAt
 
   @@unique([releaseId, slug])
+
+  @@index([publishedAt])
 }

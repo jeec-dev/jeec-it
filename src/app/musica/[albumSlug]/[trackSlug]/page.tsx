@@ -1,14 +1,13 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GeniusEmbed } from "./GeniusEmbed";
 import styles from "./TrackDetail.module.css";
 import {
   getCatalogTrackPageData,
   getCatalogTrackStaticParams,
 } from "@/lib/music/catalog";
 import { ListeningPanel } from "@/components/music/ListeningPanel";
-import { RelatedElements } from "@/components/music/RelatedElements";
+import { LyricsPanel } from "@/components/music/LyricsPanel";
+import { RelatedContent } from "@/components/related-content/RelatedContent";
 
 type TrackPageProps = {
   params: Promise<{
@@ -29,20 +28,7 @@ export default async function TrackPage({ params }: TrackPageProps) {
     notFound();
   }
 
-  const { album, track, listeningLinks, relatedElements } = data;
-
-  const externalLinks = [
-    track.spotifyUrl ? { label: "Spotify", href: track.spotifyUrl } : null,
-    track.youtubeUrl ? { label: "YouTube", href: track.youtubeUrl } : null,
-    track.geniusUrl ? { label: "Genius", href: track.geniusUrl } : null,
-    track.appleMusicUrl
-      ? { label: "Apple Music", href: track.appleMusicUrl }
-      : null,
-    track.youtubeMusicUrl
-      ? { label: "YouTube Music", href: track.youtubeMusicUrl }
-      : null,
-    ...(track.externalLinks ?? []),
-  ].filter(Boolean) as { label: string; href: string }[];
+  const { album, track, listeningLinks } = data;
 
   return (
     <main className={styles.page}>
@@ -51,98 +37,19 @@ export default async function TrackPage({ params }: TrackPageProps) {
           ← Torna a {album.title}
         </Link>
 
-        <section className={styles.layout}>
-          <div>
-            <div className={styles.coverFrame}>
-              <Image
-                src={album.cover}
-                alt={`Cover di ${album.title}`}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 28rem"
-                className={styles.coverImage}
-              />
-            </div>
+        <section className={styles.contentGrid}>
+          <div className={styles.mainColumn}>
+            <LyricsPanel track={track} />
           </div>
 
-          <div>
-            <div className={styles.meta}>
-              <span>Traccia {track.trackNumber}</span>
-              <span>{album.type}</span>
-              <span>{album.displayDate ?? album.year}</span>
-            </div>
-
-            <h1 className={styles.title}>{track.title}</h1>
-
-            <p className={styles.albumTitle}>{album.title}</p>
-
-            {track.credits?.length ? (
-              <p className={styles.credits}>
-                Credits: {track.credits.join(", ")}
-              </p>
-            ) : null}
-
-            {externalLinks.length ? (
-              <div className={styles.actions}>
-                {externalLinks.map((link) => (
-                  <a
-                    key={`${link.label}-${link.href}`}
-                    href={link.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.action}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        </section>
-
-        <section className={styles.sections}>
-          <section className={styles.sections}>
+          <aside className={styles.sideColumn}>
             <ListeningPanel links={listeningLinks} />
-
-            <div className={styles.panel}>
-              <h2 className={styles.panelTitle}>Lyrics</h2>
-
-              {track.geniusSongId ? (
-                <div className={styles.geniusEmbed}>
-                  <GeniusEmbed
-                    songId={track.geniusSongId}
-                    title={track.title}
-                    geniusUrl={track.geniusUrl}
-                  />
-                </div>
-              ) : track.geniusUrl ? (
-                <p className={styles.empty}>
-                  Testo disponibile su{" "}
-                  <a href={track.geniusUrl} target="_blank" rel="noreferrer">
-                    Genius
-                  </a>
-                  . L’embed verrà attivato quando sarà collegato il Genius song
-                  ID.
-                </p>
-              ) : track.lyrics ? (
-                <div className={styles.lyrics}>{track.lyrics}</div>
-              ) : (
-                <p className={styles.empty}>
-                  Testo ufficiale non ancora collegato per questa traccia.
-                </p>
-              )}
-            </div>
-
-            {track.loreEntry ? (
-              <div className={styles.panel}>
-                <h2 className={styles.panelTitle}>Lore</h2>
-                <p className={styles.empty}>{track.loreEntry}</p>
-              </div>
-            ) : null}
-
-            <RelatedElements elements={relatedElements} />
-          </section>
+          </aside>
         </section>
+
+        <div className={styles.relatedContentSlot}>
+          <RelatedContent albumSlug={album.slug} trackSlug={track.slug} />
+        </div>
       </div>
     </main>
   );

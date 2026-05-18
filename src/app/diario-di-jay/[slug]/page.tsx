@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { compileMDX } from "next-mdx-remote/rsc";
+import { ArticleRenderer } from "@/components/articles/ArticleRenderer";
 import {
-  getAdjacentDiaryEntries,
-  getDiaryEntries,
-  getDiaryEntry,
-} from "@/lib/diary";
+  getAdjacentDiaryArticles,
+  getDiaryArticleBySlug,
+  getDiaryArticles,
+} from "@/lib/articles/articles";
 import styles from "./DiaryEntry.module.css";
 
 type DiaryEntryPageProps = {
@@ -16,45 +16,38 @@ type DiaryEntryPageProps = {
 };
 
 export async function generateStaticParams() {
-  const entries = await getDiaryEntries();
+  const entries = await getDiaryArticles();
 
   return entries.map((entry) => ({
-    slug: entry.metadata.slug,
+    slug: entry.slug,
   }));
 }
 
 export async function generateMetadata({ params }: DiaryEntryPageProps) {
   const { slug } = await params;
-  const entry = await getDiaryEntry(slug);
+  const article = await getDiaryArticleBySlug(slug);
 
-  if (!entry) {
+  if (!article) {
     return {
       title: "Capitolo non trovato",
     };
   }
 
   return {
-    title: `${entry.metadata.title} | Diario di Jay | JeeC`,
-    description: entry.metadata.excerpt,
+    title: `${article.title} | Diario di Jay | JeeC`,
+    description: article.excerpt,
   };
 }
 
 export default async function DiaryEntryPage({ params }: DiaryEntryPageProps) {
   const { slug } = await params;
-  const entry = await getDiaryEntry(slug);
+  const article = await getDiaryArticleBySlug(slug);
 
-  if (!entry) {
+  if (!article) {
     notFound();
   }
 
-  const { previousEntry, nextEntry } = await getAdjacentDiaryEntries(slug);
-
-  const { content } = await compileMDX({
-    source: entry.source,
-    options: {
-      parseFrontmatter: false,
-    },
-  });
+  const { previousArticle, nextArticle } = await getAdjacentDiaryArticles(slug);
 
   return (
     <main className={styles.page}>
@@ -64,26 +57,32 @@ export default async function DiaryEntryPage({ params }: DiaryEntryPageProps) {
         </Link>
 
         <header className={styles.header}>
-          <p className={styles.kicker}>{entry.metadata.chapter}</p>
+          {article.metadata.chapter ? (
+            <p className={styles.kicker}>{article.metadata.chapter}</p>
+          ) : null}
 
-          <h1 className={styles.title}>{entry.metadata.title}</h1>
+          <h1 className={styles.title}>{article.title}</h1>
 
           <div className={styles.meta}>
-            <span>{entry.metadata.displayDate}</span>
+            {article.metadata.displayDate ? (
+              <span>{article.metadata.displayDate}</span>
+            ) : null}
 
-            {entry.metadata.narrativeDate ? (
-              <span>Data narrativa: {entry.metadata.narrativeDate}</span>
+            {article.metadata.narrativeDate ? (
+              <span>Data narrativa: {article.metadata.narrativeDate}</span>
             ) : null}
           </div>
 
-          <p className={styles.excerpt}>{entry.metadata.excerpt}</p>
+          {article.excerpt ? (
+            <p className={styles.excerpt}>{article.excerpt}</p>
+          ) : null}
         </header>
 
-        {entry.metadata.cover ? (
+        {article.cover ? (
           <div className={styles.coverFrame}>
             <Image
-              src={entry.metadata.cover}
-              alt={`Cover di ${entry.metadata.title}`}
+              src={article.cover.url}
+              alt={article.cover.alt ?? `Cover di ${article.title}`}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 48rem"
@@ -92,37 +91,36 @@ export default async function DiaryEntryPage({ params }: DiaryEntryPageProps) {
           </div>
         ) : null}
 
-        <div className={styles.body}>{content}</div>
+        <div className={styles.body}>
+          <ArticleRenderer html={article.html} />
+        </div>
 
-        {entry.metadata.linkedTrackSlug ? (
-          <Link
-            href={`/musica/${entry.metadata.linkedTrackSlug}`}
-            className={styles.trackCta}
-          >
-            Ascolta {entry.metadata.linkedTrackTitle ?? "la traccia"} →
+        {article.linkedTrack ? (
+          <Link href={article.linkedTrack.href} className={styles.trackCta}>
+            Ascolta {article.linkedTrack.title} →
           </Link>
         ) : null}
 
         <nav className={styles.navigation} aria-label="Navigazione diario">
-          {previousEntry ? (
+          {previousArticle ? (
             <Link
-              href={`/diario-di-jay/${previousEntry.metadata.slug}`}
+              href={`/diario-di-jay/${previousArticle.slug}`}
               className={styles.navCard}
             >
               <span>Capitolo precedente</span>
-              {previousEntry.metadata.title}
+              {previousArticle.title}
             </Link>
           ) : (
             <span />
           )}
 
-          {nextEntry ? (
+          {nextArticle ? (
             <Link
-              href={`/diario-di-jay/${nextEntry.metadata.slug}`}
+              href={`/diario-di-jay/${nextArticle.slug}`}
               className={styles.navCard}
             >
               <span>Capitolo successivo</span>
-              {nextEntry.metadata.title}
+              {nextArticle.title}
             </Link>
           ) : null}
         </nav>

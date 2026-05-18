@@ -70,7 +70,7 @@ export default function MediaKitPage() {
           <div className={styles.coverCard}>
             <div className={styles.coverFrame}>
               <Image
-                src="/images/covers/Copertina_NEW_TQCNTHD.jpg"
+                src="/images/covers/new-tutto-quello-che-non-ti-ho-detto.jpg"
                 alt="Cover di NEW (Tutto Quello Che Non Ti Ho Detto)"
                 fill
                 priority

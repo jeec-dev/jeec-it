@@ -50,3 +50,45 @@ export function getYouTubeEmbedUrl(url?: string) {
     return undefined;
   }
 }
+
+export function getSoundCloudEmbedUrl(url: string) {
+  try {
+    const encodedUrl = encodeURIComponent(url);
+
+    return `https://w.soundcloud.com/player/?url=${encodedUrl}&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`;
+  } catch {
+    return undefined;
+  }
+}
+
+export function getStableEmbedUrl(sourceCode: string, url: string) {
+  if (sourceCode === "spotify") {
+    return getSpotifyEmbedUrl(url);
+  }
+
+  if (sourceCode === "youtube" || sourceCode === "youtube_music") {
+    return getYouTubeEmbedUrl(url);
+  }
+
+  if (sourceCode === "soundcloud") {
+    return getSoundCloudEmbedUrl(url);
+  }
+
+  return undefined;
+}
+
+export function getStableEmbedHeight(sourceCode: string) {
+  if (sourceCode === "spotify") {
+    return 152;
+  }
+
+  if (sourceCode === "soundcloud") {
+    return 166;
+  }
+
+  if (sourceCode === "youtube" || sourceCode === "youtube_music") {
+    return 315;
+  }
+
+  return undefined;
+}
