@@ -11,6 +11,119 @@ type MediaAssetMap = Map<
   Pick<MediaAsset, "id" | "url" | "thumbnailUrl" | "alt" | "caption">
 >;
 
+type ImageBlockContent = {
+  mediaAssetId?: string;
+  url?: string;
+  alt?: string;
+  caption?: string;
+};
+
+type ImageTextBlockContent = {
+  mediaAssetId?: string;
+  url?: string;
+  alt?: string;
+  caption?: string;
+  title?: string;
+  text: string;
+  imagePosition: "left" | "right";
+};
+
+function getRecordContent(content: unknown): Record<string, unknown> {
+  if (!content || typeof content !== "object" || Array.isArray(content)) {
+    return {};
+  }
+
+  return content as Record<string, unknown>;
+}
+
+function getOptionalString(
+  content: Record<string, unknown>,
+  key: string,
+): string | undefined {
+  const value = content[key];
+
+  return typeof value === "string" && value.trim().length > 0
+    ? value
+    : undefined;
+}
+
+function renderImageBlock(content: unknown) {
+  const record = getRecordContent(content);
+
+  const image: ImageBlockContent = {
+    mediaAssetId: getOptionalString(record, "mediaAssetId"),
+    url: getOptionalString(record, "url"),
+    alt: getOptionalString(record, "alt"),
+    caption: getOptionalString(record, "caption"),
+  };
+
+  if (!image.url) {
+    return "";
+  }
+
+  return `
+    <figure class="article-block article-image-block">
+      <img
+        src="${escapeHtml(image.url)}"
+        alt="${escapeHtml(image.alt ?? "")}"
+        loading="lazy"
+        decoding="async"
+      />
+      ${
+        image.caption
+          ? `<figcaption>${escapeHtml(image.caption)}</figcaption>`
+          : ""
+      }
+    </figure>
+  `;
+}
+
+function renderImageTextBlock(content: unknown) {
+  const record = getRecordContent(content);
+
+  const imageText: ImageTextBlockContent = {
+    mediaAssetId: getOptionalString(record, "mediaAssetId"),
+    url: getOptionalString(record, "url"),
+    alt: getOptionalString(record, "alt"),
+    caption: getOptionalString(record, "caption"),
+    title: getOptionalString(record, "title"),
+    text: getOptionalString(record, "text") ?? "",
+    imagePosition:
+      getOptionalString(record, "imagePosition") === "right" ? "right" : "left",
+  };
+
+  const imageMarkup = imageText.url
+    ? `
+      <figure class="article-image-text-block__media">
+        <img
+          src="${escapeHtml(imageText.url)}"
+          alt="${escapeHtml(imageText.alt ?? "")}"
+          loading="lazy"
+          decoding="async"
+        />
+        ${
+          imageText.caption
+            ? `<figcaption>${escapeHtml(imageText.caption)}</figcaption>`
+            : ""
+        }
+      </figure>
+    `
+    : "";
+
+  const textMarkup = `
+    <div class="article-image-text-block__copy">
+      ${imageText.title ? `<h2>${escapeHtml(imageText.title)}</h2>` : ""}
+      ${imageText.text ? `<p>${escapeHtml(imageText.text)}</p>` : ""}
+    </div>
+  `;
+
+  return `
+    <section class="article-block article-image-text-block article-image-text-block--${imageText.imagePosition}">
+      ${imageText.imagePosition === "right" ? textMarkup + imageMarkup : imageMarkup + textMarkup}
+    </section>
+  `;
+}
+
 function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -67,63 +180,6 @@ function renderHeading(block: ArticleBlockForRender) {
   return `
 <section class="article-block article-block--heading ${layoutClass(block.layout)}">
   <h${level}>${escapeHtml(text)}</h${level}>
-</section>`;
-}
-
-function renderImage(block: ArticleBlockForRender, mediaById: MediaAssetMap) {
-  const content = getStringRecord(block.content);
-  const assetId = asString(content.assetId);
-
-  if (!assetId) {
-    return "";
-  }
-
-  const asset = mediaById.get(assetId);
-
-  if (!asset) {
-    return "";
-  }
-
-  const caption = asString(content.caption) ?? asset.caption;
-
-  return `
-<section class="article-block article-block--image ${layoutClass(block.layout)}">
-  <figure>
-    <img src="${escapeHtml(asset.url)}" alt="${escapeHtml(asset.alt ?? "")}" />
-    ${caption ? `<figcaption>${escapeHtml(caption)}</figcaption>` : ""}
-  </figure>
-</section>`;
-}
-
-function renderImageText(
-  block: ArticleBlockForRender,
-  mediaById: MediaAssetMap,
-) {
-  const content = getStringRecord(block.content);
-  const assetId = asString(content.assetId);
-  const text = asString(content.text);
-
-  if (!assetId || !text) {
-    return "";
-  }
-
-  const asset = mediaById.get(assetId);
-
-  if (!asset) {
-    return "";
-  }
-
-  const title = asString(content.title);
-
-  return `
-<section class="article-block article-block--image-text ${layoutClass(block.layout)}">
-  <figure>
-    <img src="${escapeHtml(asset.url)}" alt="${escapeHtml(asset.alt ?? "")}" />
-  </figure>
-  <div>
-    ${title ? `<h3>${escapeHtml(title)}</h3>` : ""}
-    <p>${escapeHtml(text).replaceAll("\n", "<br />")}</p>
-  </div>
 </section>`;
 }
 
@@ -189,10 +245,10 @@ export function renderArticleBlocksToHtml(
           return renderParagraph(block);
 
         case $Enums.ArticleBlockType.IMAGE:
-          return renderImage(block, mediaById);
+          return renderImageBlock(block.content);
 
         case $Enums.ArticleBlockType.IMAGE_TEXT:
-          return renderImageText(block, mediaById);
+          return renderImageTextBlock(block.content);
 
         case $Enums.ArticleBlockType.QUOTE:
           return renderQuote(block);
